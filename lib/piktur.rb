@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'pry'
-binding.pry
 require 'active_support/dependencies'
 require_dependency 'piktur/env.rb'
 require_dependency 'piktur/version.rb'
