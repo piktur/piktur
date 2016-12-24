@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://bitbucket.org/piktur/piktur'
   s.summary     = 'Piktur a complete Portfolio Management System for Artists'
   # s.source      = 'https://bitbucket.org/piktur/piktur_core'
-  s.description = 'Piktur provides common utilities for Piktur apps'
+  s.description = 'Common utilities for Piktur apps'
   s.license = ''
   s.bindir = 'bin'
   # Rubygems permits executable ruby scripts only, bash not accepted
@@ -35,21 +35,25 @@ Gem::Specification.new do |s|
   s.test_files = Dir['spec/**/*.rb']
   s.require_paths = %w(lib)
 
+  # @!group Security
+  # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
+  s.add_dependency 'dotenv',                            '~> 2.1'
+  s.add_dependency 'pundit',                            '~> 1.1'
+  # @!endgroup
+
+  # @!group Utilities
+  s.add_dependency 'activesupport',                     '= 4.2.5.1'
+  # @!endgroup
+
   # @!group Server
   s.add_dependency 'puma',                              '~> 3.4'
   s.add_dependency 'foreman',                           '~> 0.81'
-  # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
-  s.add_dependency 'dotenv',                            '~> 2.1'
   # @!endgroup
 
   # @!group Data
   # @see https://github.com/ohler55/oj#compatibility
   # @see https://github.com/ohler55/oj/issues/199
   s.add_dependency 'oj',                                '= 2.18'
-  # @!endgroup
-
-  # @!group Security
-  s.add_dependency 'pundit',                            '~> 1.1'
   # @!endgroup
 
   # @!group Frontend

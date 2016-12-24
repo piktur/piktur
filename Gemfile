@@ -9,13 +9,23 @@ ruby '2.3.0'
 
 gemspec name: 'piktur'
 
-# @note Use of `require: false` prevents loading gem on application boot.
-#   Require strategically within relevant file(s).
+# @note `require: false` defers loading. Require strategically within codebase.
 
 # @!group Security
+# @note `dotenv` preferred over `figaro`, for `foreman` compatibility
+gem 'dotenv'
 gem 'rack_auth_jwt',            git:     "#{bb}/piktur/rack_auth_jwt.git",
                                 branch:  'master',
                                 require: false
+# @!endgroup
+
+# @!group Utilities
+gem 'activesupport',            require: false
+# @!endgroup
+
+# @!group Server
+gem 'foreman',                  require: false
+gem 'puma',                     require: false
 # @!endgroup
 
 # @!group Documentation
