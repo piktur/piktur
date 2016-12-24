@@ -1,0 +1,10 @@
+.env
+.env.*
+.vscode
+.yardoc/**/*
+docs/**/*
+doc/**/*
+coverage/**/*
+.bundle/config
+vendor/bundle/**/*
+vendor/cache/**/*

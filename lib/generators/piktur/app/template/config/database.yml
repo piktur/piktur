@@ -1,0 +1,44 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # As you add more concurrency to your application it will need more connections to your
+  # database. A good formula for determining the number of connections each application will
+  # require is to multiply the RAILS_MAX_THREADS by the WEB_CONCURRENCY.
+  #
+  # Rails maintains its own database connection pool, with a new pool created for each worker
+  # process. Threads within a worker will operate on the same pool. Make sure there are enough
+  # connections inside of your Rails database connection pool so that RAILS_MAX_THREADS number of
+  # connections can be used. If you see this error:
+  #   ActiveRecord::ConnectionTimeoutError - could not obtain a database connection within 5
+  #   seconds
+  # This is an indication that your Rails connection pool is too low.
+  #
+  # @see https://devcenter.heroku.com/articles/deploying-rails-applications-with-the-puma-web-server#database-connections
+  #
+  # @note Raised pool size according to Heroku advice, would otherwise receive
+  #   ActiveRecord::ConnectionTimeoutError when performing image processing in background.
+  #
+  #   @see https://github.com/mperham/sidekiq/issues/2943
+  #   @see https://github.com/mperham/sidekiq/issues/1047
+  #
+  # @note When ENV['DATABASE_URL'] defined, it will override settings defined here
+  # @see https://github.com/rails/rails/pull/13582
+  # @see https://devcenter.heroku.com/articles/rails-database-connection-behavior
+  #
+  pool: <%%= Integer(ENV.fetch('WEB_CONCURRENCY', 2)) *
+            Integer(ENV.fetch('RAILS_MAX_THREADS', 5)) %>
+  # The Heroku router will timeout all requests that exceed 30 seconds.
+  #
+  # @see https://devcenter.heroku.com/articles/deploying-rails-applications-with-the-puma-web-server#timeout
+  timeout: 20000
+  host:
+  username: <%%= ENV.fetch('DATABASE_USER', '') %>
+  password: <%%= ENV.fetch('DATABASE_PASSWORD', '') %>
+
+development:
+  <<: *default
+  database: <%%= ENV.fetch('DATABASE_NAME', '') %>
+
+test:
+  <<: *default
+  database: <%%= ENV.fetch('DATABASE_NAME', '') %>

@@ -1,0 +1,21 @@
+Description:
+    The `piktur new` command creates a new Rails application with a default
+    directory structure and configuration at the path you specify.
+
+    The template:
+      - adds core gems to Gemfile
+      - creates local repo
+      - creates remote repo [bitbucket]
+        - adds remote
+        - commit/push
+        - checkout 'develop'
+      - creates Heroku remote [production, staging]
+        - adds domain alias [production, staging]
+        - enables addons [newrelic]
+        - sets env
+        - sets maintenance mode
+      - CircleCI integration
+
+Example:
+    cd piktur
+    bin/piktur new blog

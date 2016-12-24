@@ -1,0 +1,23 @@
+# frozen_string_literal: true
+
+eval_gemfile 'Gemfile.core'
+
+gem 'piktur_core',
+    git:    'https://bitbucket.org/piktur/piktur_core.git',
+    branch: 'master'
+<% gemfile_entries.each do |gem| -%>
+<% if gem.comment -%>
+
+# <%= gem.comment %>
+<% end -%>
+<%= gem.commented_out ? '# ' : '' %>gem '<%= gem.name %>'<%= %(, '#{gem.version}') if gem.version -%>
+<% if gem.options.any? -%>
+, <%= gem.options.map { |k,v|
+  "#{k}: #{v.inspect}" }.join(', ') %>
+<% end -%>
+<% end -%>
+
+group :production do
+  # Application Monitoring
+  gem 'newrelic_rpm'
+end

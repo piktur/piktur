@@ -1,0 +1,87 @@
+# AWS IAM Credentials stored in "AWS API" secure note with password manager
+machine:
+  ruby:
+    version:
+      2.3.0-p0
+  # pre:
+  #   - rvm use ruby-2.3.0
+  hosts:
+    piktur.io: 127.0.0.1
+    admin.piktur.io: 127.0.0.1
+    api.piktur.io: 127.0.0.1
+    blog.piktur.io: 127.0.0.1
+  services:
+    - redis
+  # @see .env.common .env.test
+  environment:
+    ENCODING: utf-8
+    CIRCLE_ENV: test
+    RAILS_ENV: test
+    RACK_ENV: test
+    NODE_ENV: test
+    WEB_CONCURRENCY: 2
+    RAILS_MAX_THREADS: 5
+    PIKTUR_ADMIN_PORT:
+    PIKTUR_ADMIN_PROTOCOL: https
+    PIKTUR_ADMIN_SERVER_NAME: piktur.io
+    PIKTUR_API_PORT:
+    PIKTUR_API_PROTOCOL: https
+    PIKTUR_API_SERVER_NAME: api.piktur.io
+    PIKTUR_BLOG_PORT:
+    PIKTUR_BLOG_PROTOCOL: https
+    PIKTUR_BLOG_SERVER_NAME: blog.danielsmall.net
+    PIKTUR_CLIENT_PORT:
+    PIKTUR_CLIENT_PROTOCOL: https
+    PIKTUR_CLIENT_SERVER_NAME: danielsmall.net
+    DATABASE_URL: postgres://ubuntu:@127.0.0.1:5432/circle_ruby_test
+
+# checkout:
+
+dependencies:
+  # Access external resources and checkout related repos during build
+  # @see https://circleci.com/docs/external-resources/
+  # @see https://circleci.com/bb/piktur/piktur-api/edit#checkout
+  pre:
+    - curl https://${BUNDLE_BITBUCKET__ORG}@bitbucket.org/piktur/piktur_core/raw/master/piktur_core/Gemfile -o Gemfile.core
+  # override:
+  #   - bundle install:
+  #       timeout: 10
+  #       without: production
+  #       clean: true
+  #       deployment: false
+  #       jobs: 5
+  #       gemfile: Gemfile
+  #       retry: 1
+
+database:
+  override:
+    - bundle exec rake db:create db:structure:load --trace
+
+# compile:
+
+test:
+  # @todo Define test scope
+  override:
+    - COVERAGE=true bundle exec rspec --color --format progress
+
+deployment:
+  # staging:
+  #   branch: master
+  #   heroku:
+  #     appname: <%= heroku_name %>-staging
+  # @note If running commands around deployment, use the ‘normal’ deployment syntax.
+  #   production:
+  #     branch: production
+  #     commands:
+  #       - [[ ! -s "$(git rev-parse --git-dir)/shallow" ]] || git fetch --unshallow
+  #       - git push git@heroku.com:<%= heroku_name %>.git $CIRCLE_SHA1:master
+  #       - heroku run rake db:migrate --app <%= heroku_name %>:
+  #           timeout: 400 # if your deploys take a long time
+  #     environment:
+  #       RAILS_ENV: production
+  #       RACK_ENV: production
+  #       NODE_ENV: production
+  production:
+    branch: master
+    heroku:
+      appname: <%= heroku_name %>
