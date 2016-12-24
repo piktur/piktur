@@ -2,13 +2,16 @@
 
 [**Trello**](https://trello.com/b/rfyc6HpD/pikturapp-jan16)
 
-[**Piktur.io**](#)
+[**Piktur.io**](http://piktur.io)
+
+## [piktur [lib]](https://bitbucket.org/piktur/piktur)
+`/piktur` Piktur | Common utilities for Piktur apps
+
+[**Issues**](https://bitbucket.org/piktur/piktur/issues) | [**README**](https://bitbucket.org/piktur/piktur/src/master/README.markdown) | [![CircleCI](https://circleci.com/bb/piktur/piktur.svg?style=svg)](https://circleci.com/bb/piktur/piktur)
 
 ## [piktur_core [engine]](https://bitbucket.org/piktur/piktur_core)
 
-`/piktur` Piktur | Initialisation and common configuration
-
-`/piktur/piktur_core` Piktur | Application Security and shared Models
+`/piktur/piktur_core` Piktur | Rails engine providing core MVC objects and configuration for Piktur apps
 
 [**Issues**](https://bitbucket.org/piktur/piktur_core/issues) | [**README**](https://bitbucket.org/piktur/piktur_core/src/master/README.markdown) | [![CircleCI](https://circleci.com/bb/piktur/piktur_core.svg?style=svg)](https://circleci.com/bb/piktur/piktur_core)
 
