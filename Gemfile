@@ -14,9 +14,11 @@ gemspec name: 'piktur'
 # @!group Security
 # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
 gem 'dotenv'
+gem 'knock',                    git:    "#{bb}/piktur/knock.git",
+                                branch: 'master'
 gem 'rack_auth_jwt',            git:     "#{bb}/piktur/rack_auth_jwt.git",
                                 branch:  'master',
-                                require: false
+                                require: 'rack/auth/jwt'
 # @!endgroup
 
 # @!group Utilities
@@ -29,9 +31,8 @@ gem 'puma',                     require: false
 # @!endgroup
 
 # @!group Documentation
-gem 'yard',                     git:     "#{gh}/lsegal/yard.git",
-                                branch:  'master',
-                                require: false
+gem 'yard',                     git:    "#{gh}/lsegal/yard.git",
+                                branch: 'master'
 # @!endgroup
 
 # @!group Frontend
@@ -53,10 +54,10 @@ group :development, :test do
                                 require: false
   gem 'benchmark-ips',          require: false
   gem 'faker',                  require: false
-  gem 'pry',                    require: true
-  gem 'pry-rails',              require: true
-  gem 'pry-rescue',             require: true
-  gem 'pry-stack_explorer',     require: true
+  gem 'pry'
+  gem 'pry-rails'
+  gem 'pry-rescue'
+  gem 'pry-stack_explorer'
 end
 
 group :test do
@@ -64,6 +65,6 @@ group :test do
 end
 
 group :production do
-  gem 'newrelic_rpm',           require: true
-  gem 'rails_12factor',         require: true
+  gem 'newrelic_rpm'
+  gem 'rails_12factor'
 end

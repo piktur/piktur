@@ -21,8 +21,6 @@ require "action_view/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-require 'piktur/engine'
-
 module Piktur
 
   module <%= app_const_base %>

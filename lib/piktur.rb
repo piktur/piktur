@@ -1,11 +1,36 @@
 # frozen_string_literal: true
 
-require 'active_support/dependencies'
-require_dependency 'piktur/env.rb'
-require_dependency 'piktur/version.rb'
 require 'pathname'
+require 'active_support/dependencies'
+require 'active_support/dependencies/autoload'
+
+require_dependency 'piktur/env.rb'
+require 'rubygems'
+require 'pry'
+binding.pry
+Bundler.setup
+Bundler.require(:default, ENV['RACK_ENV'])
+require 'rack/auth/jwt'
+require 'knock'
+require 'active_support/all'
+require 'foreman'
+require 'puma'
+require 'yard'
+require 'redcarpet'
+require 'slim'
 
 # Provides basic utilities to generate/organise Piktur application components.
+# @todo [define path helpers for each module](https://bitbucket.org/snippets/piktur/M7A6E)
+# @todo https://trello.com/c/gcytwRuV/79-decouple-core-dependencies
+#
+# ## Constant loading
+#
+# `piktur_core` must remain portable. Be clear about the relevance and broader utility of a
+# constant.
+#
+#   * Avoid introducing **irrelevant dependencies**
+#   * Maintain **separation of concerns**
+#
 module Piktur
 
   # Returns absolute path to root directory
@@ -25,5 +50,3 @@ module Piktur
   end
 
 end
-
-require_dependency 'piktur_core/piktur_core.rb' if defined?(Rails)
