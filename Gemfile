@@ -24,6 +24,7 @@ gem 'rack_auth_jwt',            source:  ENV['PRIVATE_GEM_HOST'],
 
 # @!group Utilities
 gem 'activesupport',            require: false
+gem 'rake'
 # @!endgroup
 
 # @!group Server
