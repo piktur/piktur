@@ -53,8 +53,8 @@ module Piktur
           decoded = ::Knock::AuthToken.new(token: token)
           payload = decoded.payload
 
-          @_current_entity ||= decoded.entity_for(entity_class(payload['sub']['role']))
-          @_current_entity.readonly! if api_domain == 'Client'
+          @_current_entity = decoded.entity_for(entity_class(payload['sub']['role']))
+          @_current_entity.readonly! if @_current_entity && api_domain == 'Client'
           @_current_entity
         end
         alias entity current_entity
