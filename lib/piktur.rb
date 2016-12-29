@@ -5,6 +5,7 @@ require 'active_support/dependencies'
 require 'active_support/dependencies/autoload'
 
 require_relative './piktur/env.rb'
+
 # require_relative './piktur/support.rb'
 # require_relative './piktur/security.rb'
 

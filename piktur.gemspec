@@ -40,6 +40,7 @@ Gem::Specification.new do |s|
   # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
   s.add_dependency 'dotenv',                            '~> 2.1'
   s.add_dependency 'pundit',                            '~> 1.1'
+  s.add_dependency 'knock',                             '~> 2.0'
   s.add_dependency 'rack_auth_jwt',                     '>= 0.0.1'
   # @!endgroup
 
@@ -48,8 +49,8 @@ Gem::Specification.new do |s|
   # @!endgroup
 
   # @!group Server
-  s.add_dependency 'puma',                              '~> 3.4'
   s.add_dependency 'foreman',                           '~> 0.81'
+  s.add_dependency 'puma',                              '~> 3.4'
   # @!endgroup
 
   # @!group Data
@@ -59,30 +60,35 @@ Gem::Specification.new do |s|
   # @!endgroup
 
   # @!group Frontend
-  s.add_dependency 'slim',                              '~> 3.0'
   s.add_dependency 'redcarpet',                         '~> 3.3'
-  # @!endgroup
-
-  # @ Fixtures
-  s.add_dependency 'faker',                             '~> 1.6'
-
-  # @!group Test
-  s.add_development_dependency 'simplecov',             '~> 0.12'
-  # @!endgroup
-
-  # @!group Development
-  s.add_development_dependency 'benchmark-ips',         '~> 2.7'
-  s.add_development_dependency 'byebug',                '~> 9.0'
-  s.add_development_dependency 'pry',                   '~> 0.10'
-  s.add_development_dependency 'pry-rails',             '~> 0.3'
-  s.add_development_dependency 'pry-rescue',            '~> 1.4'
-  s.add_development_dependency 'pry-stack_explorer',    '~> 0.4'
-  s.add_development_dependency 'rubocop',               '~> 0.40'
-  s.add_development_dependency 'spring',                '~> 1.7'
-  s.add_development_dependency 'spring-commands-rspec', '~> 1.0'
+  s.add_dependency 'slim',                              '~> 3.0'
   # @!endgroup
 
   # @!group Documentation
-  s.add_development_dependency 'yard',                  '~> 0.8'
+  s.add_dependency 'yard',                              '~> 0.8'
+  # @!endgroup
+
+  # @!group Test
+  s.add_dependency 'simplecov',                         '~> 0.12'
+  # @!endgroup
+
+  s.add_dependency 'newrelic_rpm',                      '~> 3.17'
+  s.add_dependency 'rails_12factor',                    '~> 0.0.3'
+
+  # @!group Development
+  # @note `add_development_dependency` does not make the library available to dependent libraries.
+  #   Instead wrap these libraries in a `group` block within `Gemfile`
+  s.add_dependency 'annotate',                          '~> 2.7'
+  s.add_dependency 'awesome_print',                     '~> 1.7'
+  s.add_dependency 'benchmark-ips',                     '~> 2.7'
+  s.add_dependency 'byebug',                            '~> 9.0'
+  s.add_dependency 'faker',                             '~> 1.6'
+  s.add_dependency 'pry',                               '~> 0.10'
+  s.add_dependency 'pry-rails',                         '~> 0.3'
+  s.add_dependency 'pry-rescue',                        '~> 1.4'
+  s.add_dependency 'pry-stack_explorer',                '~> 0.4'
+  s.add_dependency 'rubocop',                           '~> 0.40'
+  s.add_dependency 'spring',                            '~> 1.7'
+  s.add_dependency 'spring-commands-rspec',             '~> 1.0'
   # @!endgroup
 end

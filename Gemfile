@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 # rubocop:disable Metrics/BlockLength, Style/ExtraSpacing
 
-gh = 'https://github.com'
-bb = 'https://bitbucket.org'
+# @note RubyGems does not play nice with unbuilt dependencies stored in a repo. Private gems are
+#   instead served privately with `geminabox`.
+# @see https://bitbucket.org/snippets/piktur/dBKR5 require private BitBucket repo
 
 source 'https://rubygems.org'
 source ENV['PRIVATE_GEM_HOST']
@@ -16,11 +17,7 @@ gemspec name: 'piktur'
 # @!group Security
 # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
 gem 'dotenv'
-# gem 'knock',                    git:    "#{bb}/piktur/knock.git",
-#                                 branch: 'master'
-# gem 'rack_auth_jwt',            git:     "#{bb}/piktur/rack_auth_jwt.git",
-#                                 branch:  'master',
-#                                 require: 'rack/auth/jwt'
+gem 'knock',                    source:  ENV['PRIVATE_GEM_HOST']
 gem 'rack_auth_jwt',            source:  ENV['PRIVATE_GEM_HOST'],
                                 require: 'rack/auth/jwt'
 # @!endgroup
@@ -44,16 +41,14 @@ gem 'slim',                     require: false
 # @!endgroup
 
 group :development do
-  gem 'annotate',               git:     "#{gh}/noname00000123/annotate_models.git",
-                                branch:  'develop',
+  gem 'annotate',               source:  ENV['PRIVATE_GEM_HOST'],
                                 require: false
   gem 'byebug',                 require: false
   gem 'rubocop',                require: false
 end
 
 group :development, :test do
-  gem 'awesome_print',          git:     "#{gh}/awesome-print/awesome_print.git",
-                                branch:  'master',
+  gem 'awesome_print',          source:  ENV['PRIVATE_GEM_HOST'],
                                 require: false
   gem 'benchmark-ips',          require: false
   gem 'faker',                  require: false
@@ -61,6 +56,8 @@ group :development, :test do
   gem 'pry-rails'
   gem 'pry-rescue'
   gem 'pry-stack_explorer'
+  gem 'spring'
+  gem 'spring-commands-rspec'
 end
 
 group :test do
