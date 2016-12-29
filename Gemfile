@@ -5,6 +5,8 @@ gh = 'https://github.com'
 bb = 'https://bitbucket.org'
 
 source 'https://rubygems.org'
+source 'http://localhost:9292'
+
 ruby '2.3.0'
 
 gemspec name: 'piktur'
@@ -16,9 +18,10 @@ gemspec name: 'piktur'
 gem 'dotenv'
 # gem 'knock',                    git:    "#{bb}/piktur/knock.git",
 #                                 branch: 'master'
-gem 'rack_auth_jwt',            git:     "#{bb}/piktur/rack_auth_jwt.git",
-                                branch:  'master',
-                                require: 'rack/auth/jwt'
+# gem 'rack_auth_jwt',            git:     "#{bb}/piktur/rack_auth_jwt.git",
+#                                 branch:  'master',
+#                                 require: 'rack/auth/jwt'
+gem 'rack_auth_jwt',              require: 'rack/auth/jwt'
 # @!endgroup
 
 # @!group Utilities
