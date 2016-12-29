@@ -51,7 +51,7 @@ group :development, :test do
   gem 'awesome_print',          source:  ENV['PRIVATE_GEM_HOST'],
                                 require: false
   gem 'benchmark-ips',          require: false
-  gem 'faker',                  require: false
+  gem 'faker'
   gem 'pry'
   gem 'pry-rails'
   gem 'pry-rescue'

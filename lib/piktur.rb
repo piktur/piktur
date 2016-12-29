@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
 require 'pathname'
+# @see piktur_core/spec/benchmark/file_system.rb {Rake::FileList} vs {Dir.glob}
+require 'rake/file_list'
 require 'active_support/dependencies'
 require 'active_support/dependencies/autoload'
 
 require_relative './piktur/env.rb'
+require_relative './piktur/support.rb'
 
 # Basic utilities for Piktur applications.
 # @todo [define path helpers for each module](https://bitbucket.org/snippets/piktur/M7A6E)

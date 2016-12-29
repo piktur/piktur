@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'active_support/core_ext/module/remove_method'
+require 'bcrypt'
 require 'knock'
 require 'pundit'
 require 'rack/auth/jwt'
