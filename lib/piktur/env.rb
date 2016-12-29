@@ -24,7 +24,11 @@ unless ENV['CIRCLECI'] || ENV['CI']
   # Load `.env.<environment>` **AFTER** `env.common` so that matching keys are overloaded.
   files = %w(.env.common)
   files << (env == 'production' ? '.env' : ".env.#{env}")
-  files.collect! { |f| File.expand_path("../#{f}", ENV['PWD']) }
+  files.collect! do |fname|
+    path = File.expand_path("../#{fname}", ENV['PWD'])
+    File.exist? path
+  end
+  files.compact
 
   Dotenv.overload(*files)
 end
