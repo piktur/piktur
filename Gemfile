@@ -21,7 +21,8 @@ gem 'dotenv'
 # gem 'rack_auth_jwt',            git:     "#{bb}/piktur/rack_auth_jwt.git",
 #                                 branch:  'master',
 #                                 require: 'rack/auth/jwt'
-gem 'rack_auth_jwt',              require: 'rack/auth/jwt'
+gem 'rack_auth_jwt',            source:  'http://localhost:9292',
+                                require: 'rack/auth/jwt'
 # @!endgroup
 
 # @!group Utilities
