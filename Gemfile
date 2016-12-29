@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 # rubocop:disable Metrics/BlockLength, Style/ExtraSpacing
 
-# @note RubyGems does not play nice with unbuilt dependencies stored in a repo. Private gems are
+# @note RubyGems doesn't tolerate unbuilt dependencies from git sources. Private gems are
 #   instead served privately with `geminabox`.
 # @see https://bitbucket.org/snippets/piktur/dBKR5 require private BitBucket repo
 

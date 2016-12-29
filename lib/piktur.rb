@@ -6,10 +6,7 @@ require 'active_support/dependencies/autoload'
 
 require_relative './piktur/env.rb'
 
-# require_relative './piktur/support.rb'
-# require_relative './piktur/security.rb'
-
-# Provides basic utilities to generate/organise Piktur application components.
+# Basic utilities for Piktur applications.
 # @todo [define path helpers for each module](https://bitbucket.org/snippets/piktur/M7A6E)
 # @todo https://trello.com/c/gcytwRuV/79-decouple-core-dependencies
 #
@@ -23,12 +20,6 @@ require_relative './piktur/env.rb'
 #
 module Piktur
 
-  # Returns absolute path to root directory
-  # @return [Pathname]
-  def self.root
-    Pathname.new File.expand_path('../', __dir__)
-  end
-
   extend ActiveSupport::Autoload
 
   # Eager load common lib code
@@ -37,6 +28,12 @@ module Piktur
     # autoload :Settings
     # autoload :Coders
     autoload :Security
+  end
+
+  # Returns absolute path to root directory
+  # @return [Pathname]
+  def self.root
+    Pathname.new File.expand_path('../', __dir__)
   end
 
 end
