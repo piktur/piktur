@@ -5,7 +5,7 @@ gh = 'https://github.com'
 bb = 'https://bitbucket.org'
 
 source 'https://rubygems.org'
-source 'http://localhost:9292'
+source ENV['PRIVATE_GEM_HOST']
 
 ruby '2.3.0'
 
@@ -21,7 +21,7 @@ gem 'dotenv'
 # gem 'rack_auth_jwt',            git:     "#{bb}/piktur/rack_auth_jwt.git",
 #                                 branch:  'master',
 #                                 require: 'rack/auth/jwt'
-gem 'rack_auth_jwt',            source:  'http://localhost:9292',
+gem 'rack_auth_jwt',            source:  ENV['PRIVATE_GEM_HOST'],
                                 require: 'rack/auth/jwt'
 # @!endgroup
 
@@ -35,8 +35,7 @@ gem 'puma',                     require: false
 # @!endgroup
 
 # @!group Documentation
-gem 'yard',                     git:    "#{gh}/lsegal/yard.git",
-                                branch: 'master'
+gem 'yard',                     source: ENV['PRIVATE_GEM_HOST']
 # @!endgroup
 
 # @!group Frontend

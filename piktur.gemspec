@@ -36,11 +36,11 @@ Gem::Specification.new do |s|
   s.test_files = Dir['spec/**/*.rb']
   s.require_paths = %w(lib)
 
-  s.add_dependency 'rack_auth_jwt',                     '>= 0.0.1'
   # @!group Security
   # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
   s.add_dependency 'dotenv',                            '~> 2.1'
   s.add_dependency 'pundit',                            '~> 1.1'
+  s.add_dependency 'rack_auth_jwt',                     '>= 0.0.1'
   # @!endgroup
 
   # @!group Utilities

@@ -3,6 +3,7 @@
 require 'active_support/core_ext/module/remove_method'
 require 'knock'
 require 'pundit'
+require 'rack/auth/jwt'
 
 # @option [ActiveSupport::Duration] token_lifetime Token will not expire if nil
 # @option [Proc] token_audience

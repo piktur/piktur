@@ -4,21 +4,9 @@ require 'pathname'
 require 'active_support/dependencies'
 require 'active_support/dependencies/autoload'
 
-require_dependency 'piktur/env.rb'
-
-require_relative './piktur/support'
-require_relative './piktur/security'
-
-# Bundler.setup
-# Bundler.require(:default, ENV['RACK_ENV'])
-# require 'rack/auth/jwt'
-# require 'knock'
-# require 'active_support/all'
-# require 'foreman'
-# require 'puma'
-# require 'yard'
-# require 'redcarpet'
-# require 'slim'
+require_relative './piktur/env.rb'
+# require_relative './piktur/support.rb'
+# require_relative './piktur/security.rb'
 
 # Provides basic utilities to generate/organise Piktur application components.
 # @todo [define path helpers for each module](https://bitbucket.org/snippets/piktur/M7A6E)
@@ -40,14 +28,14 @@ module Piktur
     Pathname.new File.expand_path('../', __dir__)
   end
 
-  # extend ActiveSupport::Autoload
+  extend ActiveSupport::Autoload
 
   # Eager load common lib code
-  # eager_autoload do
-    # autoload :Support
+  eager_autoload do
+    autoload :Support
     # autoload :Settings
     # autoload :Coders
-    # autoload :Security
-  # end
+    autoload :Security
+  end
 
 end
