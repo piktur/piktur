@@ -14,8 +14,8 @@ gemspec name: 'piktur'
 # @!group Security
 # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
 gem 'dotenv'
-gem 'knock',                    git:    "#{bb}/piktur/knock.git",
-                                branch: 'master'
+# gem 'knock',                    git:    "#{bb}/piktur/knock.git",
+#                                 branch: 'master'
 gem 'rack_auth_jwt',            git:     "#{bb}/piktur/rack_auth_jwt.git",
                                 branch:  'master',
                                 require: 'rack/auth/jwt'
