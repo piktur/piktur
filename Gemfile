@@ -42,8 +42,6 @@ gem 'slim',                     require: false
 # @!endgroup
 
 group :development do
-  gem 'annotate',               source:  ENV['PRIVATE_GEM_HOST'],
-                                require: false
   gem 'byebug',                 require: false
   gem 'rubocop',                require: false
 end

@@ -79,7 +79,6 @@ Gem::Specification.new do |s|
   # @!group Development
   # @note `add_development_dependency` does not make the library available to dependent libraries.
   #   Instead wrap these libraries in a `group` block within `Gemfile`
-  s.add_dependency 'annotate',                          '~> 2.7'
   s.add_dependency 'awesome_print',                     '~> 1.7'
   s.add_dependency 'benchmark-ips',                     '~> 2.7'
   s.add_dependency 'byebug',                            '~> 9.0'
