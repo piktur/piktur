@@ -5,7 +5,7 @@
 #   instead served privately with `geminabox`.
 # @see https://bitbucket.org/snippets/piktur/dBKR5 require private BitBucket repo
 
-source 'https://rubygems.org'
+# source 'https://rubygems.org'
 source ENV['PRIVATE_GEM_HOST']
 
 ruby '2.3.0'
