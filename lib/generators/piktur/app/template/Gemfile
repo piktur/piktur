@@ -1,10 +1,21 @@
 # frozen_string_literal: true
 
-eval_gemfile 'Gemfile.core'
+gh = 'https://github.com'
+bb = 'https://bitbucket.org'
 
-gem 'piktur_core',
-    git:    'https://bitbucket.org/piktur/piktur_core.git',
-    branch: 'master'
+source 'https://rubygems.org'
+source ENV['GEM_SOURCE']
+
+ruby '2.3.0'
+
+gemspec name: 'piktur_<%= app_name %>'
+
+# @!group Piktur
+gem 'piktur',                   git:    "#{bb}/piktur/piktur.git",
+                                branch: 'master'
+# gem 'piktur_core',              git:    "#{bb}/piktur/piktur_core.git",
+#                                 branch: 'master'
+# @!endgroup
 <% gemfile_entries.each do |gem| -%>
 <% if gem.comment -%>
 
@@ -17,7 +28,3 @@ gem 'piktur_core',
 <% end -%>
 <% end -%>
 
-group :production do
-  # Application Monitoring
-  gem 'newrelic_rpm'
-end

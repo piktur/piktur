@@ -29,7 +29,7 @@ machine:
     PIKTUR_API_SERVER_NAME: api.piktur.io
     PIKTUR_BLOG_PORT:
     PIKTUR_BLOG_PROTOCOL: https
-    PIKTUR_BLOG_SERVER_NAME: blog.danielsmall.net
+    PIKTUR_BLOG_SERVER_NAME: blog.piktur.io
     PIKTUR_CLIENT_PORT:
     PIKTUR_CLIENT_PROTOCOL: https
     PIKTUR_CLIENT_SERVER_NAME: danielsmall.net
@@ -38,11 +38,11 @@ machine:
 # checkout:
 
 dependencies:
+  pre:
+    - gem install bundler
   # Access external resources and checkout related repos during build
   # @see https://circleci.com/docs/external-resources/
   # @see https://circleci.com/bb/piktur/piktur-api/edit#checkout
-  pre:
-    - curl https://${BUNDLE_BITBUCKET__ORG}@bitbucket.org/piktur/piktur_core/raw/master/piktur_core/Gemfile -o Gemfile.core
   # override:
   #   - bundle install:
   #       timeout: 10
@@ -64,24 +64,26 @@ test:
   override:
     - COVERAGE=true bundle exec rspec --color --format progress
 
+# @todo configure staging > production deployment
+# @see https://devcenter.heroku.com/articles/multiple-environments
+# @note If running commands around deployment, use the ‘normal’ deployment syntax.
+#   production:
+#     branch: production
+#     commands:
+#       - [[ ! -s "$(git rev-parse --git-dir)/shallow" ]] || git fetch --unshallow
+#       - git push git@heroku.com:piktur-api.git $CIRCLE_SHA1:master
+#       - heroku run rake db:migrate --app piktur-api:
+#           timeout: 400 # if your deploys take a long time
+#     environment:
+#       RAILS_ENV: production
+#       RACK_ENV: production
+#       NODE_ENV: production
 deployment:
   # staging:
   #   branch: master
   #   heroku:
-  #     appname: <%= heroku_name %>-staging
-  # @note If running commands around deployment, use the ‘normal’ deployment syntax.
-  #   production:
-  #     branch: production
-  #     commands:
-  #       - [[ ! -s "$(git rev-parse --git-dir)/shallow" ]] || git fetch --unshallow
-  #       - git push git@heroku.com:<%= heroku_name %>.git $CIRCLE_SHA1:master
-  #       - heroku run rake db:migrate --app <%= heroku_name %>:
-  #           timeout: 400 # if your deploys take a long time
-  #     environment:
-  #       RAILS_ENV: production
-  #       RACK_ENV: production
-  #       NODE_ENV: production
+  #     appname: piktur-api-staging
   production:
     branch: master
     heroku:
-      appname: <%= heroku_name %>
+      appname: piktur-api
