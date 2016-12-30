@@ -5,8 +5,8 @@
 #   instead served privately with `geminabox`.
 # @see https://bitbucket.org/snippets/piktur/dBKR5 require private BitBucket repo
 
-# source 'https://rubygems.org'
-source ENV['PRIVATE_GEM_HOST']
+source 'https://rubygems.org'
+source ENV['GEM_SOURCE']
 
 ruby '2.3.0'
 
@@ -17,8 +17,8 @@ gemspec name: 'piktur'
 # @!group Security
 # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
 gem 'dotenv'
-gem 'knock',                    source:  ENV['PRIVATE_GEM_HOST']
-gem 'rack_auth_jwt',            source:  ENV['PRIVATE_GEM_HOST'],
+gem 'knock',                    source:  ENV['GEM_SOURCE']
+gem 'rack_auth_jwt',            source:  ENV['GEM_SOURCE'],
                                 require: 'rack/auth/jwt'
 # @!endgroup
 
@@ -33,7 +33,7 @@ gem 'puma',                     require: false
 # @!endgroup
 
 # @!group Documentation
-gem 'yard',                     source: ENV['PRIVATE_GEM_HOST']
+gem 'yard',                     source: ENV['GEM_SOURCE']
 # @!endgroup
 
 # @!group Frontend
@@ -47,7 +47,7 @@ group :development do
 end
 
 group :development, :test do
-  gem 'awesome_print',          source:  ENV['PRIVATE_GEM_HOST'],
+  gem 'awesome_print',          source:  ENV['GEM_SOURCE'],
                                 require: false
   gem 'benchmark-ips',          require: false
   gem 'faker'
