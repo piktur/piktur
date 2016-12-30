@@ -1,51 +1,62 @@
 {
-	"folders":
-	[
+  "folders":
+  [
     {
-      "path": "./",
-      "name": "Piktur",
+      "path": "~/Documents/webdev/current_projects/piktur",
+      "name": "Local",
       "folder_exclude_patterns": [
-        "_storage", "piktur_admin", "piktur_blog", "piktur_client", "piktur_core", "piktur_api", "piktur-app", "piktur_store", "piktur-generator", ".yardoc", ".sass-cache"
+        "piktur",
+        "piktur_*",
+        "docs",
+        ".yardoc",
+        ".sass-cache"
       ]
     },
     {
-      "path": "./piktur_admin",
-      "name": "Piktur Admin",
-      "folder_exclude_patterns": [ "doc" ]
+      "path": "~/Documents/webdev/current_projects/piktur/piktur",
+      "name": "Piktur",
+      "folder_exclude_patterns": [ "doc", "node_modules", "bower_components" ]
     },
     {
-      "path": "./piktur_api",
-      "name": "Piktur API",
-      "folder_exclude_patterns": [ "doc", "node_modules" ]
-    },
-    {
-      "path": "./piktur_blog",
-      "name": "Piktur Blog",
-      "folder_exclude_patterns": [ "doc" ]
-    },
-    {
-      "path": "./piktur_client",
-      "name": "Piktur Client",
-      "folder_exclude_patterns": [ "doc" ]
-      // "file_exclude_patterns": ["*.css"]
-    },
-    {
-      "path": "./piktur_core",
+      "path": "~/Documents/webdev/current_projects/piktur/piktur_core",
       "name": "Piktur Core",
-      "folder_exclude_patterns": [ "doc", "node_modules" ]
+      "folder_exclude_patterns": [ "doc", "node_modules", "bower_components" ]
     },
     {
-      "path": "./piktur_store",
+      "path": "~/Documents/webdev/current_projects/piktur/piktur_api",
+      "name": "Piktur API",
+      "folder_exclude_patterns": [ "doc", "node_modules", "bower_components" ]
+    },
+    {
+      "path": "~/Documents/webdev/current_projects/piktur/piktur_admin",
+      "name": "Piktur Admin",
+      "folder_exclude_patterns": [ "doc", "node_modules", "bower_components" ]
+    },
+    {
+      "path": "~/Documents/webdev/current_projects/piktur/piktur_blog",
+      "name": "Piktur Blog",
+      "folder_exclude_patterns": [ "doc", "node_modules", "bower_components" ]
+    },
+    {
+      "path": "~/Documents/webdev/current_projects/piktur/piktur_client",
+      "name": "Piktur Client",
+      "folder_exclude_patterns": [ "doc", "node_modules", "bower_components" ]
+    },
+    {
+      "path": "~/Documents/webdev/current_projects/piktur/piktur_store",
       "name": "Piktur Store",
       "folder_exclude_patterns": [ "doc" ]
     },
     {
       "path": "~/Documents/webdev/current_projects/piktur/docs",
       "name": "Documentation",
-      // "file_exclude_patterns": ["*.css"]
     },
     {
-      "path": "../gems",
+      "path": "~/Documents/webdev/current_projects/gem_server",
+      "name": "Gem Server"
+    },
+    {
+      "path": "~/Documents/webdev/current_projects/gems",
       "name": "Gems"
     },
     {
@@ -73,20 +84,20 @@
     "linters": {
       "eslint": {
         "@disable": false,
-        "args": [],
+        "args": ["--config", ".eslintrc"],
         "chdir": "${project}",
         "excludes": ["*/*.rb"]
       },
       "json": {
         "@disable": false,
         "args": [],
-        "excludes": [],
+        "excludes": ["*/*.rb", "*/*.css"],
         "strict": true
       },
       "rubocop": {
         "@disable": false,
         "args": ["--config", ".rubocop.yml"],
-        "excludes": ["*/*.js"]
+        "excludes": ["*/*.js", "*/*.css"]
       },
       "ruby": {
         "@disable": false,
