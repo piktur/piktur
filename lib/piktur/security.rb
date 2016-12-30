@@ -24,7 +24,7 @@ Knock.setup do |c|
   c.token_audience                 = -> { ENV['AUTH0_CLIENT_ID'] }
   c.token_signature_algorithm      = 'HS256'
   c.token_public_key               = nil
-  c.not_found_exception_class_name = 'Knock::NotAuthorizedError'
+  c.not_found_exception_class_name = 'Piktur::NotAuthorizedError'
   c.token_secret_signature_key     = lambda do
     JWT.base64url_decode ENV['AUTH0_CLIENT_SECRET']
   end
@@ -36,6 +36,11 @@ Knock.redefine_method(:not_found_exception_class) do
 end
 
 module Piktur
+
+  # Raise when auth params invalid. Prefer conditional to exception callbacks.
+  # @example
+  #   unauthorized unless params[:auth][:email] && User.find_by(email: params[:auth][:email])
+  NotAuthorizedError = Class.new(ActionController::ActionControllerError)
 
   # {include:Security::Authentication}
   # {include:Security::Authorization}
