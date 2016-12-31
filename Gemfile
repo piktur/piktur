@@ -52,7 +52,6 @@ group :development, :test do
   gem 'benchmark-ips',          require: false
   gem 'faker'
   gem 'pry'
-  gem 'pry-rails'
   gem 'pry-rescue'
   gem 'pry-stack_explorer'
   gem 'spring'
@@ -65,5 +64,4 @@ end
 
 group :production do
   gem 'newrelic_rpm'
-  gem 'rails_12factor'
 end

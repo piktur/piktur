@@ -84,7 +84,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'byebug',                            '~> 9.0'
   s.add_dependency 'faker',                             '~> 1.6'
   s.add_dependency 'pry',                               '~> 0.10'
-  s.add_dependency 'pry-rails',                         '~> 0.3'
   s.add_dependency 'pry-rescue',                        '~> 1.4'
   s.add_dependency 'pry-stack_explorer',                '~> 0.4'
   s.add_dependency 'rubocop',                           '~> 0.40'
