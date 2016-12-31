@@ -54,8 +54,6 @@ group :development, :test do
   gem 'pry'
   gem 'pry-rescue'
   gem 'pry-stack_explorer'
-  gem 'spring'
-  gem 'spring-commands-rspec'
 end
 
 group :test do

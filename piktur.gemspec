@@ -86,7 +86,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'pry-rescue',                        '~> 1.4'
   s.add_dependency 'pry-stack_explorer',                '~> 0.4'
   s.add_dependency 'rubocop',                           '~> 0.40'
-  s.add_dependency 'spring',                            '~> 1.7'
-  s.add_dependency 'spring-commands-rspec',             '~> 1.0'
   # @!endgroup
 end
