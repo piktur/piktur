@@ -40,7 +40,8 @@ module Piktur
   # Raise when auth params invalid. Prefer conditional to exception callbacks.
   # @example
   #   unauthorized unless params[:auth][:email] && User.find_by(email: params[:auth][:email])
-  NotAuthorizedError = Class.new(ActionController::ActionControllerError)
+  NotAuthorizedError =
+    Class.new(defined?(ActionController) ? ActionController::ActionControllerError : StandardError)
 
   # {include:Security::Authentication}
   # {include:Security::Authorization}
