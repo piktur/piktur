@@ -74,7 +74,6 @@ Gem::Specification.new do |s|
   # @!endgroup
 
   s.add_dependency 'newrelic_rpm',                      '~> 3.17'
-  s.add_dependency 'rails_12factor',                    '~> 0.0.3'
 
   # @!group Development
   # @note `add_development_dependency` does not make the library available to dependent libraries.
