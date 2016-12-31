@@ -42,7 +42,7 @@ dependencies:
     - gem install bundler
   # Access external resources and checkout related repos during build
   # @see https://circleci.com/docs/external-resources/
-  # @see https://circleci.com/bb/piktur/piktur-api/edit#checkout
+  # @see https://circleci.com/bb/piktur/piktur_api/edit#checkout
   # override:
   #   - bundle install:
   #       timeout: 10

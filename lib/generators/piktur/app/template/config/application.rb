@@ -33,7 +33,7 @@ module Piktur
       # -- all .rb files in that directory are automatically loaded.
 
       prepare = lambda do
-        # @see https://bitbucket.org/piktur/piktur-api/raw/master/config/application.rb
+        # @see https://bitbucket.org/piktur/piktur_api/raw/master/config/application.rb
       end
 
       Spring.after_fork { FactoryGirl.reload } if defined?(Spring) && defined?(FactoryGirl)

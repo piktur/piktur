@@ -15,11 +15,11 @@
 
 [**Issues**](https://bitbucket.org/piktur/piktur_core/issues) | [**README**](https://bitbucket.org/piktur/piktur_core/src/master/README.markdown) | [![CircleCI](https://circleci.com/bb/piktur/piktur_core.svg?style=svg)](https://circleci.com/bb/piktur/piktur_core)
 
-## [piktur-api [application]](https://bitbucket.org/piktur/piktur-api)
+## [piktur-api [application]](https://bitbucket.org/piktur/piktur_api)
 
 `/piktur/piktur_api` Piktur::Api | RESTful API serving JSONAPI v1 compliant JSON
 
-[**Issues**](https://bitbucket.org/piktur/piktur-api/issues) | [**README**](https://bitbucket.org/piktur/piktur-api/src/master/README.markdown) | [![CircleCI](https://circleci.com/bb/piktur/piktur-api.svg?style=svg)](https://circleci.com/bb/piktur/piktur-api)
+[**Issues**](https://bitbucket.org/piktur/piktur_api/issues) | [**README**](https://bitbucket.org/piktur/piktur_api/src/master/README.markdown) | [![CircleCI](https://circleci.com/bb/piktur/piktur_api.svg?style=svg)](https://circleci.com/bb/piktur/piktur_api)
 
 ## [piktur_blog [application]](https://bitbucket.org/piktur/piktur_blog)
 
@@ -290,7 +290,7 @@ Keep a local copy on hand to minimise time to `bundle install`.
 
 ## Repository Management
 
-- [Erase History](http://stackoverflow.com/questions/13716658/how-to-delete-all-commit-history-in-github) Significant size reduction, up to 50% decrease on `piktur-api`
+- [Erase History](http://stackoverflow.com/questions/13716658/how-to-delete-all-commit-history-in-github) Significant size reduction, up to 50% decrease on `piktur_api`
 
 - [git prune vs repack](http://stackoverflow.com/questions/28720151/git-gc-aggressive-vs-git-repack)
 

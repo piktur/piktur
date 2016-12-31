@@ -11,7 +11,7 @@
 #   in development.
 #
 #   {file:config/environments/development.rb}
-#   {link:https://bitbucket.org/piktur/piktur-api/issues/14/fix-controller-namespacing}
+#   {link:https://bitbucket.org/piktur/piktur_api/issues/14/fix-controller-namespacing}
 #
 #   Modules defined in `lib/piktur/api.rb` must be loaded up front to ensure correct constant
 #   lookup in development.
