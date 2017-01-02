@@ -3,6 +3,7 @@
 # inherit_from:
   # - enabled.yml
   # - disabled.yml
+  # - '~/Documents/webdev/.rubocop.yml'
 
 # Common configuration.
 AllCops:
