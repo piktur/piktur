@@ -1,5 +1,5 @@
 # Ensure RAILS_ENV set before loading Rails environment
-ENV['RAILS_ENV'] ||= 'test'
+ENV['RAILS_ENV'] = 'test'
 
 # @note In order to accurately assess coverage `SimpleCov.start` **must** be called **before
 #   application loaded**

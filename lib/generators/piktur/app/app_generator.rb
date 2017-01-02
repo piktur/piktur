@@ -7,22 +7,6 @@ module Piktur
 
   include Rails::ActionMethods
 
-  # @example
-  #   # lib/generators/piktur/app/template.rb
-  #
-  #   # frozen_string_literal: true
-  #   # Add `./template` files to source_paths
-  #   Rails::Generators::AppGenerator.class_eval do
-  #     # source_root File.expand_path('template', __dir__)
-  #     def source_paths
-  #       super.unshift File.expand_path('template', __dir__)
-  #     end
-  #   end
-  #
-  #   template 'README.markdown'
-  #
-  #   # $ rails new <app_name> --template https://${BUNDLE_BITBUCKET__ORG}@bitbucket.org/piktur/piktur_core/raw/master/lib/generators/piktur/app/template.rb
-  #
   # @see http://edgeguides.rubyonrails.org/rails_application_templates.html
   module Generators
 
@@ -368,18 +352,23 @@ module Piktur
       # @note Or otherwise provision blank template
       # @return [void]
       def env
-        %w(
-          .env
-          .env.common
-          .env.development
-          .env.staging
-          .env.test
-        ).each do |f|
-          vars = `cat #{Piktur.root.join(f)}`
-          create_file f, vars
-          # Set environment variables
-          # `export #{vars}`
-        end
+        puts <<~EOS
+          DEPRECATED: Do not duplicate environment variables across apps.
+          Refer to variables defined at `~/webdev/current_projects/piktur/.env*` instead.
+        EOS
+
+        # %w(
+        #   .env
+        #   .env.common
+        #   .env.development
+        #   .env.staging
+        #   .env.test
+        # ).each do |f|
+        #   vars = `cat #{Piktur.root.parent.join(f)}`
+        #   create_file f, vars
+        #   # Set environment variables
+        #   # `export #{vars}`
+        # end
       end
 
       # @return [void]
@@ -395,18 +384,35 @@ module Piktur
     end
 
     # @example
-    #   #!/bin/bash
-    #   cd piktur
+    #   cd ~/Documents/webdev/current_projects/piktur
     #   bin/piktur new <name>
+    #
+    # @example Using custom template with Rails app generator
+    #   # lib/generators/piktur/app/template.rb
+    #
+    #   # frozen_string_literal: true
+    #   # Add `./template` files to source_paths
+    #   Rails::Generators::AppGenerator.class_eval do
+    #     # source_root File.expand_path('template', __dir__)
+    #     def source_paths
+    #       super.unshift File.expand_path('template', __dir__)
+    #     end
+    #   end
+    #
+    #   template 'README.markdown'
+    #
+    #   # $ rails new <app_name> --template https://${BUNDLE_BITBUCKET__ORG}@bitbucket.org/piktur/piktur_core/raw/master/lib/generators/piktur/app/template.rb
+    #
     # @note It may be worth incorporating `Rails::Generators::NamedBase` to manage constants
     #   namespaces
     class AppGenerator < Rails::Generators::AppGenerator
 
       require 'dotenv'
-      Dotenv.overload('.env.common', '.env.development')
 
-      class_option :deploy, type: :boolean, aliases: "-v", group: :rails,
-                            desc: "Show Rails version number and quit"
+      Dotenv.overload(*%w(common development).map! { |f| Piktur.root.parent.join(".env.#{f}") })
+
+      class_option :deploy, type: :boolean, aliases: '-v', group: :rails,
+                            desc: 'Show Rails version number and quit'
 
       class << self
 

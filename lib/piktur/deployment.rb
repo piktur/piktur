@@ -68,7 +68,7 @@ module Piktur
       return if args.blank?
 
       files = args.collect! do |e|
-        file = Piktur.root.join(e)
+        file = Piktur.root.parent.join(e)
         file if file.exist?
       end.compact
 

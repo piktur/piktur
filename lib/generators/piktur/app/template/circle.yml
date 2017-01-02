@@ -3,13 +3,11 @@ machine:
   ruby:
     version:
       2.3.0-p0
-  # pre:
-  #   - rvm use ruby-2.3.0
   hosts:
     piktur.io: 127.0.0.1
-    admin.piktur.io: 127.0.0.1
     api.piktur.io: 127.0.0.1
     blog.piktur.io: 127.0.0.1
+    docs.piktur.io: 127.0.0.1
   services:
     - redis
   # @see .env.common .env.test
@@ -38,11 +36,11 @@ machine:
 # checkout:
 
 dependencies:
-  pre:
-    - gem install bundler
   # Access external resources and checkout related repos during build
   # @see https://circleci.com/docs/external-resources/
   # @see https://circleci.com/bb/piktur/piktur_api/edit#checkout
+  pre:
+    - gem install bundler
   # override:
   #   - bundle install:
   #       timeout: 10
@@ -71,8 +69,8 @@ test:
 #     branch: production
 #     commands:
 #       - [[ ! -s "$(git rev-parse --git-dir)/shallow" ]] || git fetch --unshallow
-#       - git push git@heroku.com:piktur-api.git $CIRCLE_SHA1:master
-#       - heroku run rake db:migrate --app piktur-api:
+#       - git push git@heroku.com:piktur-<%= app_name %>.git $CIRCLE_SHA1:master
+#       - heroku run rake db:migrate --app piktur-<%= app_name %>:
 #           timeout: 400 # if your deploys take a long time
 #     environment:
 #       RAILS_ENV: production
@@ -82,8 +80,8 @@ deployment:
   # staging:
   #   branch: master
   #   heroku:
-  #     appname: piktur-api-staging
+  #     appname: piktur-<%= app_name %>-staging
   production:
     branch: master
     heroku:
-      appname: piktur-api
+      appname: piktur-<%= app_name %>
