@@ -4,43 +4,49 @@ require 'pathname'
 
 # path to your application root.
 APP_ROOT = Pathname.new File.expand_path('../', __dir__)
+DEV_ROOT = APP_ROOT.parent
+
 ENV['RAILS_ENV'] ||= 'development'
 
 Dir.chdir APP_ROOT do # rubocop:disable Metrics/BlockLength
   puts '# Export environment variables'
-  system "export $(cat .env.common .env.#{ENV['RAILS_ENV']})"
+  system "export $(cat #{DEV_ROOT}/.env.common #{DEV_ROOT}/.env.#{ENV['RAILS_ENV']})"
 
-  puts '# Fetch core dependencies'
+  # puts '# Fetch core dependencies'
   # Pull down piktur_core Gemfile from remote repository and save as ./Gemfile.core
-  system <<~EOS
-    curl https://${BUNDLE_BITBUCKET__ORG}@bitbucket.org/piktur/piktur_core/raw/master/piktur_core/Gemfile -o Gemfile.core
-  EOS
+  # system <<~EOS
+  #   curl https://${BUNDLE_BITBUCKET__ORG}@bitbucket.org/piktur/piktur_core/raw/master/piktur_core/Gemfile -o Gemfile.core
+  # EOS
+
+  # system <<~EOS
+  #   mkdir -p vendor/cache
+  #   cd vendor/cache
+  #   git clone https://github.com/lsegal/yard.git -b master
+  #   git clone https://github.com/amoeba-rb/amoeba.git -b master
+  #   git clone https://github.com/noname00000123/annotate_models.git -b develop
+  #   git clone https://github.com/awesome-print/awesome_print.git -b master
+  #   cd ../..
+  # EOS
 
   system <<~EOS
-    mkdir -p vendor/cache
-    cd vendor/cache
-    git clone https://github.com/lsegal/yard.git -b master
-    git clone https://github.com/amoeba-rb/amoeba.git -b master
-    git clone https://github.com/noname00000123/annotate_models.git -b develop
-    git clone https://github.com/awesome-print/awesome_print.git -b master
-    cd ../..
-
     git clone https://${BUNDLE_BITBUCKET__ORG}@bitbucket.com/piktur/piktur_admin.git -b master
     git clone https://${BUNDLE_BITBUCKET__ORG}@bitbucket.com/piktur/piktur_api.git -b master
     git clone https://${BUNDLE_BITBUCKET__ORG}@bitbucket.com/piktur/piktur_client.git -b master
     git clone https://${BUNDLE_BITBUCKET__ORG}@bitbucket.com/piktur/piktur_store.git -b master
 
     bundle config --local local.piktur_core ./
-    bundle config --local local.piktur_api ./piktur/piktur_admin
+    bundle config --local local.piktur_admin ./piktur/piktur_admin
     bundle config --local local.piktur_api ./piktur/piktur_api
-    bundle config --local local.piktur_api ./piktur/piktur_client
+    bundle config --local local.piktur_client ./piktur/piktur_client
     bundle config --local local.piktur_store ./piktur/piktur_store
-
-    bundle config --local local.yard ./vendor/cache/yard
-    bundle config --local local.amoeba ./vendor/cache/amoeba
-    bundle config --local local.annotate_models ./vendor/cache/annotate_models
-    bundle config --local local.awesome_print ./vendor/cache/awesome_print
   EOS
+
+  # system <<~EOS
+  #   bundle config --local local.yard ~/Documents/webdev/current_projects/gems/yard
+  #   bundle config --local local.amoeba ~/Documents/webdev/current_projects/gems/amoeba
+  #   bundle config --local local.annotate_models ~/Documents/webdev/current_projects/gems/annotate_models
+  #   bundle config --local local.awesome_print ~/Documents/webdev/current_projects/gems/awesome_print
+  # EOS
 
   system 'bundle check || bundle install'
 end
