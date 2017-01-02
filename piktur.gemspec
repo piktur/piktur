@@ -18,14 +18,8 @@ Gem::Specification.new do |s|
   s.description = 'Common utilities for Piktur apps'
   s.license = ''
   s.bindir = 'bin'
-  # Rubygems permits executable ruby scripts only, bash not accepted
-  # s.executables.push(
-  #   'piktur_admin.sh',
-  #   'piktur_api.sh',
-  #   'piktur_blog.sh',
-  #   'piktur_client.sh',
-  #   'piktur_client_webpack.sh'
-  # )
+  # @note Rubygems permits executable ruby scripts only, bash scripts ie.
+  #   `s.executables.push('piktur_admin.sh')` not accepted
   s.default_executable = 'piktur'
   s.files = Dir[
     'piktur.gemspec',
