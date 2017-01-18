@@ -19,7 +19,7 @@ module Piktur
     # @see Rails::AppBuilder
     class AppBuilder < Rails::AppBuilder
 
-      require_relative '../../../piktur/deployment'
+      require_relative Piktur.root.join('lib/piktur/deployment')
       include Deployment
 
       # @see Thor::Actions::ClassMethods#run
@@ -46,36 +46,46 @@ module Piktur
       #
       def setup
         # Fetch core gem dependencies from remote repository
-        run <<~EOS
-          curl https://#{ENV['BUNDLE_BITBUCKET__ORG']}@bitbucket.org/piktur/piktur_core/raw/master/piktur_core/Gemfile -o #{destination_root}/Gemfile.core
-        EOS
+        # run <<~EOS
+        #   curl https://#{ENV['BUNDLE_BITBUCKET__ORG']}@bitbucket.org/piktur/piktur_core/raw/master/piktur_core/Gemfile -o #{destination_root}/Gemfile.core
+        # EOS
 
-        run "bundle config --local local.piktur_core #{Piktur.root}"
+        # run "bundle config --local local.piktur_core #{Piktur.root.parent.join('piktur_core')}"
 
         # Setup local source for git repositories
-        cache = Piktur.root.join('vendor/cache')
+        local_gems_path = Piktur.root.parent.parent.join('gems')
         %w(amoeba annotate awesome_print yard).each do |e|
-          run "bundle config --local local.#{e} #{cache.join(e)}"
+          run "bundle config --local local.#{e} #{local_gems_path.join(e)}"
         end
 
         after_bundle do
-          create_local_repo
-          create_remote_repo
-          push_to_remote_repo
+          if options[:git] || options[:deploy]
+            create_local_repo
+            create_remote_repo if yes? 'Setup remote?'
+            push_to_remote_repo if yes? 'Push to remote?'
+          end
 
-          link_ci_server
+          if options[:deploy]
+            say 'Sorry, not implemented yet'
 
-          create_staging_server
-          set_server_env 'staging', '.env.common', '.env.staging'
+            # link_ci_server if yes? 'Link CI'
+            #
+            # if yes? 'Setup staging server?'
+            #   create_staging_server
+            #   set_server_env 'staging', '.env.common', '.env.staging'
+            #
+            #   deploy_to_staging_server if yes? 'Deploy to staging server?'
+            # end
+            #
+            # if yes? 'Setup prodution server?'
+            #   create_production_server
+            #   set_server_env 'production', '.env.common', '.env'
+            # end
+            #
+            # domain_alias if yes? 'Setup subdomain?'
+          end
 
-          deploy_to_staging_server
-
-          create_production_server
-          set_server_env 'production', '.env.common', '.env'
-
-          domain_alias
-
-          checkout_development_branch
+          checkout_development_branch if options[:git]
         end
       end
 
@@ -109,7 +119,7 @@ module Piktur
 
       # @return [void]
       def gitignore
-        template 'gitignore'
+        template 'gitignore', '.gitignore'
       end
 
       # @return [void]
@@ -266,6 +276,8 @@ module Piktur
               'README.markdown'
             ]
             s.test_files = Dir['spec/**/*.rb']
+
+            s.add_dependency 'rails', '= 4.2.5.1'
           end
         RUBY
       end
@@ -296,7 +308,7 @@ module Piktur
             routing
             serializers
             support
-          ).each(&:directory)
+          ).each { |e| empty_directory e }
 
           %w(controllers models requests routing serializers).each do |dir|
             create_file "support/#{dir}/shared_examples.rb", <<~RUBY
@@ -375,7 +387,7 @@ module Piktur
       def leftovers
         ruby
         %w(circle.yml Procfile).each { |f| template f }
-        %w(rspec rubocop.yml).each { |f| template ".#{f}" }
+        %w(rspec rubocop.yml).each { |f| template f, ".#{f}" }
         create_file '.yardopts', ''
       end
 
@@ -384,35 +396,33 @@ module Piktur
     end
 
     # @example
-    #   cd ~/Documents/webdev/current_projects/piktur
+    #   cd ~/<path>/piktur
     #   bin/piktur new <name>
     #
     # @example Using custom template with Rails app generator
-    #   # lib/generators/piktur/app/template.rb
+    #   # Create file ~/<path>/piktur/lib/piktur/generators/piktur/app/template.rb
     #
     #   # frozen_string_literal: true
-    #   # Add `./template` files to source_paths
+    #   # Add `./templates` files to source_paths
     #   Rails::Generators::AppGenerator.class_eval do
-    #     # source_root File.expand_path('template', __dir__)
+    #     # source_root File.expand_path('templates', __dir__)
     #     def source_paths
-    #       super.unshift File.expand_path('template', __dir__)
+    #       super.unshift File.expand_path('templates', __dir__)
     #     end
     #   end
     #
     #   template 'README.markdown'
     #
-    #   # $ rails new <app_name> --template https://${BUNDLE_BITBUCKET__ORG}@bitbucket.org/piktur/piktur_core/raw/master/lib/generators/piktur/app/template.rb
+    #   # $ rails new <app_name> --template https://${BUNDLE_BITBUCKET__ORG}@bitbucket.org/piktur/piktur_core/raw/master/lib/piktur/generators/piktur/app/template.rb
     #
     # @note It may be worth incorporating `Rails::Generators::NamedBase` to manage constants
     #   namespaces
     class AppGenerator < Rails::Generators::AppGenerator
 
-      require 'dotenv'
-
-      Dotenv.overload(*%w(common development).map! { |f| Piktur.root.parent.join(".env.#{f}") })
-
-      class_option :deploy, type: :boolean, aliases: '-v', group: :rails,
-                            desc: 'Show Rails version number and quit'
+      class_option :git,    type: :boolean, default: false,
+                            desc: 'Init git repository, create remote (BitBucket), push, and checkout `develop` branch'
+      class_option :deploy, type: :boolean, default: false,
+                            desc: 'Setup CI and deploy to staging server'
 
       class << self
 
@@ -446,11 +456,13 @@ module Piktur
         end
       end
 
-      source_root File.expand_path('template', __dir__)
+      source_root File.expand_path('templates', __dir__)
+      source_paths << source_root
+      source_paths.concat superclass.source_paths_for_search
 
       # @return [String, nil]
       def set_default_accessors!
-        self.destination_root = File.expand_path("piktur_#{app_name}", destination_root)
+        self.destination_root = Piktur.dev_path.join("piktur_#{app_name}").to_s
         self.rails_template =
           case options[:template]
           when /^https?:\/\//
@@ -554,6 +566,9 @@ module Piktur
       def finish_template
         build(:env)
         build(:leftovers)
+
+        run "export #{Piktur.env}"
+        run "bundle config --local gems.piktur.io #{ENV['BUNDLE_GEMS__PIKTUR__IO']}"
       end
 
       public_task :apply_rails_template, :run_bundle
@@ -573,8 +588,8 @@ module Piktur
           [
             # rails_gemfile_entry,
             # database_gemfile_entry,
-            assets_gemfile_entry,
-            javascript_gemfile_entry,
+            # assets_gemfile_entry,
+            # javascript_gemfile_entry,
             # jbuilder_gemfile_entry,
             # sdoc_gemfile_entry,
             # psych_gemfile_entry,
@@ -593,7 +608,7 @@ module Piktur
         end
 
         # @return [String]
-        def heroku_name
+        def remote_app_name
           "piktur-#{app_name.dasherize}"
         end
 

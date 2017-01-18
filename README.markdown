@@ -171,13 +171,13 @@ Table schema is added to model documentation using `annotate_models` gem.
 
   5. `rvm gemset create ruby-2.3.0@piktur`
 
-  6. `rvm --default use piktur`
+  6. `rvm --default use @piktur`
 
   7. Install `rails`
 
   8. Configure `pry` console `/Users/daniel/.pryrc`
 
-  9. [Install `node.js`](https://gist.github.com/isaacs/579814)
+  9. `brew install node` or [follow this guide](https://gist.github.com/isaacs/579814)
 
   10. Install [`vips`](#VIPS)
 
@@ -519,4 +519,3 @@ Then, within RSpec examples
 ```
 
 ### [Class list](https://bitbucket.org/snippets/piktur/nn9r9)
-

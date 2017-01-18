@@ -100,36 +100,27 @@ Ensure portfolios exist
 
 ## Gem Hosting
 
-~~[gems.piktur.io](http://gems.piktur.io)~~
+[gems.piktur.io](http://gems.piktur.io)
+
 [AWS Elastic Beanstalk](http://gem-server-env.q9742jmip7.ap-southeast-2.elasticbeanstalk.com/)
-[BitBucket](https://bitbucket.org/piktur/gem_server)
+
+[gem_server](https://bitbucket.org/piktur/gem_server)
 
 [Geminabox](https://github.com/yuri-karpovich/geminabox)
+
 ~~[Heroku Docker](https://devcenter.heroku.com/articles/container-registry-and-runtime)~~
 
 ```
 
+    git clone https://github.com/yuri-karpovich/geminabox.git ~/webev/current_projects/gem_server
     cd ~/webev/current_projects/gem_server
+
     # Install AWS Elastic Beanstalk CLI
     brew install awsebcli
     eb init
     eb create
     eb deploy
     eb setenv $(cat .env)
-
-    # Until domain alias resolved set Gemfile source with
-    ENV['GEM_SOURCE']
-    # => "http://<username>:<password>gem-server-env.q9742jmip7.ap-southeast-2.elasticbeanstalk.com"
-
-    # git clone https://github.com/yuri-karpovich/geminabox.git
-    # cd geminabox
-    # heroku create
-    # Store `GEMINABOX_USER` and `GEMINABOX_PASSWORD` in `./.env
-    # touch .gitignore
-    # echo .env >> .gitignore
-    # heroku config:set $(cat .env)
-    # heroku container:push web
-    # heroku open
 
 ```
 

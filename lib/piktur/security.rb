@@ -56,22 +56,22 @@ module Piktur
       autoload :Requests
     end
 
-    ActiveSupport.on_load(:user) do
+    ActiveSupport.on_load(:User) do
       extend  Authentication::User, Authorization::Roles
       include Authorization::Roles, Authorization::Authorizable
     end
 
-    ActiveSupport.on_load(:admin) do
+    ActiveSupport.on_load(:Admin) do
       extend Authentication::Admin
       default_scope -> { where(table[:role].eq(Authorization.admin)) }
     end
 
-    ActiveSupport.on_load(:subscriber) do
+    ActiveSupport.on_load(:Subscriber) do
       extend Authentication::Subscriber
       default_scope -> { where(table[:role].in(Authorization.subscribers)) }
     end
 
-    ActiveSupport.on_load(:account) do
+    ActiveSupport.on_load('Account::Base') do
       nil
     end
 

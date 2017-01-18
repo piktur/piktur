@@ -1,11 +1,22 @@
+<!--
+  # @markup markdown
+  # @title <%= app_name.titleize %>
+-->
+
 # Piktur <%= app_name.titleize %>
 
 [**Trello**](https://trello.com/b/rfyc6HpD/pikturapp-jan16)
 
 [**<%= app_name %>.piktur.io**](<%= app_name %>.piktur.io)
 
-[<%= heroku_name %>-staging](https://dashboard.heroku.com/apps/<%= heroku_name %>-staging)
-[<%= heroku_name %>](https://dashboard.heroku.com/apps/<%= heroku_name %>)
+<% case options[:service] -%>
+<% when 'heroku' -%>
+[<%= remote_app_name %>-staging](https://dashboard.heroku.com/apps/<%= remote_app_name %>-staging)
+[<%= remote_app_name %>](https://dashboard.heroku.com/apps/<%= remote_app_name %>)
+<% when 'aws' -%>
+[<%= remote_app_name %>-staging](<%= remote_app_name %>-staging)
+[<%= remote_app_name %>](<%= remote_app_name %>)
+<% end -%>
 
 ## [piktur_<%= app_name %>](https://bitbucket.org/piktur/<%= app_name %>)
 
@@ -19,11 +30,11 @@
 
 - [](#)
 
-# Style Guide
+## Style Guide
 
 [Rubocop Settings](https://bitbucket.org/piktur/piktur_core/src/master/.rubocop.yml)
 
-# [Documentation](docs.piktur.io)
+## [Documentation](docs.piktur.io)
 
 > The key words **'MUST'**, **'MUST NOT'**, **'REQUIRED'**, **'SHALL'**, **'SHALL NOT'**, **'SHOULD'**, **'SHOULD NOT'**, **'RECOMMENDED'**, **'MAY'**, and **'OPTIONAL'** in this document are to be interpreted as described in **[RFC2119](https://tools.ietf.org/html/rfc2119)**.
 
