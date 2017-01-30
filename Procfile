@@ -2,6 +2,7 @@
 #
 # This Procfile will start services required by production environment
 #   - admin
+#   - admin webpack
 #   - api
 #   - blog
 #   - client
@@ -29,7 +30,7 @@
 #   ./init.development.sh
 #
 #   # Then start Foreman
-#   foreman start -e .env.common,.env.development
+#   foreman start -e ../.env.common,../.env.development
 #
 # @example Start production environment
 #   foreman start -e .env.common,.env
@@ -46,9 +47,11 @@
 #   PID=$!
 #   wait
 
-web1:          ./piktur_admin.sh
-web2:          ./piktur_api.sh
-web3:          ./piktur_blog.sh
-web4:          ./piktur_client.sh
-worker:        ./piktur_client_webpack.sh
-worker2:       cd piktur_api; bundle exec sidekiq
+web1:    ./piktur_admin.sh
+web2:    ./piktur_api.sh
+# web3:    ./piktur_blog.sh
+# web4:    ./piktur_client.sh
+worker1: ./piktur_admin_webpack.sh
+# worker2: ./piktur_client_webpack.sh
+worker3: redis-server
+worker4: cd ../piktur_api; bundle exec sidekiq

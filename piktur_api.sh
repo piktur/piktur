@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ./piktur_api
+cd ../piktur_api
 
 # Ensure correct gemset is in use! If env var $rvm_bin_path is guaranteed to
 # exist use `$rvm_bin_path use gemset ruby-2.3.0@piktur`, otherwise

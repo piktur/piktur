@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ./piktur_client
+cd ../piktur_client
 
 # source "/usr/local/bin/npm"
 

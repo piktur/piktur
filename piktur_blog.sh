@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ./piktur_blog
+cd ../piktur_blog
 
 source '/usr/local/bin/npm'
 
