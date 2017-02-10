@@ -10,4 +10,5 @@ rvm use gemset ruby-2.3.0@piktur
 bundle install
 
 # Start Piktur Admin development server
-bundle exec puma -p ${PIKTUR_ADMIN_PORT}
+# bundle exec puma -p ${PIKTUR_ADMIN_PORT}
+bundle exec rails s -p ${PIKTUR_ADMIN_PORT}

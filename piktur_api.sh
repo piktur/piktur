@@ -13,4 +13,5 @@ bundle install
 # bundle exec sidekiq
 
 # Start Piktur API development server
-bundle exec puma -p ${PIKTUR_API_PORT}
+# bundle exec puma -p ${PIKTUR_API_PORT}
+bundle exec rails s -p ${PIKTUR_API_PORT}
