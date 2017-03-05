@@ -508,9 +508,7 @@ Then, within RSpec examples
 
 ```
 
-    # require 'rake/file_list'
-
-    Rake::FileList['**/*'].
+    Dir['**/*'].
       collect { |path| [File.file?(path) && File.new(path).size, path] }.
       select { |(size, path)| size != false }.
       sort.

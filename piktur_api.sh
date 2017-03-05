@@ -7,7 +7,7 @@ cd ../piktur_api
 source "$HOME/.rvm/scripts/rvm"
 rvm use gemset ruby-2.3.0@piktur
 
-bundle install
+# bundle install
 
 # Start Sidekiq background job manager
 # bundle exec sidekiq

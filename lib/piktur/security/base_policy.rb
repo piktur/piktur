@@ -13,7 +13,7 @@ module Piktur
     #   @return [User]
     # @!attribute object
     #   @example
-    #     @object ||= (n = self.class.name)[n.rindex('::') + 2..-7].to_sym
+    #     @object ||= (n = self.class.to_s)[n.rindex('::') + 2..-7].to_sym
     #   @return [Symbol]
     #
     class BasePolicy

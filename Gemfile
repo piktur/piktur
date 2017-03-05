@@ -5,6 +5,8 @@
 #   instead served privately with `geminabox`.
 # @see https://bitbucket.org/snippets/piktur/dBKR5 require private BitBucket repo
 
+bb = 'https://bitbucket.org'
+
 source 'https://rubygems.org'
 source ENV['GEM_SOURCE']
 
@@ -17,7 +19,8 @@ gemspec name: 'piktur'
 # @!group Security
 # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
 gem 'dotenv'
-gem 'knock',                    source:  ENV['GEM_SOURCE']
+gem 'knock',                    git:    "#{bb}/piktur/knock.git",  # source:  ENV['GEM_SOURCE']
+                                branch: 'master'
 gem 'rack_auth_jwt',            source:  ENV['GEM_SOURCE'],
                                 require: 'rack/auth/jwt'
 # @!endgroup

@@ -7,7 +7,7 @@ cd ../piktur_admin
 source "$HOME/.rvm/scripts/rvm"
 rvm use gemset ruby-2.3.0@piktur
 
-bundle install
+# bundle install
 
 # Start Piktur Admin development server
 # bundle exec puma -p ${PIKTUR_ADMIN_PORT}

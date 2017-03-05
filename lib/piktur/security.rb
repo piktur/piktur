@@ -6,10 +6,9 @@ require 'knock'
 require 'pundit'
 require 'rack/auth/jwt'
 
-# @option [ActiveSupport::Duration] token_lifetime Token will not expire if nil
+# @option [ActiveSupport::Duration] token_expires_in Token will not expire if nil
 # @option [Proc] token_audience
-#   Configure the audience claim to identify the recipients that the token
-#   is intended for.
+#   Configure the audience claim to identify the recipients that the token is intended for.
 # @option [String] token_signature_algorithm
 #   Configure the algorithm used to encode the token
 # @option [Proc] token_secret_signature_key
@@ -20,8 +19,10 @@ require 'rack/auth/jwt'
 # @option [Class] not_found_exception_class_name
 #   Exception to raise when entity instance not found
 Knock.setup do |c|
-  c.token_lifetime                 = 1.day
-  c.token_audience                 = -> { ENV['AUTH0_CLIENT_ID'] }
+  c.token_expires_in               = 1.day
+  # @example Auth0
+  #   -> { ENV['AUTH0_CLIENT_ID'] }
+  c.token_audience                 = -> { Piktur::Services.production_servers }
   c.token_signature_algorithm      = 'HS256'
   c.token_public_key               = nil
   c.not_found_exception_class_name = 'Piktur::NotAuthorizedError'
@@ -53,26 +54,6 @@ module Piktur
       autoload :Authentication
       autoload :Authorization
       autoload :BasePolicy
-      autoload :Requests
-    end
-
-    ActiveSupport.on_load(:User) do
-      extend  Authentication::User, Authorization::Roles
-      include Authorization::Roles, Authorization::Authorizable
-    end
-
-    ActiveSupport.on_load(:Admin) do
-      extend Authentication::Admin
-      default_scope -> { where(table[:role].eq(Authorization.admin)) }
-    end
-
-    ActiveSupport.on_load(:Subscriber) do
-      extend Authentication::Subscriber
-      default_scope -> { where(table[:role].in(Authorization.subscribers)) }
-    end
-
-    ActiveSupport.on_load('Account::Base') do
-      nil
     end
 
   end

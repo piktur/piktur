@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require 'pathname'
-# @see piktur_core/spec/benchmark/file_system.rb {Rake::FileList} vs {Dir.glob}
-require 'rake/file_list'
 require 'active_support/dependencies'
 require 'active_support/dependencies/autoload'
 

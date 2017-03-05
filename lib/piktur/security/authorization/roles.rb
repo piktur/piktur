@@ -29,7 +29,7 @@ module Piktur
         # @return [Integer]
         ::Piktur::Security::Authorization::ROLES.each.with_index do |role, i|
           define_method(role) { i }
-          define_method(role.gsub('piktur', 'subscriber')) { i } if role =~ /^piktur_/
+          define_method(role.sub('piktur', 'subscriber')) { i } if role =~ /^piktur_/
         end
 
       end

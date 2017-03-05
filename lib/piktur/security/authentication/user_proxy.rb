@@ -17,7 +17,7 @@ module Piktur
       # ```
       #
       # ```json
-      #   {"jwt":"xxx0xxxxxxxxx0xxxxxxxxxxxxxxxxx0xxx0.xxxxxxxxxxx0xxxxxxxxxxxxxxx0xxx0xxx0xxxxxxx0xxxxxxx0xxx0xxxxxxxxx0xxxxx0xxxxxxxxx0xxxxxxxx.xxx0x000xxxxxxx-xxxxxx_x0x0xxx0xxx-xx0xxxxx"}
+      #   {"jwt":"HEADERxXx...xXx.PAYLOADyyy...yYy.VERIFY_SIGNATUREzZz...zZz"}
       # ```
       #
       # ```bash
