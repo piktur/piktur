@@ -17,7 +17,7 @@
 
 ## [piktur-api [application]](https://bitbucket.org/piktur/piktur_api)
 
-`/piktur/piktur_api` Piktur::Api | RESTful API serving JSONAPI v1 compliant JSON
+`/piktur/piktur_api` Piktur::Api | RESTful API serving JSONAPI v1.0 compliant JSON
 
 [**Issues**](https://bitbucket.org/piktur/piktur_api/issues) | [**README**](https://bitbucket.org/piktur/piktur_api/src/master/README.markdown) | [![CircleCI](https://circleci.com/bb/piktur/piktur_api.svg?style=svg)](https://circleci.com/bb/piktur/piktur_api)
 
