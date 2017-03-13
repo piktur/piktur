@@ -390,7 +390,7 @@ all subsequent expectations can access `#request`, `#response` and `#controller`
 ```ruby
 
     before(:all) do
-      get '/api/v1/client/path', {}, { 'Authorization' => 'Bearer abc123' }
+      get '/v1/path', {}, { 'Authorization' => 'Bearer abc123' }
     end
     it { expect(response).to have_http_status 200 }
     it { expect(response.body).to eq {} }

@@ -86,7 +86,7 @@ module Piktur
           end
           alias subscriber_complete? complete?
 
-          # Entity SHOULD be **readonly** when requested via public route ie. `/api/v1/client/*`
+          # Entity SHOULD be **readonly** when requested via public route ie. `/v1/*`
           #
           # {include:#subscriber?}
           #
