@@ -8,7 +8,7 @@ module Piktur
     extend ActiveSupport::Autoload
 
     eager_autoload do
-      autoload :Uri
+      autoload :URI
     end
 
   end

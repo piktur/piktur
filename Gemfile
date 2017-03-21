@@ -19,9 +19,10 @@ gemspec name: 'piktur'
 # @!group Security
 # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
 gem 'dotenv'
-gem 'knock',                    git:    "#{bb}/piktur/knock.git",  # source:  ENV['GEM_SOURCE']
+gem 'knock',                    git:    "#{bb}/piktur/knock.git",  # ENV['GEM_SOURCE'],
                                 branch: 'master'
-gem 'rack_auth_jwt',            source:  ENV['GEM_SOURCE'],
+gem 'rack_auth_jwt',            source:  "#{bb}/piktur/rack_auth_jwt.git", # ENV['GEM_SOURCE'],
+                                branch:  'master',
                                 require: 'rack/auth/jwt'
 # @!endgroup
 

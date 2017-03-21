@@ -58,7 +58,7 @@ module Piktur
     flist = args.collect! do |fname|
       file = Piktur.dev_path.join(fname)
       file if file.exist?
-    end.compact
+    end.delete_if(&:nil?)
 
     return flist unless vlist
 

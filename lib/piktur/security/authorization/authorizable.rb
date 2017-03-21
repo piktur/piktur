@@ -20,18 +20,17 @@ module Piktur
             # @return [Integer]
             def self.default_role
               raise NotImplementedError
-              # @role ||= Piktur::Security::Authorization.subscriber_basic
             end
 
           end
 
           # Set default value for key 'role' on underlying `attributes` hash.
-          # **Apply default to new records only!** The record **MUST** be assumed compromised if
-          # unexpected role returned.
+          # **Apply default to new records only!**
+          # The record **MUST** be assumed compromised if unexpected role returned.
           # @see Piktur::Security::Authorization::ROLES
           # @return [Integer]
           def role
-            self['role'] ||= new_record? && self.class.default_role
+            new_record? ? (self['role'] ||= self.class.default_role) : self['role']
           end
         end
 
