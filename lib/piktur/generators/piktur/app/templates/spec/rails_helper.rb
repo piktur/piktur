@@ -28,11 +28,11 @@ require_relative './support/test_helpers'
 RSpec.configure do |c|
   # c.support_dirs[<:app_name>] = Rails.root.join('spec/support')
   # c.support_files = :piktur_core # <:app_name>
-  # c.extend  Piktur::Support::TestHelpers::Api::Controllers, type: :controller
-  # c.extend  Piktur::Support::TestHelpers::Api::Requests,    type: :request
-  # c.extend  Piktur::Support::TestHelpers::Api::Routing,     type: :routing
-  # c.extend  Piktur::Support::TestHelpers::Api::Serializers, type: :serializer
-  # c.extend  Piktur::Support::TestHelpers::Serializable,     type: :serializer
-  # c.extend  Piktur::Support::TestHelpers::Serializable,     type: :model
-  # c.include Piktur::Support::TestHelpers::Features,     type: :feature
+  # c.extend  Piktur::Support::TestHelpers::Controllers, type: :controller
+  # c.extend  Piktur::Support::TestHelpers::Requests,    type: :request
+  # c.extend  Piktur::Support::TestHelpers::Routing,     type: :routing
+  # c.extend  Piktur::Support::TestHelpers::Serializers, type: :serializer
+  # c.extend  Piktur::Support::TestHelpers::Model,       type: :serializer
+  # c.extend  Piktur::Support::TestHelpers::Model,       type: :model
+  # c.include Piktur::Support::TestHelpers::Features,    type: :feature
 end

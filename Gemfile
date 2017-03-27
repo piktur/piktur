@@ -7,7 +7,7 @@
 
 bb = 'https://bitbucket.org'
 
-source 'https://rubygems.org'
+# source 'https://rubygems.org'
 source ENV['GEM_SOURCE']
 
 ruby '2.3.0'
@@ -19,10 +19,10 @@ gemspec name: 'piktur'
 # @!group Security
 # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
 gem 'dotenv'
-gem 'knock',                    git:    "#{bb}/piktur/knock.git",  # ENV['GEM_SOURCE'],
-                                branch: 'master'
-gem 'rack_auth_jwt',            source:  "#{bb}/piktur/rack_auth_jwt.git", # ENV['GEM_SOURCE'],
-                                branch:  'master',
+# git: "#{bb}/piktur/knock.git", branch: 'master'
+gem 'knock',                    source: ENV['GEM_SOURCE']
+# git: "#{bb}/piktur/rack_auth_jwt.git", branch: 'master'
+gem 'rack_auth_jwt',            source:  ENV['GEM_SOURCE'],
                                 require: 'rack/auth/jwt'
 # @!endgroup
 

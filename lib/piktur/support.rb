@@ -9,6 +9,7 @@ module Piktur
 
     eager_autoload do
       autoload :URI
+      autoload :Hash
     end
 
   end

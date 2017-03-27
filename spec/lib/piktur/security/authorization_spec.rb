@@ -1,5 +1,5 @@
 require 'rails_helper'
-Piktur::Support.require_shared_examples 'piktur/security'
+RSpec.require_shared_examples 'piktur/security'
 
 RSpec.describe Piktur::Security::Authorization do
   subject { Piktur::Security::Authorization }
