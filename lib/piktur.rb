@@ -55,8 +55,6 @@ module Piktur
   # Eager load common lib code
   eager_autoload do
     autoload :Support
-    # autoload :Settings
-    # autoload :Coders
     autoload :Security
   end
 
