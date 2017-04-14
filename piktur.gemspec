@@ -55,7 +55,7 @@ Gem::Specification.new do |s|
   # @!endgroup
 
   # @!group Frontend
-  s.add_dependency 'redcarpet',                         '~> 3.3'
+  s.add_dependency 'redcarpet',                         '~> 3.0'
   s.add_dependency 'slim',                              '~> 3.0'
   # @!endgroup
 
