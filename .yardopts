@@ -1,1 +1,12 @@
---exclude lib/piktur/generators/piktur/*/templates
+--verbose
+--backtrace
+--debug
+--embed-mixins
+--hide-void-return
+--markup-provider redcarpet
+--markup markdown
+--exclude lib/piktur/generators/**
+lib/**/*.rb
+app/**/*.rb
+-
+README.markdown
