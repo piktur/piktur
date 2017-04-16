@@ -1,6 +1,8 @@
 --verbose
 --backtrace
 --debug
+--use-cache
+--no-private
 --embed-mixins
 --hide-void-return
 --markup-provider redcarpet
