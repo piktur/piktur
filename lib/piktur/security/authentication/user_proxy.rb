@@ -6,9 +6,9 @@ module Piktur
 
     module Authentication
 
-      # The proxy object enables {User} authentication for applications without a database
+      # The proxy object enables {User::Base} authentication for applications without a database
       # connection ie. `Piktur::Docs`, or any endpoint protected by `Rack::Auth::JWT`
-      # middleware. The {User} must obtain a token in the usual way.
+      # middleware. The {User::Base} must obtain a token in the usual way.
       #
       # ```sh
       #   curl -P https://api.piktur.io/v1/token \
@@ -29,15 +29,15 @@ module Piktur
 
         # @!method from_token_request(request)
         #   @!scope class
-        #   @see Authentication::User::ClassMethods#from_token_request
+        #   @see Authentication::User#from_token_request
         #   @param [ActionDispatch::Request] request
         #   @raise Knock.not_found_exception_class_name
-        #   @return [User, nil]
+        #   @return [User::Base, nil]
         # @!method from_token_payload(base)
         #   @!scope class
         #   Instantiate if `payload['sub']['role']` contains expected role
         #   @param [Hash] payload
-        #   @return [User, nil]
+        #   @return [User::Base, nil]
         # @!method uuid
         #   Returns a reference to parent instance
         #   @return [String]

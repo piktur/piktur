@@ -6,7 +6,7 @@ module Piktur
 
     # ## Authorization (based on `pundit`)
     #
-    # Permissions assigned according to {User#role}. Authorization performed against
+    # Permissions assigned according to {User::Base#role}. Authorization performed against
     # {ApplicationPolicy}.
     #
     # Resource ownership tracked via {Account::Ownership}
@@ -16,7 +16,8 @@ module Piktur
     module Authorization
 
       # Return human readable role descriptors
-      # @note {User#role} stores an `Integer` corresponding to entry's position within {ROLES}
+      # @note {User::Base#role} stores an `Integer` corresponding to entry's position within
+      #   {ROLES}
       # @see Roles
       # @return [Array]
       ROLES = [ # rubocop:disable Style/MutableConstant
@@ -47,7 +48,7 @@ module Piktur
         end
       end
 
-      # Returns possible Subscriber roles as a `Range`
+      # Returns possible {User::Subscriber} roles as a `Range`
       # @see file:spec/benchmark/array.rb Collect indices
       # @example
       #   return @subscribers if @subscribers

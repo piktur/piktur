@@ -6,11 +6,11 @@ module Piktur
 
     module Authorization
 
-      # @todo Ensure users can NOT change {User#role} via request parameters. Add to strong
+      # @todo Ensure users can NOT change {User::Base#role} via request parameters. Add to strong
       #   parameters filter.
       #
       # Helper methods utilised within Controllers [`Piktur::Api::V1::ApplicationController`] and
-      # Policies [{ApplicationPolicy}]. Methods MUST check expected `type` and {User#role}.
+      # Policies [{ApplicationPolicy}]. Methods MUST check expected `type` and {User::Base#role}.
       module Verifiers
 
         extend  ActiveSupport::Concern
@@ -28,31 +28,31 @@ module Piktur
 
           # Confirm entity provides **admin** criteria
           #
-          # - entity: {Admin}
+          # - entity: {User::Admin}
           # - criteria: {ROLES}[3]
-          # - policy: {AdminPolicy}
+          # - policy: {User::AdminPolicy}
           #
           # @return [Boolean]
           def admin?
-            entity && entity.is_a?(::Admin) && entity.role == admin
+            entity && entity.is_a?(::User::Admin) && entity.role == admin
           end
 
           # @!group Subscriber
 
           # Confirm entity provides **subscriber** criteria
           #
-          # - entity: {Subscriber}
+          # - entity: {User::Subscriber}
           # - criteria: {ROLES}(0..2)
-          # - policy: {SubscriberPolicy}
+          # - policy: {User::SubscriberPolicy}
           #
           # @return [Boolean]
           def subscriber?
-            entity && entity.is_a?(::Subscriber) && entity.role.in?(subscribers)
+            entity && entity.is_a?(::User::Subscriber) && entity.role.in?(subscribers)
           end
 
           # Confirm entity provides **subscriber (basic)** criteria
           #
-          # - entity: {Subscriber}
+          # - entity: {User::Subscriber}
           # - criteria: {ROLES}[0]
           # - policy: {Plan::BasicPolicy}
           #
@@ -64,7 +64,7 @@ module Piktur
 
           # Confirm entity provides **subscriber (standard)** criteria
           #
-          # - entity: {Subscriber}
+          # - entity: {User::Subscriber}
           # - criteria: {ROLES}[1]
           # - policy: {Plan::StandardPolicy}
           #
@@ -76,7 +76,7 @@ module Piktur
 
           # Confirm entity provides **subscriber (complete)** criteria
           #
-          # - entity: {Subscriber}
+          # - entity: {User::Subscriber}
           # - criteria: {ROLES}[2]
           # - plan: {Plan::CompletePolicy}
           #

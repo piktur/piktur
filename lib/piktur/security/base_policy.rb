@@ -10,7 +10,7 @@ module Piktur
     # authorization ruling.
     #
     # @!attribute entity
-    #   @return [User]
+    #   @return [User::Base]
     # @!attribute object
     #   @example
     #     @object ||= (n = self.class.to_s)[n.rindex('::') + 2..-7].to_sym
@@ -22,7 +22,7 @@ module Piktur
 
       attr_accessor :entity, :object
 
-      # @param [User] entity
+      # @param [User::Base] entity
       # @param [Class, ActiveRecord::Relation, ActiveRecord::Base, Array] object
       def initialize(entity, object)
         @entity = entity

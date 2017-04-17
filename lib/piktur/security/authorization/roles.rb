@@ -6,8 +6,8 @@ module Piktur
 
     module Authorization
 
-      # To ensure performant equality check {User} stores {User#role} as an `Integer`. {Roles} adds
-      # helper per {Authorization::ROLES} entry to improve readability.
+      # To ensure performant equality check {User::Base} stores {User::Base#role} as an `Integer`.
+      # {Roles} adds helper per {Authorization::ROLES} entry to improve readability.
       module Roles
 
         # @!method find_role
