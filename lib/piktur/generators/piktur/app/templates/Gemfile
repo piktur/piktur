@@ -27,4 +27,3 @@ gem 'piktur_core',              git:    "#{bb}/piktur/piktur_core.git",
   "#{k}: #{v.inspect}" }.join(', ') %>
 <% end -%>
 <% end -%>
-
