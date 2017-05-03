@@ -7,9 +7,9 @@ module Piktur
 
     extend ActiveSupport::Autoload
 
+    autoload :Hash
     autoload :SerializableURI, 'piktur/support/uri'
     autoload :URI, 'piktur/support/uri'
-    autoload :Hash
 
   end
 

@@ -39,7 +39,7 @@ Gem::Specification.new do |s|
   # @!endgroup
 
   # @!group Utilities
-  s.add_dependency 'activesupport',                     '= 4.2.5.1'
+  s.add_dependency 'activesupport',                     '~> 5.1'
   s.add_dependency 'rake',                              '~> 12.0'
   # @!endgroup
 

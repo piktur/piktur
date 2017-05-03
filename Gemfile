@@ -10,7 +10,7 @@ bb = 'https://bitbucket.org'
 # source 'https://rubygems.org'
 source ENV['GEM_SOURCE']
 
-ruby '2.3.0'
+ruby ENV.fetch('RUBY_VERSION').sub('ruby-', '')
 
 gemspec name: 'piktur'
 
