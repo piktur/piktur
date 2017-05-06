@@ -16,15 +16,11 @@ gemspec name: 'piktur'
 
 # @note `require: false` defers loading. Require strategically within codebase.
 
-# @!group Security
 # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
 gem 'dotenv'
-# git: "#{bb}/piktur/knock.git", branch: 'master'
-gem 'knock',                    source: ENV['GEM_SOURCE']
-# git: "#{bb}/piktur/rack_auth_jwt.git", branch: 'master'
-gem 'rack_auth_jwt',            source:  ENV['GEM_SOURCE'],
-                                require: 'rack/auth/jwt'
-# @!endgroup
+
+gem 'piktur_security',          git:    "#{bb}/piktur/piktur_security.git",
+                                branch: 'rails5'
 
 # @!group Utilities
 gem 'activesupport',            require: false

@@ -271,7 +271,7 @@ Keep a local copy on hand to minimise time to `bundle install`.
     git clone https://github.com/amoeba-rb/amoeba.git -b master
     git clone https://github.com/awesome-print/awesome_print.git -b master
     git clone https://github.com/noname00000123/annotate_models.git -b develop
-    git clone https://bitbucket.org/piktur/knock.git -b master
+    git clone https://bitbucket.org/piktur/piktur_security.git -b master
 
 ```
 

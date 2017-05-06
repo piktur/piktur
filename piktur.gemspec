@@ -33,9 +33,6 @@ Gem::Specification.new do |s|
   # @!group Security
   # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
   s.add_dependency 'dotenv',                            '~> 2.1'
-  s.add_dependency 'pundit',                            '~> 1.1'
-  s.add_dependency 'knock',                             '~> 2.0'
-  s.add_dependency 'rack_auth_jwt',                     '>= 0.0.1'
   # @!endgroup
 
   # @!group Utilities

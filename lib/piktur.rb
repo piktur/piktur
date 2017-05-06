@@ -23,6 +23,7 @@ require 'active_support/dependencies/autoload'
 #     |-- /piktur_client   # Piktur::Client
 #     |-- /piktur_core     # Piktur::Core
 #     |-- /piktur_docs     # Piktur::Docs
+#     |-- /piktur_security # Piktur::Security
 # ```
 #
 # ## Constant loading
@@ -55,7 +56,6 @@ module Piktur
   # Eager load common lib code
   eager_autoload do
     autoload :Support
-    autoload :Security
   end
 
 end
