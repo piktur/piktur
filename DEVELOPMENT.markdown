@@ -4,25 +4,25 @@
 
 Ensure common path variables defined on terminal session start.
 
-```
+```sh
+  $ atom ~/.process
+  export DEV_HOME=~/Documents/webdev
+  export PIKTUR_HOME=$DEV_HOME/current_projects/piktur
 
-    $ atom ~/.process
-    export DEV_HOME=~/Documents/webdev
-    export PIKTUR_HOME=$DEV_HOME/current_projects/piktur
-
+  cd $PIKTUR_HOME
+  export $(cat .env.common)
 ```
 
 ## Ruby
 
 ### Linting
 
+[`RuboCop` config](https://bitbucket.org/piktur/piktur/raw/master/.rubocop.yml)
+
 ```yaml
-
-    inherit_from:
-      - '~/Documents/webdev/.rubocop.yml'
-
+  inherit_gem:
+    piktur: .rubocop.yml
 ```
-
 
 ## Node
 
