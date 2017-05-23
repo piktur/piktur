@@ -3,6 +3,8 @@
 require 'active_support/core_ext/module/delegation'
 require 'rails/generators/app_base'
 
+# rubocop:disable Documentation, MethodLength, LineLength
+
 module Piktur
 
   include Rails::ActionMethods
@@ -44,7 +46,7 @@ module Piktur
       #   unset CACHE
       #   @return [void]
       #
-      def setup
+      def setup # rubocop:disable AbcSize, CyclomaticComplexity
         # Fetch core gem dependencies from remote repository
         # run <<~EOS
         #   curl https://#{ENV['BUNDLE_BITBUCKET__ORG']}@bitbucket.org/piktur/piktur_core/raw/master/piktur_core/Gemfile -o #{destination_root}/Gemfile.core
@@ -271,7 +273,7 @@ module Piktur
             s.license     = ''
             s.bindir      = 'bin'
             s.files = Dir[
-              '{app,db,config,lib}/**/*',
+              '{app,db,config,lib}/**/*.rb',
               'Rakefile',
               'README.markdown'
             ]
@@ -446,14 +448,18 @@ module Piktur
         super
 
         unless app_path
-          raise Error, "Application name should be provided in arguments. For details run: rails --help"
+          raise Error, <<~EOS
+            Application name should be provided in arguments. For details run: rails --help
+          EOS
         end
 
         options[:database] ||= 'postgresql'
 
-        if !options[:skip_active_record] && !DATABASES.include?(options[:database])
-          raise Error, "Invalid value for --database option. Supported for preconfiguration are: #{DATABASES.join(", ")}."
-        end
+        return unless !options[:skip_active_record] && !DATABASES.include?(options[:database])
+        raise Error, <<~EOS
+          Invalid value for --database option. Supported for preconfiguration are:
+          #{DATABASES.join(', ')}.
+        EOS
       end
 
       source_root File.expand_path('templates', __dir__)
@@ -461,16 +467,13 @@ module Piktur
       source_paths.concat superclass.source_paths_for_search
 
       # @return [String, nil]
-      def set_default_accessors!
-        self.destination_root = Piktur.dev_path.join("piktur_#{app_name}").to_s
+      def set_default_accessors! # rubocop:disable AbcSize
+        self.destination_root = Piktur.root.parent.join("piktur_#{app_name}").to_s
         self.rails_template =
           case options[:template]
-          when /^https?:\/\//
-            options[:template]
-          when String
-            File.expand_path(options[:template], Dir.pwd)
-          else
-            options[:template]
+          when /^https?:\/\// then options[:template]
+          when String then File.expand_path(options[:template], Dir.pwd)
+          else options[:template]
           end
       end
 
@@ -613,7 +616,7 @@ module Piktur
         end
 
         # @return [Class]
-        def get_builder_class
+        def get_builder_class # rubocop:disable AccessorMethodName
           Generators::AppBuilder
         end
 

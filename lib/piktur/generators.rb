@@ -7,7 +7,7 @@ require_relative './generators/piktur/config/config_generator'
 
 module Piktur
 
-  module Generators
+  module Generators # rubocop:disable Documentation
 
     include Rails::Generators
 

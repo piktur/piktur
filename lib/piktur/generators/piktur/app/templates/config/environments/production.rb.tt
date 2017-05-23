@@ -60,8 +60,6 @@ Rails.application.configure do
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.action_controller.asset_host = ENV['S3_ASSET_HOST'] || ENV['ASSET_HOST']
-  # routes.default_url_options[:host] = ENV['PIKTUR_<%= app_name.upcase %>_SERVER_NAME']
-  # routes.default_url_options[:locale] = I18n.locale
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

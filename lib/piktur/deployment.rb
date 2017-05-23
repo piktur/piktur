@@ -73,18 +73,18 @@ module Piktur
         #
         # @see [Deploying Elastic Beanstalk Applications from Docker Containers](http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker.html)
         # @see http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.platforms.html Stacks
-        def self.create
+        def self.create # rubocop:disable MethodLength
           resp = client.create_environment(
             application_name:    "piktur-#{app_name}",
             cname_prefix:        "piktur-#{app_name}",
             environment_name:    "piktur-#{app_name}-env",
-            solution_stack_name: "64bit Amazon Linux 2016.09 v2.3.0 running Ruby 2.3 (Puma)",
+            solution_stack_name: '64bit Amazon Linux 2016.09 v2.3.0 running Ruby 2.3 (Puma)',
             version_label:       '0.0.1',
             option_settings:     [
               {
-                resource_name: "",
-                namespace:     "aws:cloudformation:template:parameter",
-                option_name:   "EnvironmentVariables",
+                resource_name: '',
+                namespace:     'aws:cloudformation:template:parameter',
+                option_name:   'EnvironmentVariables',
                 value:         env
               }
             ]
@@ -121,7 +121,7 @@ module Piktur
           @hosted_zone ||= client.get_hosted_zone(id: PIKTUR__IO_HOSTED_ZONE_ID)
         end
 
-        def self.create_resource_record_set
+        def self.create_resource_record_set # rubocop:disable MethodLength
           client.change_resource_record_sets(
             hosted_zone_id: hosted_zone.id,
             change_batch:   {
