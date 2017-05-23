@@ -1,52 +1,76 @@
 #!/usr/bin/env ruby
-# frozen_string_literal: true
-require 'pathname'
 
-# path to your application root.
-APP_ROOT = Pathname.new File.expand_path('../', __dir__)
-DEV_ROOT = APP_ROOT.parent
+# frozen_string_literal: true
+
+# |-- /gem_server        # Private gem server
+# |-- /gems              # Store forked gems
+# |-- <project_name>     # Store common config and untracked files ie. `.env`
+#   |-- /piktur          # Piktur
+#   |-- /piktur_admin    # Piktur::Admin
+#   |-- /piktur_api      # Piktur::Api
+#   |-- /piktur_blog     #
+#   |-- /piktur_client   # Piktur::Client
+#   |-- /piktur_core     # Piktur::Core
+#   |-- /piktur_docs     # Piktur::Docs
+#   |-- /piktur_security # Piktur::Security
+#
+# @todo We may also want to clone forked gems
+#   * yard
+#   * amoeba
+#   * annotate_models
+#   * awesome_print
+#
+# @todo [Host secrets privately or store encrypted files on git, then decrypt on clone.](https://trello.com/c/iymYXp4X/203-env)
+
+require 'pathname'
 
 ENV['RAILS_ENV'] ||= 'development'
 
-Dir.chdir APP_ROOT do # rubocop:disable Metrics/BlockLength
-  puts '# Export environment variables'
-  system "export $(cat #{DEV_ROOT}/.env.common #{DEV_ROOT}/.env.#{ENV['RAILS_ENV']})"
+APP_ROOT  = Pathname.new File.expand_path('../', __dir__)
+DEV_ROOT  = APP_ROOT.parent # Pathname.pwd.join('piktur')
+BITBUCKET = 'https://${BUNDLE_BITBUCKET__ORG}@bitbucket.com/piktur'
+SERVICES  = %w(
+  piktur
+  piktur_admin
+  piktur_api
+  piktur_blog
+  piktur_client
+  piktur_core
+  piktur_docs
+  piktur_security
+  piktur_store
+).freeze
 
-  # puts '# Fetch core dependencies'
-  # Pull down piktur_core Gemfile from remote repository and save as ./Gemfile.core
-  # system <<~EOS
-  #   curl https://${BUNDLE_BITBUCKET__ORG}@bitbucket.org/piktur/piktur_core/raw/master/piktur_core/Gemfile -o Gemfile.core
-  # EOS
+def clone(repo, branch = 'maste')
+  system "git clone #{BITBUCKET}/#{repo}.git -b #{branch}"
+end
 
-  # system <<~EOS
-  #   mkdir -p vendor/cache
-  #   cd vendor/cache
-  #   git clone https://github.com/lsegal/yard.git -b master
-  #   git clone https://github.com/amoeba-rb/amoeba.git -b master
-  #   git clone https://github.com/noname00000123/annotate_models.git -b develop
-  #   git clone https://github.com/awesome-print/awesome_print.git -b master
-  #   cd ../..
-  # EOS
+def bundler_local(repo)
+  system "bundle config --local local.#{repo} #{PIKTUR_ROOT}/#{repo}"
+end
 
-  system <<~EOS
-    git clone https://${BUNDLE_BITBUCKET__ORG}@bitbucket.com/piktur/piktur_admin.git -b master
-    git clone https://${BUNDLE_BITBUCKET__ORG}@bitbucket.com/piktur/piktur_api.git -b master
-    git clone https://${BUNDLE_BITBUCKET__ORG}@bitbucket.com/piktur/piktur_client.git -b master
-    git clone https://${BUNDLE_BITBUCKET__ORG}@bitbucket.com/piktur/piktur_store.git -b master
-
-    bundle config --local local.piktur_core ./
-    bundle config --local local.piktur_admin ./piktur/piktur_admin
-    bundle config --local local.piktur_api ./piktur/piktur_api
-    bundle config --local local.piktur_client ./piktur/piktur_client
-    bundle config --local local.piktur_store ./piktur/piktur_store
-  EOS
-
-  # system <<~EOS
-  #   bundle config --local local.yard ~/Documents/webdev/current_projects/gems/yard
-  #   bundle config --local local.amoeba ~/Documents/webdev/current_projects/gems/amoeba
-  #   bundle config --local local.annotate_models ~/Documents/webdev/current_projects/gems/annotate_models
-  #   bundle config --local local.awesome_print ~/Documents/webdev/current_projects/gems/awesome_print
-  # EOS
-
+def bundle
   system 'bundle check || bundle install'
+end
+
+Dir.chdir DEV_ROOT do
+  puts '# Export environment variables'
+
+  # @todo Decrypt and export secrets
+  # load File.expand_path('../env', __FILE__)
+  # system 'export $(cat .env.common)'
+
+  SERVICES.each do |repo|
+    clone(repo)
+    bundler_local(repo)
+  end
+
+  SERVICES.each do |repo|
+    Dir.chdir DEV_ROOT.join(repo) do
+      bundler_local(repo)
+      bundle
+    end
+  end
+
+  bundle
 end

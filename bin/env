@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require 'dotenv'
+
+# Load ENV to avoid `export $(cat ../.env.common)` everytime we open a new terminal session
+env = File.expand_path('../.env.common', Dir.pwd)
+Dotenv.overload(env)
