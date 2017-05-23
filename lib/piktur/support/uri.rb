@@ -10,9 +10,9 @@ module Piktur
       # Implement `#as_json` on instance of `Object.URI`.
       # When called returns a String rather than `instance_values` Hash.
       # @return [URI]
-      def URI(str) # rubocop:disable Style/MethodName
+      def URI(str) # rubocop:disable MethodName
         Object.send(:URI, str).instance_eval do
-          def as_json; to_s; end; self # rubocop:disable Style/Semicolon, Style/SingleLineMethods
+          def as_json; to_s; end; self # rubocop:disable SingleLineMethods
         end
       end
 

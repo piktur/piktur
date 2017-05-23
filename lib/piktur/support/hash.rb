@@ -2,8 +2,9 @@
 
 module Piktur
 
-  module Support
+  module Support # rubocop:disable Documentation
 
+    # Ruby core Hash extension
     module Hash
 
       # Flatten Hash keys recursively
@@ -35,7 +36,7 @@ module Piktur
 
     end
 
-    ::Hash.extend(::Piktur::Support::Hash)
+    ::Hash.extend(self::Hash)
 
   end
 
