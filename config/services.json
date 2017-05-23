@@ -1,0 +1,68 @@
+{
+  "services": {
+    "production": {
+      "host": "piktur.io",
+      "scheme": "https"
+    },
+    "development": {
+      "host": "localhost",
+      "scheme": "http"
+    },
+    "staging": {
+      "host": null,
+      "scheme": null
+    },
+    "piktur": {
+      "namespace": "Piktur"
+    },
+    "piktur_core": {
+      "namespace": "Piktur"
+    },
+    "piktur_store": {
+      "namespace": "Piktur::Store"
+    },
+    "piktur_security": {
+      "namespace": "Piktur::Security"
+    },
+    "piktur_admin": {
+      "namespace": "Piktur::Admin",
+      "uri": {
+        "production": "https://admin.piktur.io",
+        "development": "http://localhost:3001",
+        "staging": null
+      }
+    },
+    "piktur_api": {
+      "namespace": "Piktur::Api",
+      "uri": {
+        "production": "https://api.piktur.io",
+        "development": "http://localhost:3000",
+        "staging": null
+      }
+    },
+    "piktur_blog": {
+      "namespace": "Piktur::Blog",
+      "uri": {
+        "production": "https://blog.piktur.io",
+        "development": "http://localhost:2368",
+        "staging": null
+      }
+    },
+    "piktur_client": {
+      "namespace": "Piktur::Client",
+      "uri": {
+        "production": "https://client.piktur.io",
+        "development": "http://localhost:3002",
+        "staging": null
+      }
+    },
+    "piktur_docs": {
+      "namespace": "Piktur::Docs",
+      "uri": {
+        "production": "https://docs.piktur.io",
+        "development": "http://localhost:3003",
+        "staging": null
+      }
+    }
+  }
+}

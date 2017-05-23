@@ -2,14 +2,16 @@
 
 module Piktur
 
-  # Utility methods
+  # Utility modules
   module Support
 
     extend ActiveSupport::Autoload
 
+    autoload :Dependencies
     autoload :Hash
     autoload :SerializableURI, 'piktur/support/uri'
     autoload :URI, 'piktur/support/uri'
+    autoload :JSON, 'piktur/support/json'
 
   end
 

@@ -1,61 +1,93 @@
 # frozen_string_literal: true
 
 require 'pathname'
-require 'active_support/dependencies'
-require 'active_support/dependencies/autoload'
+%w(dependencies dependencies/autoload core_ext/string/inquiry core_ext/module/delegation)
+  .each { |f| require "active_support/#{f}" }
 
-# Basic utilities for Piktur applications.
-# @todo [define path helpers for each module](https://bitbucket.org/snippets/piktur/M7A6E)
-# @todo https://trello.com/c/gcytwRuV/79-decouple-core-dependencies
+# Basic config/utilities for Piktur applications.
+# `piktur` must remain portable.
 #
-# ## Development directory structure
-#
-# Run `bin/piktur setup` to prepare development directory
-#
-# ```
-#   |-- /gem_server        # Private gem server
-#   |-- /gems              # Store forked gems
-#   |-- <project_name>     # Store common config and untracked files ie. `.env`
-#     |-- /piktur          # Piktur
-#     |-- /piktur_admin    # Piktur::Admin
-#     |-- /piktur_api      # Piktur::Api
-#     |-- /piktur_blog     #
-#     |-- /piktur_client   # Piktur::Client
-#     |-- /piktur_core     # Piktur::Core
-#     |-- /piktur_docs     # Piktur::Docs
-#     |-- /piktur_security # Piktur::Security
-# ```
-#
-# ## Constant loading
-#
-# `piktur_core` must remain portable. Be clear about the relevance and broader utility of a
-# constant.
-#
-#   * Avoid introducing **irrelevant dependencies**
+#   * Minimize **redundancy**
 #   * Maintain **separation of concerns**
+#   * Be DRY
+#
+# @see https://trello.com/c/gcytwRuV/79-decouple-core-dependencies
+# @see https://bitbucket.org/piktur/piktur_core/issues/21/decouple-core-dependencies #21
 #
 module Piktur
 
-  # Returns absolute path to root directory
-  # @return [Pathname]
-  def self.root
-    Pathname.new File.expand_path('../', __dir__)
-  end
+  extend ::ActiveSupport::Autoload
 
-  # Returns absolute path to local development directory
-  # @return [Pathname]
-  def self.dev_path
-    root.parent
-  end
-
-  require_relative './piktur/env.rb'
-  require_relative './piktur/support.rb'
-
-  extend ActiveSupport::Autoload
-
-  # Eager load common lib code
   eager_autoload do
+    autoload :Services
+    autoload :Config
+    autoload :Secrets, 'piktur/env'
     autoload :Support
   end
+
+  autoload :Cache
+
+  class << self
+
+    # Returns absolute path to root directory
+    # @return [Pathname]
+    def root
+      Pathname.new(File.expand_path('../', __dir__))
+    end
+
+    # @return [ActiveSupport::StringInquirer]
+    def env
+      return Rails.env if defined?(Rails)
+      ENV.fetch('ENV') { ENV.fetch('RACK_ENV') { 'development' } }.inquiry
+    end
+
+    # @!method config
+    #   @return [Piktur::Config]
+    # @!method configure(&block)
+    #   @return [void]
+    delegate :config, :configure, to: 'Piktur::Config'
+
+    # @!method services
+    #   @return [Services::Index]
+    delegate :services, to: :config
+
+    # @!method application
+    #   Returns Service object for current application
+    #   @return [Services::Service]
+    delegate :application, to: :services
+
+    # @!method applications
+    # @!method engines
+    # @!method libraries
+    # @return [Array<Services::Service>]
+    delegate :applications, :engines, :libraries, to: :services
+
+    # @!method railties
+    #   @return [Array<Class>]
+    delegate :railties, to: :services
+
+    # @!method dependencies
+    #   @return [Services::Index]
+    delegate :dependencies, to: :services
+
+    # @!method servers
+    #   Remote server metadata for Piktur services
+    #   @return [Services::Servers]
+    delegate :servers, to: :services
+
+    # @!method domain
+    #   Base domain for Piktur services
+    #   @return [Object]
+    delegate :domain, to: :servers
+
+    # @!method eager_load_namespaces
+    #   @return [Array<Module, Class>]
+    delegate :eager_load_namespaces, to: :services
+
+  end
+
+  Secrets.overload
+
+  require 'pry' if env.production?
 
 end
