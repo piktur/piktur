@@ -1,12 +1,11 @@
 # frozen_string_literal: true
+
 # rubocop:disable Metrics/BlockLength
 
 $LOAD_PATH.push File.expand_path('./lib', __dir__)
 
-# Maintain your gem's version:
 require 'piktur/version'
 
-# Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
   s.name        = 'piktur'
   s.version     = Piktur::VERSION
@@ -22,8 +21,16 @@ Gem::Specification.new do |s|
   #   `s.executables.push('piktur_admin.sh')` not accepted
   s.default_executable = 'piktur'
   s.files = Dir[
+    '{bin,lib}/**/*.rb',
+    '.rubocop.yml',
+    '.yardopts',
+    'circle.yml',
+    'DEPLOY.markdown',
+    'DEVELOPMENT.markdown',
+    'init.development.sh',
     'piktur.gemspec',
-    'lib/**/*.rb',
+    'piktur*.sh',
+    'Procfile',
     'Rakefile',
     'README.markdown'
   ]
@@ -37,6 +44,9 @@ Gem::Specification.new do |s|
 
   # @!group Utilities
   s.add_dependency 'activesupport',                     '~> 5.1'
+  s.add_dependency 'dry-configurable',                  '~> 0.7'
+  s.add_dependency 'dry-struct',                        '~> 0.3'
+  s.add_dependency 'dry-types',                         '~> 0.10'
   s.add_dependency 'rake',                              '~> 12.0'
   # @!endgroup
 
