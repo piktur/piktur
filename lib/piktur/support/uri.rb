@@ -12,7 +12,7 @@ module Piktur
       # @return [URI]
       def URI(str) # rubocop:disable MethodName
         Object.send(:URI, str).instance_eval do
-          def as_json; to_s; end; self # rubocop:disable SingleLineMethods
+          def as_json; to_s; end; self
         end
       end
 
@@ -50,7 +50,7 @@ module Piktur
       # @param [String] uri
       def initialize(uri)
         @uri = uri.match(REGEX)[0]
-        @scheme, @host, @path = $1, $2, $3 # rubocop:disable Style/ParallelAssignment
+        @scheme, @host, @path = $1, $2, $3 # rubocop:disable ParallelAssignment
         @port = $4.to_i if $4.present?
       end
 

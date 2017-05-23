@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-# rubocop:disable Metrics/BlockLength, Style/ExtraSpacing
+
+# rubocop:disable ExtraSpacing
 
 # @note RubyGems doesn't tolerate unbuilt dependencies from git sources. Private gems are
 #   instead served privately with `geminabox`.
@@ -24,6 +25,9 @@ gem 'piktur_security',          git:    "#{bb}/piktur/piktur_security.git",
 
 # @!group Utilities
 gem 'activesupport',            require: false
+gem 'dry-configurable',         require: false
+gem 'dry-struct',               require: false
+gem 'dry-types',                require: false
 gem 'rake'
 # @!endgroup
 

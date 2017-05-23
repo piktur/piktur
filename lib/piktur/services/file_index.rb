@@ -90,7 +90,7 @@ module Piktur
           arr = []
           files.each do |root, paths|
             paths.each do |f|
-              next unless f =~ /\A#{target}\/#{type}(?!\/concerns)/
+              next unless f.match?(/\A#{target}\/#{type}(?!\/concerns)/)
               path = File.join(root, f)
               arr << path if File.file?(path)
             end

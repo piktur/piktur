@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable BlockLength
+
 require 'rails_helper'
 
 types = %w(
@@ -27,7 +29,7 @@ RSpec.describe Piktur do
         [
           Piktur::Engine.root.join('app/models/**/*.rb'),
           Piktur::Store::Engine.root.join('app/models/**/*.rb'),
-          Rails.root.join('app/models/**/*.rb')
+          Rails.root.join('app', 'models', '**', '*.rb')
         ]
       end
 
@@ -137,7 +139,7 @@ RSpec.describe Piktur::Support::Dependencies do
     end
   end
 
-  types.select { |type| type =~ /mod|contr|pol|serial/ }.each do |type|
+  types.select { |type| type.match?(/mod|contr|pol|serial/) }.each do |type|
     singular_type = type.singularize
 
     describe ".find_#{singular_type}" do

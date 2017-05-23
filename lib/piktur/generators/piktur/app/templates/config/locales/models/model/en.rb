@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable Style/StringLiterals, Style/AlignHash, Metrics/LineLength
+# rubocop:disable StringLiterals, AlignHash, LineLength
 # @see activemodel-4.2.5.1/lib/active_model/locale/en.yml
 # @see activerecord-4.2.5.1/lib/active_record/locale/en.yml
 #

@@ -254,7 +254,7 @@ module Piktur
       def gemspec
         create_file "piktur_#{app_name}.gemspec", <<~RUBY
           # frozen_string_literal: true
-          # rubocop:disable Metrics/BlockLength
+          # rubocop:disable BlockLength
 
           $LOAD_PATH.push File.expand_path('./lib', __dir__)
 

@@ -1,0 +1,195 @@
+GIT
+  remote: https://bitbucket.org/piktur/piktur_security.git
+  revision: 9c62def9b9c6f883e964e5609c96cb6050bbe579
+  branch: rails5
+  specs:
+    piktur_security (0.0.1)
+      activesupport (~> 5.1)
+      bcrypt (~> 3.1)
+      jwt (~> 1.5)
+      pundit (~> 1.1)
+      rack (~> 2.0)
+      rspec (~> 3.5)
+      timecop (~> 0.8.0)
+
+PATH
+  remote: .
+  specs:
+    piktur (0.0.1)
+      activesupport (~> 5.1)
+      awesome_print (~> 1.7)
+      benchmark-ips (~> 2.7)
+      byebug (~> 9.0)
+      dotenv (~> 2.1)
+      dry-configurable (~> 0.7)
+      dry-struct (~> 0.3)
+      dry-types (~> 0.10)
+      faker (~> 1.6)
+      foreman (~> 0.81)
+      newrelic_rpm (~> 3.17)
+      oj (~> 2.18)
+      pry (~> 0.10)
+      pry-rescue (~> 1.4)
+      pry-stack_explorer (~> 0.4)
+      puma (~> 3.4)
+      rake (~> 12.0)
+      redcarpet (~> 3.0)
+      rubocop (~> 0.40)
+      simplecov (~> 0.12)
+      slim (~> 3.0)
+      yard (~> 0.8)
+
+GEM
+  remote: http://localhost:9292/
+  specs:
+    activesupport (5.1.0)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (~> 0.7)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
+    ast (2.3.0)
+    awesome_print (1.7.0)
+    bcrypt (3.1.11)
+    benchmark-ips (2.7.2)
+    binding_of_caller (0.7.2)
+      debug_inspector (>= 0.0.1)
+    byebug (9.0.6)
+    coderay (1.1.1)
+    concurrent-ruby (1.0.5)
+    debug_inspector (0.0.3)
+    diff-lcs (1.3)
+    docile (1.1.5)
+    dotenv (2.2.1)
+    dry-configurable (0.7.0)
+      concurrent-ruby (~> 1.0)
+    dry-container (0.6.0)
+      concurrent-ruby (~> 1.0)
+      dry-configurable (~> 0.1, >= 0.1.3)
+    dry-core (0.3.0)
+      concurrent-ruby (~> 1.0)
+    dry-equalizer (0.2.0)
+    dry-logic (0.4.1)
+      dry-container (~> 0.2, >= 0.2.6)
+      dry-core (~> 0.2)
+      dry-equalizer (~> 0.2)
+    dry-struct (0.3.0)
+      dry-configurable (~> 0.1)
+      dry-core (~> 0.3)
+      dry-equalizer (~> 0.2)
+      dry-types (~> 0.9, >= 0.9.0)
+      ice_nine (~> 0.11)
+    dry-types (0.10.3)
+      concurrent-ruby (~> 1.0)
+      dry-configurable (~> 0.1)
+      dry-container (~> 0.3)
+      dry-core (~> 0.2, >= 0.2.1)
+      dry-equalizer (~> 0.2)
+      dry-logic (~> 0.4, >= 0.4.0)
+      inflecto (~> 0.0.0, >= 0.0.2)
+    faker (1.7.3)
+      i18n (~> 0.5)
+    foreman (0.84.0)
+      thor (~> 0.19.1)
+    i18n (0.8.1)
+    ice_nine (0.11.2)
+    inflecto (0.0.2)
+    interception (0.5)
+    json (2.1.0)
+    jwt (1.5.6)
+    method_source (0.8.2)
+    minitest (5.10.2)
+    newrelic_rpm (3.18.1.330)
+    oj (2.18.5)
+    parser (2.4.0.0)
+      ast (~> 2.2)
+    powerpack (0.1.1)
+    pry (0.10.4)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    pry-rescue (1.4.5)
+      interception (>= 0.5)
+      pry
+    pry-stack_explorer (0.4.9.2)
+      binding_of_caller (>= 0.7)
+      pry (>= 0.9.11)
+    puma (3.8.2)
+    pundit (1.1.0)
+      activesupport (>= 3.0.0)
+    rack (2.0.2)
+    rainbow (2.2.2)
+      rake
+    rake (12.0.0)
+    redcarpet (3.4.0)
+    rspec (3.6.0)
+      rspec-core (~> 3.6.0)
+      rspec-expectations (~> 3.6.0)
+      rspec-mocks (~> 3.6.0)
+    rspec-core (3.6.0)
+      rspec-support (~> 3.6.0)
+    rspec-expectations (3.6.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.6.0)
+    rspec-mocks (3.6.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.6.0)
+    rspec-support (3.6.0)
+    rubocop (0.48.1)
+      parser (>= 2.3.3.1, < 3.0)
+      powerpack (~> 0.1)
+      rainbow (>= 1.99.1, < 3.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (~> 1.0, >= 1.0.1)
+    ruby-progressbar (1.8.1)
+    simplecov (0.14.1)
+      docile (~> 1.1.0)
+      json (>= 1.8, < 3)
+      simplecov-html (~> 0.10.0)
+    simplecov-html (0.10.0)
+    slim (3.0.8)
+      temple (>= 0.7.6, < 0.9)
+      tilt (>= 1.3.3, < 2.1)
+    slop (3.6.0)
+    temple (0.8.0)
+    thor (0.19.4)
+    thread_safe (0.3.6)
+    tilt (2.0.7)
+    timecop (0.8.1)
+    tzinfo (1.2.3)
+      thread_safe (~> 0.1)
+    unicode-display_width (1.2.1)
+    yard (0.9.9)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  activesupport
+  awesome_print!
+  benchmark-ips
+  byebug
+  dotenv
+  dry-configurable
+  dry-struct
+  dry-types
+  faker
+  foreman
+  newrelic_rpm
+  piktur!
+  piktur_security!
+  pry
+  pry-rescue
+  pry-stack_explorer
+  puma
+  rake
+  redcarpet
+  rubocop
+  simplecov
+  slim
+  yard!
+
+RUBY VERSION
+   ruby 2.4.1p111
+
+BUNDLED WITH
+   1.14.6
