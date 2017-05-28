@@ -25,10 +25,16 @@ gem 'piktur_security',          git:    "#{bb}/piktur/piktur_security.git",
 
 # @!group Utilities
 gem 'activesupport',            require: false
+gem 'countries',                require: false
 gem 'dry-configurable',         require: false
+gem 'dry-monads',               require: false
 gem 'dry-struct',               require: false
 gem 'dry-types',                require: false
+gem 'liquid',                   require: false
 gem 'rake'
+# gem 'disposable',               require: false
+# gem 'reform',                   require: false
+# gem 'reform-rails',             require: false
 # @!endgroup
 
 # @!group Server

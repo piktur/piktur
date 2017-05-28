@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+# rubocop:disable Documentation
+
 module Piktur
 
-  module Support # rubocop:disable Documentation
+  module Support
 
     # Ruby core Hash extension
     module Hash

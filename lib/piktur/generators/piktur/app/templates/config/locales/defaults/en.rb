@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable StringLiterals, AlignHash, LineLength
+# rubocop:disable StringLiterals, AlignHash
 # @see activemodel-4.2.5.1/lib/active_model/locale/en.yml
 #
 # @note refer to Model.model_name.i18n_key to confirm i18n key

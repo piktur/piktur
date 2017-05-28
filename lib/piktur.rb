@@ -88,6 +88,6 @@ module Piktur
 
   Secrets.overload
 
-  require 'pry' if env.production?
+  require 'pry' unless env.production?
 
 end

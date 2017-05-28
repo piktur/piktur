@@ -28,6 +28,7 @@ module Piktur
   #     |-- /piktur_core     # Piktur::Core
   #     |-- /piktur_docs     # Piktur::Docs
   #     |-- /piktur_security # Piktur::Security
+  #     |-- /piktur_store    # Piktur::Store
   # ```
   #
   module Services
@@ -63,17 +64,29 @@ module Piktur
 
         # @return [Array<Hash>]
         def libraries
-          services_data %i(piktur piktur_security)
+          services_data %i(
+            piktur
+            piktur_security
+          )
         end
 
         # @return [Array<Hash>]
         def engines
-          services_data %i(piktur_core piktur_store)
+          services_data %i(
+            piktur_core
+            piktur_store
+          )
         end
 
         # @return [Array<Hash>]
         def applications
-          services_data %i(piktur_api piktur_admin piktur_blog piktur_client)
+          services_data %i(
+            piktur_api
+            piktur_admin
+            piktur_blog
+            piktur_client
+            piktur_docs
+          )
         end
 
     end

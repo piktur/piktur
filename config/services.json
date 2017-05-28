@@ -12,6 +12,10 @@
       "host": null,
       "scheme": null
     },
+    "test": {
+      "host": "localhost",
+      "scheme": "http"
+    },
     "piktur": {
       "namespace": "Piktur"
     },
@@ -29,7 +33,8 @@
       "uri": {
         "production": "https://admin.piktur.io",
         "development": "http://localhost:3001",
-        "staging": null
+        "staging": null,
+        "test": "http://localhost:3001"
       }
     },
     "piktur_api": {
@@ -37,7 +42,8 @@
       "uri": {
         "production": "https://api.piktur.io",
         "development": "http://localhost:3000",
-        "staging": null
+        "staging": null,
+        "test": "http://localhost:3000"
       }
     },
     "piktur_blog": {
@@ -45,7 +51,8 @@
       "uri": {
         "production": "https://blog.piktur.io",
         "development": "http://localhost:2368",
-        "staging": null
+        "staging": null,
+        "test": "http://localhost:2368"
       }
     },
     "piktur_client": {
@@ -53,7 +60,8 @@
       "uri": {
         "production": "https://client.piktur.io",
         "development": "http://localhost:3002",
-        "staging": null
+        "staging": null,
+        "test": "http://localhost:3002"
       }
     },
     "piktur_docs": {
@@ -61,7 +69,8 @@
       "uri": {
         "production": "https://docs.piktur.io",
         "development": "http://localhost:3003",
-        "staging": null
+        "staging": null,
+        "test": "http://localhost:3003"
       }
     }
   }

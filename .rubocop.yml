@@ -7,6 +7,15 @@ AllCops:
     - 'vendor/**/*'
     - 'lib/**/generators/**/*'
     - 'test/dummy/**/*'
+    - 'spec/**/*'
+    - '**/vendor/**/*'
+    - '**/lib/**/generators/**/*'
+    - '**/test/dummy/**/*'
+    - '**/spec/**/*'
+    - '../**/vendor/**/*'
+    - '../**/lib/**/generators/**/*'
+    - '../**/test/dummy/**/*'
+    - '../**/spec/**/*'
   DisplayCopNames: true
   TargetRubyVersion: 2.4.1
   TargetRailsVersion: 5.0
@@ -14,22 +23,68 @@ AllCops:
 Style/AlignHash:
   EnforcedHashRocketStyle: key
   EnforcedColonStyle: table
+  Exclude:
+    - 'locales/**/*'
+    - '**/locales/**/*'
+    - '../**/locales/**/*'
 
 Style/BracesAroundHashParameters:
   EnforcedStyle: context_dependent
 
-# Checks formatting of special comments
-Style/CommentAnnotation:
-  Keywords:
-    - '@example'
-    - '@note'
-    - '@return'
-    - '@see'
-    - '@todo'
-    - '@yieldparam'
+Style/Documentation:
+  Enabled: true
+  Exclude:
+    - 'lib/spec/**/*'
+    - 'spec/**/*'
+    - 'test/**/*'
+    - 'db/**/*'
+    - '**/lib/spec/**/*'
+    - '**/spec/**/*'
+    - '**/test/**/*'
+    - '**/db/**/*'
+    - '../**/lib/spec/**/*'
+    - '../**/spec/**/*'
+    - '../**/test/**/*'
+    - '../**/db/**/*'
 
 Style/Copyright:
   Enabled: false
+
+Style/CommentIndentation:
+  Enabled: false
+
+Style/CommentAnnotation:
+  Keywords:
+    - '@abstract'
+    - '@api'
+    - '@attr'
+    - '@attr_reader'
+    - '@attr_writer'
+    - '@author'
+    - '@deprecated'
+    - '@example'
+    - '@note'
+    - '@option'
+    - '@overload'
+    - '@param'
+    - '@private'
+    - '@raise'
+    - '@return'
+    - '@see'
+    - '@since'
+    - '@todo'
+    - '@version'
+    - '@yield'
+    - '@yieldparam'
+    - '@yieldreturn'
+    - '@!attribute'
+    - '@!endgroup'
+    - '@!group'
+    - '@!macro'
+    - '@!method'
+    - '@!parse'
+    - '@!scope'
+    - '@!visibility'
 
 Style/EmptyLineBetweenDefs:
   AllowAdjacentOneLineDefs: true
@@ -90,6 +145,10 @@ Style/PredicateName:
   Exclude:
     - 'spec/**/*'
     - 'lib/**/spec/**/*'
+    - '**/spec/**/*'
+    - '**/lib/**/spec/**/*'
+    - '../**/spec/**/*'
+    - '../**/lib/**/spec/**/*'
 
 Style/Semicolon:
   AllowAsExpressionSeparator: true
@@ -119,13 +178,6 @@ Style/SymbolArray:
   Enabled: false
   EnforcedStyle: brackets
 
-Style/Documentation:
-  Enabled: true
-  Exclude:
-    - 'lib/**/test_helpers.rb'
-    - 'spec/**/*'
-    - 'test/**/*'
-
 Style/PerlBackrefs:
   Enabled: false
 
@@ -146,10 +198,17 @@ Style/SingleLineMethods:
 
 Metrics/BlockLength:
   Exclude:
-    - lib/spec/**/*.rb
-    - spec/**/*.rb
+    - 'lib/spec/**/*'
+    - 'spec/**/*'
+    - '**/lib/spec/**/*'
+    - '**/spec/**/*'
+    - '../**/lib/spec/**/*'
+    - '../**/spec/**/*'
+    - '*.gemspec'
+    - '../*.gemspec'
+    - '**/*.gemspec'
   CountComments: false
-  Max: 25
+  Max: 30
   ExcludedMethods:
     - context
     - describe
@@ -161,7 +220,9 @@ Metrics/BlockLength:
     - before
     - around
     - shared_context
+    - include_contexts
     - shared_examples
+    - include_examples
     - configure
     - included
     - new
@@ -169,8 +230,12 @@ Metrics/BlockLength:
 Metrics/BlockNesting:
   Max: 3
   Exclude:
-    - lib/spec/**/*.rb
-    - spec/**/*.rb
+    - 'lib/spec/**/*'
+    - 'spec/**/*'
+    - '**/lib/spec/**/*'
+    - '**/spec/**/*'
+    - '../**/lib/spec/**/*'
+    - '../**/spec/**/*'
 
 Metrics/ClassLength:
   CountComments: false
@@ -189,14 +254,19 @@ Metrics/LineLength:
     - https
   IgnoreCopDirectives: true
   IgnoredPatterns:
-    - !ruby/regexp /\A\s*# @todo/
-    - !ruby/regexp /\A\s*# @note/
-    - !ruby/regexp /\A\s*# @see/
-    - !ruby/regexp /\A\s*# @example/
+    - !ruby/regexp /\A\s*#\s*@[!a-z]/
+  Exclude:
+    - 'locales/**/*'
+    - '**/locales/**/*'
+    - '../**/locales/**/*'
 
 Metrics/MethodLength:
   CountComments: false
   Max: 10
+  Exclude:
+    - 'db/migrate/**/*'
+    - '**/db/migrate/**/*'
+    - '../**/db/migrate/**/*'
 
 Metrics/ParameterLists:
   Max: 5
@@ -232,10 +302,18 @@ Rails/DynamicFindBy:
 
 Rails/Exit:
   Exclude:
-    - bin/*
-    - Rakefile
-    - lib/**/cli.rb
-    - lib/**/*.rake
+    - 'bin/*'
+    - 'Rakefile'
+    - 'lib/**/cli.rb'
+    - 'lib/**/*.rake'
+    - '**/bin/*'
+    - '**/Rakefile'
+    - '**/lib/**/cli.rb'
+    - '**/lib/**/*.rake'
+    - '../**/bin/*'
+    - '../**/Rakefile'
+    - '../**/lib/**/cli.rb'
+    - '../**/lib/**/*.rake'
 
 Rails/SaveBang:
   Enabled: true

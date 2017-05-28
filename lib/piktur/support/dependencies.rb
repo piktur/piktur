@@ -221,14 +221,14 @@ module Piktur
           # @param [String] str
           # @return [Hash]
           def _match_base_class(str)
-            return unless str.match(_matcher(:base)) && File.directory?($1 + $3)
+            return unless str =~ _matcher(:base) && File.directory?($1 + $3)
             cache[cache_key($4)] = { match: $2.freeze, path: str.freeze }
           end
 
           # @param [String] str
           # @return [Hash]
           def _match_other(str)
-            return unless str.match(_matcher(:other))
+            return unless str =~ _matcher(:other)
             cache[cache_key(($3 || $4).singularize)] = { match: $1.freeze, path: str.freeze }
           end
 
@@ -304,14 +304,14 @@ module Piktur
           # @param [String] str
           # @return [Hash]
           def _match_base_class(str)
-            return unless str.match(_matcher(:base)) && File.directory?($1 + $3)
+            return unless str =~ _matcher(:base) && File.directory?($1 + $3)
             cache[cache_key] = { match: $2.freeze, path: str.freeze }
           end
 
           # @param [String] str
           # @return [Hash]
           def _match_other(str)
-            return unless str.match(_matcher(:other))
+            return unless str =~ _matcher(:other)
             cache[cache_key] = { match: $1.freeze, path: str.freeze }
           end
 

@@ -3,7 +3,7 @@
 module Piktur
 
   # Provides temporary storage containers
-  # @see //bitbucket.org/piktur/piktur_core/src/master/spec/benchmark/cache.rb
+  # @see file:spec/cache_spec.rb
   module Cache
 
     # Provides multi value read capability equivalent to

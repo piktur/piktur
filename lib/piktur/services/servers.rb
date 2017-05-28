@@ -35,6 +35,8 @@ module Piktur
     # Presents environment specific remote location data for hosted {Application}s
     class Server
 
+      require 'active_support/core_ext/hash/indifferent_access'
+
       # @private
       # :nocov
       Defaults = Struct.new(:scheme, :host) do

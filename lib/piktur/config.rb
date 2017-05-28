@@ -14,17 +14,6 @@ module Piktur
     #   @return [Services::Index]
     setting(:services, reader: true) { |dependencies| Services::Index.new(*dependencies) }
 
-    # Prevent instantiation of {Piktur::Services} objects.
-    # config.instance_exec do
-    #   def finalize!
-    #     ::Piktur::Services.constants.each do |const|
-    #       const = ::Piktur::Services.const_get(const)
-    #       const.private_class_method :new if const.is_a?(Class)
-    #     end
-    #     super
-    #   end
-    # end
-
   end
 
 end
