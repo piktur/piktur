@@ -20,15 +20,12 @@ PATH
       awesome_print (~> 1.7)
       benchmark-ips (~> 2.7)
       byebug (~> 9.0)
-      countries (~> 2.0)
       dotenv (~> 2.1)
       dry-configurable (~> 0.7)
-      dry-monads (~> 0.3)
       dry-struct (~> 0.3)
       dry-types (~> 0.10)
       faker (~> 1.6)
       foreman (~> 0.81)
-      liquid (~> 4.0)
       newrelic_rpm (~> 3.17)
       oj (~> 2.18)
       pry (~> 0.10)
@@ -59,11 +56,6 @@ GEM
     byebug (9.0.6)
     coderay (1.1.1)
     concurrent-ruby (1.0.5)
-    countries (2.0.8)
-      i18n_data (~> 0.7.0)
-      money (~> 6.7)
-      sixarm_ruby_unaccent (~> 1.1)
-      unicode_utils (~> 1.4)
     debug_inspector (0.0.3)
     diff-lcs (1.3)
     docile (1.1.5)
@@ -80,9 +72,6 @@ GEM
       dry-container (~> 0.2, >= 0.2.6)
       dry-core (~> 0.2)
       dry-equalizer (~> 0.2)
-    dry-monads (0.3.1)
-      dry-core
-      dry-equalizer
     dry-struct (0.3.0)
       dry-configurable (~> 0.1)
       dry-core (~> 0.3)
@@ -102,17 +91,13 @@ GEM
     foreman (0.84.0)
       thor (~> 0.19.1)
     i18n (0.8.4)
-    i18n_data (0.7.0)
     ice_nine (0.11.2)
     inflecto (0.0.2)
     interception (0.5)
     json (2.1.0)
     jwt (1.5.6)
-    liquid (4.0.0)
     method_source (0.8.2)
     minitest (5.10.2)
-    money (6.9.0)
-      i18n (>= 0.6.4, < 0.9)
     newrelic_rpm (3.18.1.330)
     oj (2.18.5)
     parallel (1.11.2)
@@ -163,7 +148,6 @@ GEM
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.1)
-    sixarm_ruby_unaccent (1.1.1)
     slim (3.0.8)
       temple (>= 0.7.6, < 0.9)
       tilt (>= 1.3.3, < 2.1)
@@ -176,7 +160,6 @@ GEM
     tzinfo (1.2.3)
       thread_safe (~> 0.1)
     unicode-display_width (1.2.1)
-    unicode_utils (1.4.0)
     yard (0.9.9)
 
 PLATFORMS
@@ -189,6 +172,8 @@ DEPENDENCIES
   byebug
   dotenv
   dry-configurable
+  dry-struct
+  dry-types
   faker
   foreman
   newrelic_rpm

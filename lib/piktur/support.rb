@@ -8,6 +8,7 @@ module Piktur
     extend ActiveSupport::Autoload
 
     autoload :Dependencies
+    autoload :Enum
     autoload :Hash
     autoload :SerializableURI, 'piktur/support/uri'
     autoload :URI, 'piktur/support/uri'

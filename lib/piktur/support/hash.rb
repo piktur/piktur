@@ -9,6 +9,9 @@ module Piktur
     # Ruby core Hash extension
     module Hash
 
+      # @example Build nested hash from key array
+      #   %w(1 2 3).reduce(h = {}) { |a, e| a[e] = {} }
+
       # Flatten Hash keys recursively
       # @example
       #   src = {

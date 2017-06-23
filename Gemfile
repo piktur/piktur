@@ -26,6 +26,8 @@ gem 'piktur_security',          git:    "#{bb}/piktur/piktur_security.git",
 # @!group Utilities
 gem 'activesupport',            require: false
 gem 'dry-configurable',         require: false
+gem 'dry-struct',               require: false
+gem 'dry-types',                require: false
 gem 'rake'
 # @!endgroup
 
@@ -44,7 +46,6 @@ gem 'slim',                     require: false
 # @!endgroup
 
 group :development do
-  gem 'byebug',                 require: false
   gem 'rubocop',                require: false
 end
 
@@ -52,6 +53,7 @@ group :development, :test do
   gem 'awesome_print',          source:  ENV['GEM_SOURCE'],
                                 require: false
   gem 'benchmark-ips',          require: false
+  gem 'byebug',                 require: false
   gem 'faker'
   gem 'pry'
   gem 'pry-rescue'
