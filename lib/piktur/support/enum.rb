@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable ParallelAssignment, Delegate, SymbolProc, DynamicFindBy, FormatString, Documentation
+# rubocop:disable ParallelAssignment, Delegate, SymbolProc, DynamicFindBy, FormatString, MethodName
 
 require 'dry-struct'
 require 'dry-types'
@@ -24,7 +24,7 @@ module Piktur
       #   @return [Array<Symbol>]
       class Value
 
-        attr_reader :key, :value, :default, :i18n_scope
+        attr_reader :key, :value, :i18n_scope
 
         def initialize(key:, value:, i18n_scope:, default: false)
           @key        = key.to_sym
@@ -34,6 +34,8 @@ module Piktur
           freeze
         end
 
+        def as_json(**options); value; end
+
         # @param [Hash] options
         # @return [String]
         def human(**options); ::I18n.t(@key, scope: i18n_scope, **options); end
@@ -42,7 +44,11 @@ module Piktur
         def to_s; human; end
 
         # @return [Boolean]
-        def ==(other); value == other; end
+        def default?; @default; end # rubocop:disable TrivialAccessors
+
+        # @return [Boolean]
+        def eql?(other); value == other; end
+        alias == eql?
 
       end
 
@@ -61,7 +67,7 @@ module Piktur
       #
       class << self
 
-        I18N_NAMESPACE = :enums
+        I18N_NAMESPACE = :enum
 
         DUPLICATE_KEY_MSG = <<~EOS
           Key %{key} already defined.
@@ -78,42 +84,49 @@ module Piktur
         attr_accessor :mapping, :keys, :values
 
         # @param [Symbol] name
-        # @param [Boolean] predicates
+        # @param [Array<Symbol>] i18n_scope
         # @param [Hash] enumerated
         # @return [void]
-        def enum(name, predicates: true, **enumerated)
+        def enum(name, i18n_scope: nil, **enumerated)
           @name, @mapping = name.to_sym, {}
-          @i18n_scope     = [I18N_NAMESPACE, parent_name.underscore.to_sym, @name]
+          @i18n_scope     = _i18n_scope(i18n_scope)
           enumerated.each { |key, options| declare!(key, i18n_scope: @i18n_scope, **options) }
           @keys, @values = mapping.keys.freeze, mapping.values.freeze
           @mapping.freeze
           true
         end
 
+        # @!method find
+        # @!method find_by_key
+        # @!method find_by_value
+        # @param [Object] value
         # @return [Enum::Value]
-        def find(value); find_by_key(value) || find_by_value(value); end
 
-        # @raise [ArgumentError]
-        # @return [Enum::Value]
+        def find(value); find_by_value(value) || find_by_key(value); end
+
         def find!(value); find(value) || not_found!(value); end
         alias [] find!
 
-        # @return [Enum::Value]
         def find_by_key(value); values.find { |obj| obj.key == value }; end
 
-        # @return [Enum::Value]
-        def find_by_key!(value); find_by_key(value) || not_found!(value); end
-
-        # @return [Enum::Value]
         def find_by_value(value); values.find { |obj| obj.value == value }; end
 
+        # @!method []
+        # @!method find!
+        # @!method find_by_key!
+        # @!method find_by_value!
+        # @param [Object] value
+        # @raise [ArgumentError]
         # @return [Enum::Value]
+
+        def find_by_key!(value); find_by_key(value) || not_found!(value); end
+
         def find_by_value!(value); find_by_value(value) || not_found!(value); end
 
         def include?(value); find(value).present?; end
 
         # @return [Enum::Value]
-        def default; @default ||= values.find { |e| e.default }; end
+        def default; @default ||= values.find { |e| e.default? }; end
 
         # @return [Integer]
         def size; values.size; end
@@ -127,13 +140,17 @@ module Piktur
         # @return [Enumerator]
         def to_enum; mapping.enum_for; end
 
-        def to_hash; mapping.map { |k, v| v.value }; end
-
+        # @return [Hash]
+        def to_hash; mapping.transform_values { |v| v.value }; end
         alias to_h to_hash
+
         alias to_a values
 
         # @return [Module]
         def predicates(attribute); Predicates[attribute, self]; end
+
+        # @return [Module]
+        def scopes(attribute); Scopes[attribute, self]; end
 
         private
 
@@ -163,8 +180,15 @@ module Piktur
 
           def duplicate_value?(value); mapping.find { |_, obj| value == obj.value }; end
 
+          def _i18n_scope(namespace)
+            namespace ||= parent_name
+            namespace = ActiveSupport::Inflector.underscore(namespace.to_s).to_sym if namespace
+            [I18N_NAMESPACE, *namespace, @name]
+          end
+
       end
 
+      # Enumerated attribute predicates
       module Predicates
 
         class << self
@@ -172,8 +196,31 @@ module Piktur
           def call(attribute, enum)
             Module.new do
               enum.each do |key, obj|
-                define_method("#{key}?") { enum.include? send(attribute) }
+                # enum.include? send(attribute)
+                define_method("#{key}?") { enum[send(attribute)].key == key }
                 define_method("#{key}!") { send "#{attribute}=", enum[key].value }
+                define_method("default_#{attribute}!") { send "#{attribute}=", enum.default&.value }
+              end
+            end
+          end
+          alias [] call
+
+        end
+
+      end
+
+      # Define ActiveRecord scope per enumerated value
+      module Scopes
+
+        class << self
+
+          def call(attribute, enum)
+            Module.new do
+              define_singleton_method(:included) do |base|
+                enum.each do |key, obj|
+                  base.scope  ActiveSupport::Inflector.pluralize(key),
+                              -> { where table[attribute].eq(obj.value) }
+                end
               end
             end
           end
@@ -187,4 +234,29 @@ module Piktur
 
   end
 
+end
+
+# @example
+#   class Example
+#     Enum Module,
+#          :enum,
+#          predicates: true,
+#          a: { value: 0, default: true }
+#          b: { value: 10 }
+#          c: { value: 100 }
+#   end
+#
+#   Example::Enum[0].value # => 0
+#
+# @param [Class, Module] namespace
+# @param [Symbol] name
+# @param [Array<Symbol>] i18n_scope
+# @param [Hash] enumerated
+def Enum(namespace, name, i18n_scope: nil, **enumerated)
+  i18n_scope ||= namespace
+  namespace.const_set(
+    ActiveSupport::Inflector.camelize(name),
+    Class.new(::Piktur::Support::Enum) { enum name, i18n_scope: i18n_scope, **enumerated }
+  )
+  true
 end

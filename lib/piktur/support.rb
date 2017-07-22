@@ -11,8 +11,8 @@ module Piktur
     autoload :Enum
     autoload :Hash
     autoload :SerializableURI, 'piktur/support/uri'
-    autoload :URI, 'piktur/support/uri'
-    autoload :JSON, 'piktur/support/json'
+    autoload :URI,             'piktur/support/uri'
+    autoload :JSON,            'piktur/support/json'
 
   end
 
