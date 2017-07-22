@@ -26,6 +26,7 @@ gem 'piktur_security',          git:    "#{bb}/piktur/piktur_security.git",
 # @!group Utilities
 gem 'activesupport',            require: false
 gem 'dry-configurable',         require: false
+gem 'dry-monads',               require: false
 gem 'dry-struct',               require: false
 gem 'dry-types',                require: false
 gem 'rake'

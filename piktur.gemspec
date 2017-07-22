@@ -45,6 +45,7 @@ Gem::Specification.new do |s|
   # @!group Utilities
   s.add_dependency 'activesupport',                     '~> 5.1'
   s.add_dependency 'dry-configurable',                  '~> 0.7'
+  s.add_dependency 'dry-monads',                        '~> 0.3'
   s.add_dependency 'dry-struct',                        '~> 0.3'
   s.add_dependency 'dry-types',                         '~> 0.10'
   s.add_dependency 'rake',                              '~> 12.0'
