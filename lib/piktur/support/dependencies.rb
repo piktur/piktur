@@ -122,7 +122,7 @@ module Piktur
 
           # @return [Regexp]
           def _namespace_matcher
-            /.*(?:#{namespace}.*?)/ if namespace
+            /.*(?:#{namespace}.*?)/i if namespace
           end
 
           # @return [Regexp]
@@ -134,16 +134,16 @@ module Piktur
           # @return [Regexp]
           def _base_class_matcher(*args)
             names = args.join('|')
-            /\A(.*#{_path_matcher}\/)((.*#{_namespace_matcher}(#{names}))\/base(?:_\w+)?)\.rb\Z/
+            /\A(.*#{_path_matcher}\/)((.*#{_namespace_matcher}(#{names}))\/base(?:_\w+)?)\.rb\Z/i
           end
 
           # @param [String] args Truncated constant paths
           # @return [Regexp]
           def _other_matcher(*args)
             names = args.map! { |e| [e, e.to_s.pluralize] }.join('|')
-            a = /#{_namespace_matcher}(#{names})/
-            b = /(?:\w+\/)*#{_namespace_matcher}(#{names})/
-            /\A.*#{_path_matcher}\/((#{a}|#{b})(?:_\w+)?)\.rb\Z/
+            a = /#{_namespace_matcher}(#{names})/i
+            b = /(?:\w+\/)*#{_namespace_matcher}(#{names})/i
+            /\A.*#{_path_matcher}\/((#{a}|#{b})(?:_\w+)?)\.rb\Z/i
           end
 
       end
