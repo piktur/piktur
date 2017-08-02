@@ -2,15 +2,55 @@
 
 # rubocop:disable ParallelAssignment, Delegate, SymbolProc, DynamicFindBy, FormatString, MethodName
 
-require 'dry-struct'
 require 'dry-types'
 
 module Piktur
 
   module Support
 
+    # @example
+    #   class Example
+    #     ::Enum[
+    #       Module,
+    #       :enum,
+    #       predicates: true,
+    #       a: { value: 0, default: true }
+    #       b: { value: 10 }
+    #       c: { value: 100 }
+    #     ]
+    #   end
+    #
+    #   Example::Enum[0].value # => 0
+    #
+    # @param [Class, Module] namespace
+    # @param [Symbol] name
+    # @param [Array<Symbol>] i18n_scope
+    # @param [Hash] enumerated
+    ::Enum = lambda do |namespace, name, i18n_scope: nil, **enumerated|
+      i18n_scope ||= namespace
+      namespace.const_set(
+        ActiveSupport::Inflector.camelize(name),
+        Class.new(::Piktur::Support::Enum) { enum name, i18n_scope: i18n_scope, **enumerated }
+      )
+      true
+    end
+
     # Enum maps static values and translation to a developer friendly identifier.
     class Enum
+
+      I18N_NAMESPACE = :enum
+
+      DUPLICATE_KEY_MSG = <<~EOS
+        Key %{key} already defined.
+      EOS
+
+      DUPLICATE_VALUE_MSG = <<~EOS
+        Value %{value} already defined. Provide a unique value for "%{key}".
+      EOS
+
+      NOT_FOUND_MSG = <<~EOS
+        Value "%{value}" not in %{enum}.
+      EOS
 
       # Immutable object provides consistent representation of an enumerated value.
       #
@@ -34,7 +74,7 @@ module Piktur
           freeze
         end
 
-        def as_json(**options); value; end
+        def as_json(**); value; end
 
         # @param [Hash] options
         # @return [String]
@@ -66,20 +106,6 @@ module Piktur
       #   Genders[:key] # => <Piktur::Support::Enum::Value key=:key value=0>
       #
       class << self
-
-        I18N_NAMESPACE = :enum
-
-        DUPLICATE_KEY_MSG = <<~EOS
-          Key %{key} already defined.
-        EOS
-
-        DUPLICATE_VALUE_MSG = <<~EOS
-          Value %{value} already defined. Provide a unique value for "%{key}".
-        EOS
-
-        NOT_FOUND_MSG = <<~EOS
-          Value "%{value}" not in %{enum}.
-        EOS
 
         attr_accessor :mapping, :keys, :values
 
@@ -189,74 +215,31 @@ module Piktur
       end
 
       # Enumerated attribute predicates
-      module Predicates
-
-        class << self
-
-          def call(attribute, enum)
-            Module.new do
-              enum.each do |key, obj|
-                # enum.include? send(attribute)
-                define_method("#{key}?") { enum[send(attribute)].key == key }
-                define_method("#{key}!") { send "#{attribute}=", enum[key].value }
-                define_method("default_#{attribute}!") { send "#{attribute}=", enum.default&.value }
-              end
-            end
+      Predicates = lambda do |attribute, enum|
+        Module.new do
+          enum.each do |key, obj|
+            # enum.include? send(attribute)
+            define_method("#{key}?") { enum[send(attribute)].key == key }
+            define_method("#{key}!") { send "#{attribute}=", enum[key].value }
+            define_method("default_#{attribute}!") { send "#{attribute}=", enum.default&.value }
           end
-          alias [] call
-
         end
-
       end
 
       # Define ActiveRecord scope per enumerated value
-      module Scopes
-
-        class << self
-
-          def call(attribute, enum)
-            Module.new do
-              define_singleton_method(:included) do |base|
-                enum.each do |key, obj|
-                  base.scope  ActiveSupport::Inflector.pluralize(key),
-                              -> { where table[attribute].eq(obj.value) }
-                end
-              end
+      Scopes = lambda do |attribute, enum|
+        Module.new do
+          define_singleton_method(:included) do |base|
+            enum.each do |key, obj|
+              base.scope  ActiveSupport::Inflector.pluralize(key),
+                          -> { where table[attribute].eq(obj.value) }
             end
           end
-          alias [] call
-
         end
-
       end
 
     end
 
   end
 
-end
-
-# @example
-#   class Example
-#     Enum Module,
-#          :enum,
-#          predicates: true,
-#          a: { value: 0, default: true }
-#          b: { value: 10 }
-#          c: { value: 100 }
-#   end
-#
-#   Example::Enum[0].value # => 0
-#
-# @param [Class, Module] namespace
-# @param [Symbol] name
-# @param [Array<Symbol>] i18n_scope
-# @param [Hash] enumerated
-def Enum(namespace, name, i18n_scope: nil, **enumerated)
-  i18n_scope ||= namespace
-  namespace.const_set(
-    ActiveSupport::Inflector.camelize(name),
-    Class.new(::Piktur::Support::Enum) { enum name, i18n_scope: i18n_scope, **enumerated }
-  )
-  true
 end
