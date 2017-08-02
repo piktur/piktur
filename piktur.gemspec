@@ -47,12 +47,13 @@ Gem::Specification.new do |s|
   s.add_dependency 'dry-configurable',                  '~> 0.7'
   s.add_dependency 'dry-monads',                        '~> 0.3'
   s.add_dependency 'dry-struct',                        '~> 0.3'
-  s.add_dependency 'dry-types',                         '~> 0.10'
+  s.add_dependency 'dry-types',                         '~> 0.1'
+  s.add_dependency 'dry-transaction',                   '~> 0.1'
   s.add_dependency 'rake',                              '~> 12.0'
   # @!endgroup
 
   # @!group Server
-  s.add_dependency 'foreman',                           '~> 0.81'
+  s.add_dependency 'foreman',                           '~> 0.8'
   s.add_dependency 'puma',                              '~> 3.4'
   # @!endgroup
 

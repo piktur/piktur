@@ -1,6 +1,6 @@
 GIT
   remote: https://bitbucket.org/piktur/piktur_security.git
-  revision: 675011fdec0b2e1565777eb20cfd3a6a6f054bad
+  revision: f184d9bff4d8ed851c824c1a3a9b25867ac0f47b
   branch: rails5
   specs:
     piktur_security (0.0.1)
@@ -24,9 +24,10 @@ PATH
       dry-configurable (~> 0.7)
       dry-monads (~> 0.3)
       dry-struct (~> 0.3)
-      dry-types (~> 0.10)
+      dry-transaction (~> 0.1)
+      dry-types (~> 0.1)
       faker (~> 1.6)
-      foreman (~> 0.81)
+      foreman (~> 0.8)
       newrelic_rpm (~> 3.17)
       oj (~> 2.18)
       pry (~> 0.10)
@@ -73,6 +74,7 @@ GEM
       dry-container (~> 0.2, >= 0.2.6)
       dry-core (~> 0.2)
       dry-equalizer (~> 0.2)
+    dry-matcher (0.6.0)
     dry-monads (0.3.1)
       dry-core
       dry-equalizer
@@ -82,6 +84,11 @@ GEM
       dry-equalizer (~> 0.2)
       dry-types (~> 0.9, >= 0.9.0)
       ice_nine (~> 0.11)
+    dry-transaction (0.10.2)
+      dry-container (>= 0.2.8)
+      dry-matcher (>= 0.5.0)
+      dry-monads (>= 0.0.1)
+      wisper (>= 1.6.0)
     dry-types (0.11.0)
       concurrent-ruby (~> 1.0)
       dry-configurable (~> 0.1)
@@ -164,6 +171,7 @@ GEM
     tzinfo (1.2.3)
       thread_safe (~> 0.1)
     unicode-display_width (1.3.0)
+    wisper (2.0.0)
     yard (0.9.9)
 
 PLATFORMS
@@ -178,6 +186,7 @@ DEPENDENCIES
   dry-configurable
   dry-monads
   dry-struct
+  dry-transaction
   dry-types
   faker
   foreman

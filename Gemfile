@@ -29,6 +29,7 @@ gem 'dry-configurable',         require: false
 gem 'dry-monads',               require: false
 gem 'dry-struct',               require: false
 gem 'dry-types',                require: false
+gem 'dry-transaction',          require: false
 gem 'rake'
 # @!endgroup
 
