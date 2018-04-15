@@ -191,7 +191,7 @@ Style/ColonMethodCall:
   Enabled: false
 
 Style/LambdaCall:
-  Enabled: true
+  Enabled: false
 
 Style/SingleLineMethods:
   Enabled: false
