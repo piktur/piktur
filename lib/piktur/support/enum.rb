@@ -29,8 +29,8 @@ module Piktur
     ::Enum = lambda do |namespace, name, i18n_scope: nil, **enumerated|
       i18n_scope ||= namespace
       namespace.const_set(
-        ActiveSupport::Inflector.camelize(name),
-        Class.new(::Piktur::Support::Enum) { enum name, i18n_scope: i18n_scope, **enumerated }
+        ::ActiveSupport::Inflector.camelize(name),
+        ::Class.new(::Piktur::Support::Enum) { enum name, i18n_scope: i18n_scope, **enumerated }
       )
       true
     end
