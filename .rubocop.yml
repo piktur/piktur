@@ -31,6 +31,9 @@ Style/AlignHash:
 Style/BracesAroundHashParameters:
   EnforcedStyle: context_dependent
 
+Style/ClassAndModuleChildren:
+  EnforcedStyle: nested # compact
+
 Style/Documentation:
   Enabled: true
   Exclude:
