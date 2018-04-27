@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable ParallelAssignment, Delegate, SymbolProc, DynamicFindBy, FormatString, MethodName
+# rubocop:disable ParallelAssignment, SymbolProc, FormatString
 
 require 'dry-types'
 
@@ -8,6 +8,30 @@ module Piktur
 
   module Support
 
+    # @example Performance of enumerated collection
+    # ```
+    #   require 'benchmark'
+    #   require 'benchmark/ips'
+    #
+    #   n = 1_000_000
+    #
+    #   male = Identity::Genders[:male]
+    #
+    #   Benchmark.bmbm do |x|
+    #     x.report('local var cache') { n.times { male } }
+    #     x.report('singleton method') { n.times { Identity::Genders.male(false) } }
+    #     x.report('find') { n.times { Identity::Genders[:male] } }
+    #   end
+    #
+    #   Benchmark.ips do |x|
+    #     x.report('local var cache') { male }
+    #     x.report('singleton method') { Identity::Genders.male(false) }
+    #     x.report('find') { Identity::Genders[:male] }
+    #
+    #     x.compare!
+    #   end
+    # ```
+    #
     # @example
     #   class Example
     #     ::Enum[
@@ -23,17 +47,17 @@ module Piktur
     #   Example::Enum[0].value # => 0
     #
     # @param [Class, Module] namespace
-    # @param [Symbol] name
+    # @param [Symbol] collection The collection name
     # @param [Array<Symbol>] i18n_scope
     # @param [String, Symbol] predicates Include {Predicates} for enumerated attribute
     # @param [String, Symbol] scopes Include {Scopes} for enumerated attribute
     # @param [Hash<Symbol=>Hash>] options Enumerated values and options
-    ::Enum = lambda do |namespace, name, i18n_scope: nil, **options|
+    ::Enum = lambda do |namespace, collection, i18n_scope: nil, **options|
       i18n_scope ||= namespace
       predicates_for, scopes_for = options.extract!(:predicates, :scopes).values
-      const = ::ActiveSupport::Inflector.camelize(name)
+      const = ::ActiveSupport::Inflector.camelize(collection)
       enum  = ::Class.new(::Piktur::Support::Enum) do
-        enum name, i18n_scope: i18n_scope, **options
+        enum collection, i18n_scope: i18n_scope, **options
       end
 
       namespace.const_set(const, enum)
@@ -97,16 +121,36 @@ module Piktur
 
         # @example
         #   Enum[Object, :colours, red: { value: 0 }, green: { value: 1 }]
-        #   Colours[:red] == 'red'  # => true
-        #   Colours[:red] == :red   # => true
-        #   Colours[:red] == :green # => false
-        #   Colours[:red] == 0      # => true
-        #   Colours[:red] == 1      # => false
+        #   Colours[:red] == Colours[:red] # => true
+        #   Colours[:red] == 'red'         # => true
+        #   Colours[:red] == :red          # => true
+        #   Colours[:red] == :green        # => false
+        #   Colours[:red] == 0             # => true
+        #   Colours[:red] == 1             # => false
         # @return [Boolean]
         def eql?(other)
-          value == other || match?(other)
+          return super if other.is_a?(Value)
+          return false if defined?(::Dry::Core::Constants::Undefined) &&
+              other == ::Dry::Core::Constants::Undefined
+
+          value == other || key == other || match?(other)
         end
         alias == eql?
+
+        # Implement equality operator so that Enum::Value may be used within in case statements.
+        # @example
+        #   gender = :male
+        #
+        #   case gender
+        #   when Genders[:male]   then 'blue'
+        #   when Genders[:female] then 'red'
+        #   else
+        #     'black'
+        #   end
+        def ===(other)
+          return self == other if other.is_a?(Value)
+          value == other || key == other
+        end
 
         # @example
         #   Enum[Object, :colours, red: { value: 0 }, green: { value: 1 }]
@@ -115,7 +159,7 @@ module Piktur
         #   Colours[:red] == 0      # => false
         # @return [Boolean]
         def match?(other)
-          return false if other.is_a?(Integer)
+          return false unless other.respond_to?(:match?)
           other.match?(matcher)
         end
         alias =~ match?
@@ -131,21 +175,21 @@ module Piktur
       #           non_binary: { value: 3 }
       #   end
       #
-      #   Genders[0]    # => <Piktur::Support::Enum::Value key=:key value=0>
-      #
-      #   Genders[:key] # => <Piktur::Support::Enum::Value key=:key value=0>
-      #
+      #   Genders[1]          # => <Piktur::Support::Enum::Value key=:male value=1>
+      #   Genders[:male]      # => <Piktur::Support::Enum::Value key=:male value=1>
+      #   Genders.male        # => 1
+      #   Genders.male(false) # => <Piktur::Support::Enum::Value key=:male value=1>
       class << self
 
-        attr_accessor :name, :mapping, :keys, :values
+        attr_accessor :collection, :mapping, :keys, :values
 
-        # @param [Symbol] name
+        # @param [Symbol] collection
         # @param [Array<Symbol>] i18n_scope
         # @param [Hash] enumerated
         # @return [void]
-        def enum(name, i18n_scope: nil, **enumerated)
-          @name, @mapping = name.to_sym, {}
-          @i18n_scope     = _i18n_scope(i18n_scope)
+        def enum(collection, i18n_scope: nil, **enumerated)
+          @collection, @mapping = collection.to_sym, {}
+          @i18n_scope = _i18n_scope(i18n_scope)
           enumerated.each { |key, options| declare!(key, i18n_scope: @i18n_scope, **options) }
           @keys, @values = mapping.keys.freeze, mapping.values.freeze
           @mapping.freeze
@@ -220,12 +264,17 @@ module Piktur
         # Use to cast user input to {Enum::Value}
         # @return [Dry::Types::Constructor]
         def type
-          @type ||= ::ApplicationSchema::Types::Object.constructor do |val|
+          @type ||= ::Dry::Types['object'].constructor do |val|
             find(val) || default
           end
         end
 
         private
+
+          # @!method key()
+          #   @return [Integer]
+          # @!method key(false)
+          #   @return [Value]
 
           # * Store {Value} under `key`
           # * Define scoped `I18n` helper
@@ -233,12 +282,18 @@ module Piktur
           # @return [void]
           def declare!(key, value:, **options)
             validate!((key = key.to_sym), value)
-            mapping[key] = Value.new(key: key, value: value, **options)
-            define_singleton_method(key) { mapping[key].value }
+            obj = mapping[key] = Value.new(key: key, value: value, **options)
+
+            return if key == :default # Prevent method override
+
+            warn "Name Collision: method #{@collection}.#{key} is already defined, #{__FILE__}:#{__LINE__}" if
+              singleton_class.method_defined?(key)
+
+            define_singleton_method(key) { |cast = true| cast ? obj.value : obj }
           end
 
           def not_found!(value)
-            raise ArgumentError, NOT_FOUND_MSG % { value: value, enum: @name }
+            raise ArgumentError, NOT_FOUND_MSG % { value: value, enum: @collection }
           end
 
           def validate!(key, value)
@@ -256,7 +311,7 @@ module Piktur
           def _i18n_scope(namespace)
             namespace ||= parent_name
             namespace = ActiveSupport::Inflector.underscore(namespace.to_s).to_sym if namespace
-            [I18N_NAMESPACE, *namespace, @name]
+            [I18N_NAMESPACE, *namespace, @collection]
           end
 
       end
@@ -320,7 +375,7 @@ module Piktur
         Module.new do
           # Use define_singleton_method so that lambda context accessible
           define_singleton_method(:included) do |base|
-            m = "find_by_#{scope_name(enum.name, plural: false)}"
+            m = "find_by_#{scope_name(enum.collection, plural: false)}"
             base.scope m, ScopeBuilder.(base, path)
 
             enum.each do |key, obj|
