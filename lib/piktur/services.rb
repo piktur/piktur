@@ -22,7 +22,7 @@ module Piktur
   #   |-- <project_name>     # Store common config and untracked files ie. `.env`
   #     |-- /piktur          # Piktur
   #     |-- /piktur_admin    # Piktur::Admin
-  #     |-- /piktur_api      # Piktur::Api
+  #     |-- /piktur_api      # Piktur::API
   #     |-- /piktur_blog     #
   #     |-- /piktur_client   # Piktur::Client
   #     |-- /piktur_core     # Piktur::Core

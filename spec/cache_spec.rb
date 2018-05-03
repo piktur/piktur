@@ -89,7 +89,7 @@ module CacheKeyHashing
     def routes_cache(ips = true)
       method = :hexdigest
 
-      Piktur::Api::Routing.singleton_class.class_eval do
+      Piktur::API::Routing.singleton_class.class_eval do
         define_method(:_hash) do |*args|
           case method
           when :hexdigest then Digest::MD5.hexdigest(args.to_s)
