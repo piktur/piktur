@@ -36,13 +36,13 @@ module Piktur
         # @see https://bitbucket.org/piktur/piktur_api/raw/master/config/application.rb
       end
 
-      Spring.after_fork { FactoryGirl.reload } if defined?(Spring) && defined?(FactoryGirl)
+      Spring.after_fork { FactoryBot.reload } if defined?(Spring) && defined?(FactoryBot)
 
       config.after_initialize do
         prepare.call
 
         # @since [3f55fd1](https://bitbucket.org/piktur/piktur_core/commits/3f55fd15a53b86a60566742289ed324d1f205ecf?at=master)
-        FactoryGirl.find_definitions if defined?(FactoryGirl)
+        FactoryBot.find_definitions if defined?(FactoryBot)
       end
 
       # @!group
