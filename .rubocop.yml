@@ -292,6 +292,9 @@ Lint/InheritException:
 Lint/UnderscorePrefixedVariableName:
   Enabled: false
 
+Lint/UnneededSplatExpansion:
+  Enabled: false
+
 Rails:
   Enabled: true
 
