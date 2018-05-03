@@ -38,16 +38,16 @@ module Piktur
     # ```ruby
     #   # const_get will return root level constant if parent not defined
     #   Rails.env.development?                                   # => true
-    #   Object.const_defined?('Piktur::Api::V1::Admin::Asset')   # => false
-    #   Object.const_get('Piktur::Api::V1::Admin::Asset::Audio') # => Asset::Audio
+    #   Object.const_defined?('Piktur::API::V1::Admin::Asset')   # => false
+    #   Object.const_get('Piktur::API::V1::Admin::Asset::Audio') # => Asset::Audio
     #
     #   # after parent loaded
     #   require_dependency 'app/serializers/piktur/api/v1/admin/asset/base_serializer.rb'
-    #   Object.const_defined?('Piktur::Api::V1::Admin::Asset')   # => true
+    #   Object.const_defined?('Piktur::API::V1::Admin::Asset')   # => true
     #
     #   # the correct constant is returned
-    #   Object.const_get('Piktur::Api::V1::Admin::Asset::AudioSerializer')
-    #   # => Piktur::Api::V1::Admin::Asset::AudioSerializer
+    #   Object.const_get('Piktur::API::V1::Admin::Asset::AudioSerializer')
+    #   # => Piktur::API::V1::Admin::Asset::AudioSerializer
     # ```
     #
     # @note Add deeply nested paths to `Rails.application.config.autoload_paths` to
@@ -411,14 +411,14 @@ module Piktur
       # @param [String] path Relative path from engine root
       # @return [Class, Module]
       def constantize_matched(path, name, namespace: nil)
-        Dependencies.find(path, name, namespace: namespace) { |str| Object.const_get(str.classify) }
+        Dependencies.find(path, name, namespace: namespace) { |str| Object.const_get(str.camelize) }
       end
 
       # @param [String] name Demodulized constant
       # @param [String] path Relative path from engine root
       # @return [String]
       def classify_matched(path, name, namespace: nil)
-        Dependencies.find(path, name, namespace: namespace, &:classify)
+        Dependencies.find(path, name, namespace: namespace, &:camelize)
       end
 
       # @param [String] name Demodulized constant
