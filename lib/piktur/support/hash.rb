@@ -1,13 +1,16 @@
 # frozen_string_literal: true
 
-# rubocop:disable Documentation
-
 module Piktur
 
   module Support
 
     # Ruby core Hash extension
     module Hash
+
+      def self.install(*)
+        ::Hash.extend(self)
+      end
+      private_class_method :install
 
       # @example Build nested hash from key array
       #   %w(1 2 3).reduce(h = {}) { |a, e| a[e] = {} }
@@ -40,8 +43,6 @@ module Piktur
       end
 
     end
-
-    ::Hash.extend(self::Hash)
 
   end
 

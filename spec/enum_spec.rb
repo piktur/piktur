@@ -108,8 +108,8 @@ end
 # Address#type
 # Catalogue::Event#traits.type
 # Catalogue::Participant#role
-# Identity#gender
-# User#role
+# Profile#gender
+# User::Base#role
 # Asset::Base#role
 
 # require 'ruby-enum'

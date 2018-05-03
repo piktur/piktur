@@ -29,7 +29,7 @@ module Piktur
       # @see https://precompile.com/2015/07/25/rails-activesupport-json.html
       # @see file:http://bitbucket.org/piktur/piktur_core/spec/benchmark/json.rb Benchmarks
       #
-      class Encoder < ActiveSupport::JSON::Encoding::JSONGemEncoder
+      class Encoder < ::ActiveSupport::JSON::Encoding::JSONGemEncoder
 
         # `#jsonify` recursively transforms a Ruby object to Ruby equivalent JSON primitive. If the
         # object implements `#as_json` `#jsonify` will utilise it. Virtually all available JSON
@@ -37,23 +37,35 @@ module Piktur
         # results. Although potentially error prone, we forego `#jsonify` using
         # `Oj.dump(object, mode: :compat)` in `:compat` mode as it is substantially faster.
         # @return [Object]
-        def jsonify(*)
-          super
+        def jsonify(value, options = nil)
+          case value
+          when String
+            EscapedString.new(value)
+          when Numeric, NilClass, TrueClass, FalseClass
+            value.as_json(options)
+          when Hash
+            Hash[value.map { |k, v| [jsonify(k, options), jsonify(v, options)] }]
+          when Array
+            value.map { |v| jsonify(v, options) }
+          else
+            jsonify value.as_json(options)
+          end
         end
 
         # @param [Object] object
+        # @param [Hash] options
         # @return [String] JSON
-        def encode(object)
-          stringify(jsonify(object.as_json(options.dup)))
+        def encode(object, options = nil)
+          stringify(jsonify(object, options))
         end
 
         # Produce JSON string from object
-        # @note relies on Oj `compat` mode coercion.
-        # @note calling stringify from encode seems to impact performance.
+        # @note Utilises Oj `compat` mode coercion.
         # @param [Object] object
+        # @param [Hash] options
         # @return [String] JSON
-        def stringify(object)
-          ::Oj.dump(object)
+        def stringify(object, options = nil)
+          ::Oj.dump(object, options)
         end
 
       end

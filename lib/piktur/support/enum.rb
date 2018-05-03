@@ -15,18 +15,18 @@ module Piktur
     #
     #   n = 1_000_000
     #
-    #   male = Identity::Genders[:male]
+    #   male = ::Genders[:male]
     #
     #   Benchmark.bmbm do |x|
     #     x.report('local var cache') { n.times { male } }
-    #     x.report('singleton method') { n.times { Identity::Genders.male(false) } }
-    #     x.report('find') { n.times { Identity::Genders[:male] } }
+    #     x.report('singleton method') { n.times { ::Genders.male(false) } }
+    #     x.report('find') { n.times { ::Genders[:male] } }
     #   end
     #
     #   Benchmark.ips do |x|
     #     x.report('local var cache') { male }
-    #     x.report('singleton method') { Identity::Genders.male(false) }
-    #     x.report('find') { Identity::Genders[:male] }
+    #     x.report('singleton method') { ::Genders.male(false) }
+    #     x.report('find') { ::Genders[:male] }
     #
     #     x.compare!
     #   end
@@ -53,9 +53,9 @@ module Piktur
     # @param [String, Symbol] scopes Include {Scopes} for enumerated attribute
     # @param [Hash<Symbol=>Hash>] options Enumerated values and options
     ::Enum = lambda do |namespace, collection, i18n_scope: nil, **options|
-      i18n_scope ||= namespace
+      i18n_scope ||= namespace unless namespace == Object
       predicates_for, scopes_for = options.extract!(:predicates, :scopes).values
-      const = ::ActiveSupport::Inflector.camelize(collection)
+      const = Inflector.camelize(collection)
       enum  = ::Class.new(::Piktur::Support::Enum) do
         enum collection, i18n_scope: i18n_scope, **options
       end
@@ -310,7 +310,9 @@ module Piktur
 
           def _i18n_scope(namespace)
             namespace ||= parent_name
-            namespace = ActiveSupport::Inflector.underscore(namespace.to_s).to_sym if namespace
+            if namespace && namespace != Object
+              namespace = Inflector.underscore(namespace.to_s).to_sym
+            end
             [I18N_NAMESPACE, *namespace, @collection]
           end
 
@@ -384,11 +386,7 @@ module Piktur
           end
 
           def self.scope_name(value, plural: true)
-            if plural
-              ::ActiveSupport::Inflector.pluralize(value)
-            else
-              ::ActiveSupport::Inflector.singularize(value)
-            end
+            plural ? Inflector.pluralize(value) : Inflector.singularize(value)
           end
           private_class_method :scope_name
 
