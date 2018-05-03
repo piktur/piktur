@@ -53,7 +53,7 @@ module Piktur
         @all = []
         count = 0
         %w(libraries engines applications).each do |e|
-          klass    = Services.const_get(e.classify.singularize)
+          klass    = Services.const_get(e.classify, false)
           services = Services.send(e).map { |name, **data| klass.new(name, count += 1, data) }
           @all.concat(services)
           self.class.send(:define_method, e) { services }

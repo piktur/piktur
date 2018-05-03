@@ -89,7 +89,7 @@ module Piktur
       def railtie(const = :Engine)
         return @railtie if @railtie
         return unless loaded?
-        @railtie = namespace.const_get(const) if namespace.const_defined?(const)
+        @railtie = ::Piktur::Support::Inflector.constantize(const, namespace)
       end
 
       # @return [Array]
