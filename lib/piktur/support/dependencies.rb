@@ -32,6 +32,28 @@ module Piktur
     # To ensure constants under `/lib` reloaded in  development add path to `config.watchable_dirs`
     # and use `require_dependency`.
     #
+    # ```
+    #   # lib/piktur/to_reload.rb
+    #   module Piktur
+    #     # lib/piktur/core.rb
+    #     extend ActiveSupport::Autoload
+    #     autoload :ToReload
+    #
+    #     module ToReload
+    #       LOADED_AT = Time.zone.now
+    #     end
+    #   end
+    #
+    #   # app/models/needy.rb
+    #   require_dependency 'piktur/to_reload.rb'
+    #   class Needy; end
+    #
+    #   > a = Piktur::ToReload::LOADED_AT
+    #   # Edit app/models/needy.rb
+    #   > reload!
+    #   > a < Piktur::ToReload::LOADED_AT # => true
+    # ```
+    #
     # Modules defined in `lib/piktur/api.rb` must be loaded up front to ensure correct constant
     # lookup in development.
     #
