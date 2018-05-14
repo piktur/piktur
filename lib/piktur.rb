@@ -1,8 +1,13 @@
 # frozen_string_literal: true
 
 require 'pathname'
-%w(dependencies dependencies/autoload core_ext/string/inquiry core_ext/module/delegation)
-  .each { |f| require "active_support/#{f}" }
+%w(
+  dependencies
+  dependencies/autoload
+  core_ext/string/inquiry
+  core_ext/hash/keys
+  core_ext/module/delegation
+).each { |f| require "active_support/#{f}" }
 
 # Basic config/utilities for Piktur applications.
 # `piktur` must remain portable.
@@ -25,6 +30,7 @@ module Piktur
     autoload :Support
   end
 
+  autoload :Config
   autoload :Cache
 
   class << self
@@ -44,7 +50,7 @@ module Piktur
     #   @return [Piktur::Config]
     # @!method configure(&block)
     #   @return [void]
-    delegate :config, :configure, to: 'Piktur::Config'
+    delegate :config, to: 'Piktur::Config'
 
     # @!method services
     #   @return [Services::Index]
@@ -90,3 +96,5 @@ module Piktur
   require 'pry' unless env.production?
 
 end
+
+require_relative './piktur/config.rb'

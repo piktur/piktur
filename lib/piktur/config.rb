@@ -7,6 +7,7 @@ module Piktur
   # Thread safe configuration store
   class Config
 
+    extend ::ActiveSupport::Autoload
     extend ::Dry::Configurable
 
     # @!method services(%w(piktur_library piktur_engine piktur_application))
