@@ -56,7 +56,8 @@ module Piktur
         # @param [Hash] options
         # @return [String] JSON
         def encode(object, options = nil)
-          stringify(jsonify(object, options))
+          # stringify(jsonify(object, options))
+          stringify(object, *options)
         end
 
         # Produce JSON string from object
@@ -65,7 +66,7 @@ module Piktur
         # @param [Hash] options
         # @return [String] JSON
         def stringify(object, options = nil)
-          ::Oj.dump(object, options)
+          ::Oj.dump(object, *options)
         end
 
       end

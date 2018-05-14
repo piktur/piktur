@@ -60,7 +60,7 @@ Gem::Specification.new do |s|
   # @!group Data
   # @see https://github.com/ohler55/oj#compatibility
   # @see https://github.com/ohler55/oj/issues/199
-  s.add_dependency 'oj',                                '~> 2.18'
+  s.add_dependency 'oj',                                '~> 3.5', '< 3.6'
   # @!endgroup
 
   # @!group Frontend
