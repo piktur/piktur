@@ -10,12 +10,14 @@ module Piktur
       # @return [String]
       TIME_PATTERN = '%H:%M%p'
 
+      module_function
+
       # @param [String]
-      Title = proc { |str| str.is_a?(String) ? str.squish.titleize : '' }
+      def title(str); str.is_a?(String) ? str.squish.titleize : ''; end
 
       # @param [String]
       # @param [String] pattern
-      Time = proc { |str, pattern = TIME_PATTERN| str.to_time.strftime(pattern) }
+      def time(str, pattern = TIME_PATTERN); str.to_time.strftime(pattern); end
 
     end
 
