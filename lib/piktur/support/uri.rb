@@ -12,7 +12,7 @@ module Piktur
       # @return [URI]
       def URI(str) # rubocop:disable MethodName
         Object.send(:URI, str).instance_eval do
-          def as_json; to_s; end; self
+          def as_json(*); to_s; end; self
         end
       end
 
