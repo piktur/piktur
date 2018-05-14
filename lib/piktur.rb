@@ -93,6 +93,9 @@ module Piktur
 
   Secrets.overload
 
+  # Install the optimised Inflector immediately
+  Support.install(inflector: true)
+
   require 'pry' unless env.production?
 
 end

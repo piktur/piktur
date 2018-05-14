@@ -1,6 +1,27 @@
 # frozen_string_literal: true
 
+require 'fast_underscore'
 require 'active_support/inflector'
+
+ActiveSupport::Inflector.inflections(:en) do |inflector|
+  inflector.acronym 'DSL'
+  inflector.acronym 'API'
+  inflector.acronym 'JSON'
+  inflector.acronym 'JSONB'
+  inflector.acronym 'SQL'
+  inflector.acronym 'PostgreSQL'
+  inflector.acronym 'XML'
+  inflector.acronym 'YAML'
+  inflector.acronym 'HTTP'
+  inflector.acronym 'HTTPS'
+  inflector.acronym 'RESTful'
+  inflector.acronym 'JWT'
+
+  inflector.plural(/(ba)(se)\Z/i, '\1\2s')
+  inflector.singular(/(ba)(sis|ses)\Z/i, '\1se')
+
+  inflector.uncountable %w(root)
+end
 
 module Piktur
 
@@ -9,6 +30,9 @@ module Piktur
     # @example
     #   Object.extend Inflector
     module Inflector
+
+      CAMELIZED_MATCHER = /[A-Z\-:]/ # /[A-Z-]|::/
+      private_constant :CAMELIZED_MATCHER
 
       class << self
 
@@ -19,9 +43,17 @@ module Piktur
 
         include ::ActiveSupport::Inflector
 
+        # @note FastUnderscore CAN NOT handle Symbol input.
+        # @param [String, Symbol] input
+        # @return [String]
+        def underscore(input)
+          return input unless input.match?(CAMELIZED_MATCHER)
+          ::FastUnderscore.underscore(input.to_s)
+        end
+
         # @see https://ruby-doc.org/core-2.5.0/Module.html#method-i-const_defined-3F
         #   NameSpace.const_defined?('Child', false) # disable inherited lookup
-
+        #
         # Find constant named `:const` within `:scope` only.
         # The constant SHOULD be in CamelCase but will be transformed if option :camelize true.
         # If `:scope` not given, the lookup is performed within top-level namespace.
@@ -63,6 +95,16 @@ module Piktur
         # @return [Class, Module]
         def constantize!(const, scope = ::Object)
           scope.const_get(const, false)
+        end
+
+        # @example
+        #   segments = %w(church priest clergy)
+        #   Inflector.join *segments, path: true      # => Church::Priest::Clergy
+        #   Inflector.join *segments, path: false     # => ChurchPriestClergy
+        #   Inflector.join *segments, path: false, transform: :underscore # => church_priest_clergy
+        def join(*args, path: true, transform: :camelize)
+          separator = path ? '/' : '_'
+          send(transform, args.join(separator))
         end
 
       end

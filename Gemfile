@@ -20,6 +20,9 @@ gemspec name: 'piktur'
 # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
 gem 'dotenv'
 
+# C extension to replace ActiveSupport::Inflector.underscore
+gem 'fast_underscore',          require: false
+
 gem 'piktur_security',          git:    "#{bb}/piktur/piktur_security.git",
                                 branch: 'rails5'
 
