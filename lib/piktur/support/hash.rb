@@ -12,6 +12,64 @@ module Piktur
       end
       private_class_method :install
 
+      # Provides an attr_reader like interface for Hash. ~3x faster than OpenStruct to initialize
+      # and read.
+      #
+      # @example Benchmark
+      #   module Benchmark
+      #     def self.run(**options)
+      #       require 'benchmark/ips'
+      #       Benchmark.ips do |x|
+      #         x.report('OpenStruct') do
+      #           ostruct = OpenStruct.new
+      #           ostruct['abc'] = 123
+      #           ostruct[:xyz] = 123
+      #           ostruct.abc
+      #           ostruct.xyz
+      #         end
+      #
+      #         x.report('WithAttrReader') do
+      #           h = WithAttrReader.new
+      #           h['abc'] = 123
+      #           h[:xyz] = 123
+      #           h.abc
+      #           h.xyz
+      #         end
+      #
+      #         x.compare!
+      #       end
+      #     end
+      #   end
+      #
+      # @example
+      #   obj = Struct.new
+      #   obj['abc'] = 123
+      #   obj.abc # => 123
+      #
+      WithAttrReader = Class.new(::Hash) do
+        # Recursively copy the hash structure to a new instance of WithAttrReader
+        # @param [Hash] object
+        # @return [WithAttrReader]
+        def self.[](object, recursive: false)
+          new.tap do |h|
+            object.is_a?(::Hash) && object.each do |k, v|
+              h[k] = recursive && # rubocop:disable MultilineTernaryOperator
+                (v.is_a?(::Hash) || v.is_a?(::Array)) ? self[v, recursive: true] : v
+            end
+          end
+        end
+
+        def method_missing(method_name, *) # rubocop:disable MethodMissing
+          fetch(m = method_name[/\w+/]) { fetch(m.to_sym) { nil } }
+        end
+        private :method_missing
+
+        def respond_to_missing?(method_name, *)
+          method_name.match?(/\w$/) || super
+        end
+        private :respond_to_missing?
+      end
+
       # @example Build nested hash from key array
       #   %w(1 2 3).reduce(h = {}) { |a, e| a[e] = {} }
 
@@ -35,7 +93,7 @@ module Piktur
       # @param [Hash] a accumulator
       # @see http://stackoverflow.com/a/23861946
       # @return [Hash]
-      def flat_hash(h, path = [], a = {})
+      def flat_hash(h, path = [], a = {}) # rubocop:disable UncommunicativeMethodParamName
         return a.update(path => h) unless h.is_a?(::Hash) && h.present?
         # [path, k].compact.join('.')
         h.each { |k, v| flat_hash(v, (path + [k]), a) }

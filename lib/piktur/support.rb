@@ -12,6 +12,9 @@ module Piktur
     autoload :Inflector
     autoload :Enum
     autoload :Hash
+    autoload_under 'piktur/support/hash' do
+      autoload :WithAttrReader
+    end
     autoload :SerializableURI, 'piktur/support/uri'
     autoload :URI,             'piktur/support/uri'
     autoload :JSON,            'piktur/support/json'
