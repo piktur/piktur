@@ -4,7 +4,7 @@
 
 $LOAD_PATH.push File.expand_path('./lib', __dir__)
 
-require 'piktur/version'
+require_relative './lib/piktur/version.rb'
 
 Gem::Specification.new do |s|
   s.name        = 'piktur'
@@ -15,11 +15,10 @@ Gem::Specification.new do |s|
   s.summary     = 'Piktur a complete Portfolio Management System for Artists'
   # s.source      = 'https://bitbucket.org/piktur/piktur_core'
   s.description = 'Common utilities for Piktur apps'
-  s.license = ''
-  s.bindir = 'bin'
+  s.license     = ''
+  s.bindir      = 'bin'
   # @note Rubygems permits executable ruby scripts only, bash scripts ie.
   #   `s.executables.push('piktur_admin.sh')` not accepted
-  s.default_executable = 'piktur'
   s.files = Dir[
     '{bin,lib}/**/*.rb',
     '.rubocop.yml',
@@ -27,6 +26,7 @@ Gem::Specification.new do |s|
     'circle.yml',
     'DEPLOY.markdown',
     'DEVELOPMENT.markdown',
+    'Gemfile',
     'init.development.sh',
     'piktur.gemspec',
     'piktur*.sh',
@@ -34,8 +34,13 @@ Gem::Specification.new do |s|
     'Rakefile',
     'README.markdown'
   ]
-  s.test_files = Dir['spec/**/*.rb']
+  s.test_files    = Dir['spec/**/*.rb']
   s.require_paths = %w(lib)
+  s.executables << 'piktur'
+  %w(bundle env rails rspec setup spring yarn).each do |e|
+    s.executables << "piktur-#{e}"
+  end
+  s.default_executable = 'piktur'
 
   # @!group Security
   # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
@@ -47,8 +52,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport',                     Piktur.rails_version
   s.add_dependency 'dry-configurable',                  '~> 0.7'
   s.add_dependency 'dry-monads',                        '~> 0.3'
-  s.add_dependency 'dry-struct',                        '~> 0.3'
-  s.add_dependency 'dry-types',                         '~> 0.1'
+  s.add_dependency 'dry-struct',                        '~> 0.4', '< 0.5'
+  s.add_dependency 'dry-types',                         '~> 0.12'
   s.add_dependency 'dry-transaction',                   '~> 0.1'
   s.add_dependency 'rake',                              '~> 12.0'
   # @!endgroup

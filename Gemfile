@@ -2,11 +2,11 @@
 
 # rubocop:disable ExtraSpacing
 
-# @note RubyGems doesn't tolerate unbuilt dependencies from git sources. Private gems are
-#   instead served privately with `geminabox`.
-# @see https://bitbucket.org/snippets/piktur/dBKR5 require private BitBucket repo
-
 bb = 'https://bitbucket.org'
+
+# @note RubyGems will not load unbuilt dependencies from git sources. Private gems are
+#   instead served with `geminabox`.
+# @see https://bitbucket.org/snippets/piktur/dBKR5 require private BitBucket repo
 
 # source 'https://rubygems.org'
 source ENV['GEM_SOURCE']
@@ -65,6 +65,7 @@ group :development, :test do
   gem 'pry'
   gem 'pry-rescue'
   gem 'pry-stack_explorer'
+  gem 'ruby-prof',              require: false
 end
 
 group :test do
