@@ -40,7 +40,7 @@ module Piktur
         end
 
         def self.env
-          Piktur.env('.env').gsub(/\n/, ', ')
+         ::Piktur.env('.env').gsub(/\n/, ', ')
         end
 
         # @example AWS EB CLI usage
