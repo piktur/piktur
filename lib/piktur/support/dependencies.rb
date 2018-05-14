@@ -59,7 +59,7 @@ module Piktur
     #
     # ```ruby
     #   # const_get will return root level constant if parent not defined
-    #   Rails.env.development?                                   # => true
+    #  ::Piktur.env.development?                                   # => true
     #   Object.const_defined?('Piktur::API::V1::Admin::Asset')   # => false
     #   Object.const_get('Piktur::API::V1::Admin::Asset::Audio') # => Asset::Audio
     #

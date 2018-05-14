@@ -20,8 +20,8 @@ module Piktur
 
   eager_autoload do
     autoload :Services
-    autoload :Config
-    autoload :Secrets, 'piktur/env'
+    autoload :Secrets,     'piktur/env'
+    autoload :Environment, 'piktur/env'
     autoload :Support
   end
 
@@ -35,10 +35,9 @@ module Piktur
       Pathname.new(File.expand_path('../', __dir__))
     end
 
-    # @return [ActiveSupport::StringInquirer]
+    # @return [Piktur::Environment]
     def env
-      return Rails.env if defined?(Rails)
-      ENV.fetch('ENV') { ENV.fetch('RACK_ENV') { 'development' } }.inquiry
+      Environment.instance
     end
 
     # @!method config

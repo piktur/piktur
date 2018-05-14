@@ -69,7 +69,7 @@ module Piktur
     # Default filename for environment
     # @return [String]
     def self.default
-      case Piktur.env
+      case ::Piktur.env
       when 'production'   then '.env'
       when 'development'  then '.env.development'
       when 'staging'      then '.env.staging'
@@ -85,6 +85,78 @@ module Piktur
       ::Dotenv.overload(*flist(default))
       true
     end
+
+  end
+
+  # ActiveSupport::StringInquirer utilises method_missing and is fairly slow. Given {#env} is used
+  # rather heavily throughout the code base, a ~200% performance increase over `Rails.env` is
+  # welcome.
+  #
+  # @example
+  #   class R
+  #     class << self
+  #       def env; @_env; end
+  #     end
+  #
+  #     instance_variable_set :@_env, ActiveSupport::StringInquirer.new(if defined?(::Rails)
+  #       ENV.fetch('RAILS_ENV') { ENV.fetch('RACK_ENV') { DEVELOPMENT } }
+  #     else
+  #       ENV.fetch('ENV') { DEVELOPMENT }
+  #     end)
+  #   end
+  #
+  #   require 'benchmark/ips'
+  #   Benchmark.ips do |x|
+  #     x.report('Piktur::Environment') do
+  #       Environment.instance.testing?
+  #       Environment.instance.test?
+  #       Environment.instance.development?
+  #     end
+  #     x.report('Rails.env') do
+  #       R.env.testing?
+  #       R.env.test?
+  #       R.env.development?
+  #     end
+  #     x.compare!
+  #   end
+  class Environment < ::String
+
+    require 'singleton'
+    include ::Singleton
+
+    DEVELOPMENT = 'development'.freeze
+    PRODUCTION  = 'production'.freeze
+    STAGING     = 'staging'.freeze
+    TESTING     = 'test'.freeze
+
+    def initialize(*)
+      if defined?(::Rails)
+        super ::ENV.fetch('RAILS_ENV') { ::ENV.fetch('RACK_ENV') { DEVELOPMENT } }
+      else
+        super ::ENV.fetch('ENV') { DEVELOPMENT }
+      end
+      freeze
+    end
+
+    def development?; self == DEVELOPMENT; end
+    alias dev? development?
+
+    def production?;  self == PRODUCTION; end
+
+    def staging?;     self == STAGING; end
+
+    def testing?;     self == TESTING; end
+    alias test? testing?
+
+    private
+
+      def method_missing(method_name, *)
+        method_name.match?(/\?/) ? false : super
+      end
+
+      def respond_to_missing?(method_name, *)
+        method_name.match?(/\?/) || super
+      end
 
   end
 
