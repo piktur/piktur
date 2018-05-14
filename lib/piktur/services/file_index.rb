@@ -36,9 +36,13 @@ module Piktur
         @services = services
         @target   = target
         @files    = {}
-        services.each { |service| @files[service.path] = service.gemspec.files }
+        services.each do |service|
+          next unless service.gemspec
+          service.path && @files[service.path] = service.gemspec.files
+        end
         @types = extract_types
-        Piktur.extend Types()
+        ::Piktur.extend Types[self]
+        freeze
       end
 
       # @overload search('app/models')
@@ -52,6 +56,22 @@ module Piktur
       end
 
       private
+
+        # @!method
+        #   Returns a list of file paths per type relative to application root.
+        #   Searches all service directories.
+        # @return [Module]
+        Types = proc do |context|
+          Module.new do
+            context.types.each do |type|
+              files = context.send(:group_by_type, type).freeze
+              define_method(type) { files }
+            end
+
+            files = context.search('config/locales', '**/*.{rb,yml}').sort!.freeze
+            define_method(:locales) { files }
+          end
+        end
 
         # Extract object types from existent sub directories under {#target}
         # @return [Array<String>]
@@ -79,6 +99,7 @@ module Piktur
         # @return [Array<Pathname>] if `glob` given, appends `glob` pattern to absolute path
         def paths_glob(dir, glob = '**/*.rb')
           @services.map do |service|
+            next unless service.gemspec # service.path.nil?
             next unless (path = service.path.join(dir)).directory?
             path.join(glob.to_s)
           end.compact
@@ -96,20 +117,6 @@ module Piktur
             end
           end
           arr.sort!
-        end
-
-        # Adds context aware helpers returning combined file list per object type
-        # @return [Module]
-        def Types(context = self) # rubocop:disable MethodName
-          Module.new do
-            context.types.each do |type|
-              files = context.send(:group_by_type, type).freeze
-              define_method(type) { files }
-            end
-
-            files = context.search('config/locales', '**/*.{rb,yml}').sort!.freeze
-            define_method(:locales) { files }
-          end
         end
 
     end

@@ -29,6 +29,7 @@ module Piktur
   #     |-- /piktur_docs     # Piktur::Docs
   #     |-- /piktur_security # Piktur::Security
   #     |-- /piktur_store    # Piktur::Store
+  #     |-- /piktur_spec     # Piktur::Spec
   # ```
   #
   module Services
@@ -48,9 +49,33 @@ module Piktur
 
     # @see file:config/services.json
     # @return [Hash{Symbol=>Object}]
-    SERVICES = Oj.load(File.read(Piktur.root.join('config', 'services.json')))['services']
+    SERVICES = ::Oj
+      .load_file(::Piktur.root.join('config', 'services.json').to_s)['services']
       .deep_symbolize_keys!
       .freeze
+    private_constant :SERVICES
+
+    LIBRARIES = %i(
+      piktur
+      piktur_security
+    ).freeze
+    private_constant :LIBRARIES
+
+    ENGINES = %i(
+      piktur_core
+      piktur_store
+    ).freeze
+    private_constant :ENGINES
+
+    APPLICATIONS = %i(
+      piktur_api
+      piktur_admin
+      piktur_blog
+      piktur_client
+      piktur_docs
+      piktur_spec
+    ).freeze
+    private_constant :APPLICATIONS
 
     class << self
 
@@ -59,34 +84,22 @@ module Piktur
         # @param [Array<String>] services
         # @return [Array<Hash>]
         def services_data(services)
-          SERVICES.select { |k,| k.in?(services) }.to_a
+          services.zip SERVICES.values_at(*services)
         end
 
         # @return [Array<Hash>]
         def libraries
-          services_data %i(
-            piktur
-            piktur_security
-          )
+          services_data LIBRARIES
         end
 
         # @return [Array<Hash>]
         def engines
-          services_data %i(
-            piktur_core
-            piktur_store
-          )
+          services_data ENGINES
         end
 
         # @return [Array<Hash>]
         def applications
-          services_data %i(
-            piktur_api
-            piktur_admin
-            piktur_blog
-            piktur_client
-            piktur_docs
-          )
+          services_data APPLICATIONS
         end
 
     end

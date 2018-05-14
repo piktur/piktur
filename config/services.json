@@ -28,6 +28,15 @@
     "piktur_security": {
       "namespace": "Piktur::Security"
     },
+    "piktur_spec": {
+      "namespace": "Piktur::Spec",
+      "uri": {
+        "production": null,
+        "development": "http://localhost:3001",
+        "staging": null,
+        "test": "http://localhost:3001"
+      }
+    },
     "piktur_admin": {
       "namespace": "Piktur::Admin",
       "uri": {
@@ -38,7 +47,7 @@
       }
     },
     "piktur_api": {
-      "namespace": "Piktur::Api",
+      "namespace": "Piktur::API",
       "uri": {
         "production": "https://api.piktur.io",
         "development": "http://localhost:3000",

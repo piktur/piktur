@@ -17,6 +17,10 @@ module Piktur
       #   @return [Array<Class>]
       attr_reader :railties
 
+      # Returns Service object for current application
+      # @return [Services::Application]
+      attr_reader :application
+
       # @!attribute [r] paths
       #   Return root directories
       #   @return [Array<Pathname>]
@@ -40,25 +44,24 @@ module Piktur
         @dependencies = all.select { |e| e if e.name.in?(services) }
         # @note Rails::Engline::Configuration#railties_order determined accordingly
         # (engines + applications).map(&:railtie).compact
-        @files    = Services::FileIndex.new(loaded)
-        @paths    = loaded(attr: :path)
-        @railties = loaded(predicate: :engine?, attr: :railtie)
-        @servers  = Services::Servers.new(applications)
-        freeze
+        @files       = Services::FileIndex.new(loaded)
+        @paths       = loaded { |arr| arr.map(&:path) }.to_set.freeze
+        @application = loaded.find { |e| e.application? && e.railtie }
+        @railties    = loaded { |arr| arr.select(&:engine?).map(&:railtie) }.to_set
+        @servers     = Services::Servers.new(applications)
+        (@railties << @application.railtie).freeze
       end
 
       # @return [Array<Services::Service>]
       def all
         return @all if defined?(@all)
-        @all = []
-        count = 0
-        %w(libraries engines applications).each do |e|
-          klass    = Services.const_get(e.classify, false)
-          services = Services.send(e).map { |name, **data| klass.new(name, count += 1, data) }
-          @all.concat(services)
+        n = -1
+        @all = %w(libraries engines applications).each.with_object([]) do |e, a|
+          klass    = Services.const_get(e.camelize.singularize, false)
+          services = Services.send(e).map { |e, opts| klass.new(e, position: n += 1, **opts) }
           self.class.send(:define_method, e) { services }
-        end
-        @all.freeze
+          a.concat services
+        end.freeze
       end
       alias to_a all
       delegate :each, :find, :map, :select, to: :all
@@ -88,26 +91,29 @@ module Piktur
       #   @return [Array<Object>]
       # @overload loaded(predicate: :method?, attr: :method)
 
-      # @param [Symbol] predicate
-      # @param [Symbol] attr
+      # @yieldparam [Array<Services::Service>] arr
       # @return [Array<Services::Service>]
-      def loaded(predicate: nil, attr: nil)
-        loaded = select(&:loaded?)
-        loaded.select!(&predicate) if predicate
-        loaded.map!(&attr) if attr
-        loaded
+      def loaded
+        if block_given?
+          yield select(&:loaded?)
+        else
+          select(&:loaded?)
+        end
       end
 
       # @see Rails::Railtie::Configuration.eager_load_namespaces
-      # @return [Array<Module, Class>]
+      # @return [Set<Module, Class>]
       def eager_load_namespaces
-        loaded(attr: :eager_load).flatten
+        @_eager_load_namespaces ||= Set.new loaded { |enum| enum.flat_map(&:eager_load) }
       end
 
-      # Returns Service object for current application
-      # @return [Services::Service]
-      def application
-        self[Pathname.pwd.basename] # Rails.root.basename if defined?(Rails)
+      # Return an Array of Modules for which setup hooks should be called on boot
+      # @return [Array]
+      def to_prepare
+        return @_to_prepare if defined?(@_to_prepare)
+        @_to_prepare ||= Set[::Piktur]
+        @_to_prepare << application.namespace if application.namespace.respond_to?(:setup)
+        @_to_prepare
       end
 
       # @return [Boolean]

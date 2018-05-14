@@ -51,7 +51,7 @@ module Piktur
       # @raise [KeyError]
       # @return [Defaults]
       def self.defaults_for(env)
-        Defaults.new(*Services::SERVICES.fetch(env).values_at(:scheme, :host)).freeze
+        Defaults.new(*Services.const_get(:SERVICES).fetch(env).values_at(:scheme, :host)).freeze
       end
       private_class_method :defaults_for
 
@@ -75,7 +75,7 @@ module Piktur
       # @!scope class
       # @return [Defaults]
       %w(defaults production staging development test).each do |e|
-        val = const_get(e.upcase)
+        val = const_get(e.upcase, false)
         define_singleton_method(e) { val }
       end
 
@@ -108,9 +108,9 @@ module Piktur
       end
 
       # @param [String, Symbol] env
-      # @return [ActiveSypport::StringInquirer]
+      # @return [ActiveSupport::StringInquirer]
       def scheme(env = self.env)
-        uri(env).scheme.inquiry
+        ::ActiveSupport::StringInquirer.new(uri(env).scheme)
       end
 
       # @param [String, Symbol] env

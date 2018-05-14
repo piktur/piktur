@@ -27,19 +27,25 @@ module Piktur
       delegate :application?, :engine?, :library?, to: :type
 
       # @param [String, Symbol] name
-      # @param [Integer] position
       # @param [Hash] opts
-      def initialize(name, position, **opts)
+      # @param [Integer] position
+      def initialize(name, position:, path: nil, namespace:, **opts)
         @name      = name.to_s
         @position  = position
-        @namespace = opts.delete(:namespace)
+        @path      = path
+        @namespace = namespace
         @opts      = opts
       end
 
       # @note `defined?(namespace)` will return false positive if `namespace` nil or a String.
+      # @return [Module, Class]
+      def loaded
+        @loaded ||= constantize
+      end
+
       # @return [Boolean]
       def loaded?
-        @loaded ||= constantize.is_a?(Module)
+        loaded.is_a?(Module)
       end
 
       # @return [Gem::Specification]
@@ -48,9 +54,18 @@ module Piktur
       end
 
       # Return path to gem installation
-      # @return [Pathname]
+      # @note There may be cases where the service is not a gem. The path cannot be inferred and
+      #   has to be declared explicitly, as in Test::Dummy application.
+      # @return [Pathname, nil]
       def path
-        Pathname(gemspec.gem_dir)
+        @path = if gemspec
+                  Pathname(gemspec.gem_dir)
+                elsif @path.is_a?(Array)
+                  root, path = @path
+                  Pathname(::Gem.loaded_specs[root].gem_dir).join(path)
+                elsif @path.is_a?(String)
+                  Pathname(path)
+                end
       end
 
       # Load constant and replace {#namespace} if defined
@@ -70,9 +85,9 @@ module Piktur
     # Canonical data object for a library extension
     class Library < Service
 
-      # @return [ActiveSupport::StringInquirer]
+      # @return [Piktur::Support::StringInquirer]
       def type
-        @type ||= 'library'.inquiry
+        @type ||= ::ActiveSupport::StringInquirer.new('library')
       end
 
     end
@@ -80,16 +95,37 @@ module Piktur
     # Canonical data object for a `Rails::Engine`
     class Engine < Service
 
-      # @return [ActiveSupport::StringInquirer]
+      # @!method uri
+      #   @see Services::Server#uri
+      #   @return [URI]
+      # @!method http?
+      # @!method https?
+      # @return [Boolean]
+      delegate :uri, :http?, :https?, to: :server
+
+      # @return [Piktur::Support::StringInquirer]
       def type
-        @type ||= 'engine'.inquiry
+        return @type if defined?(@type)
+        *_, const = self.class.name.rpartition('::')
+        @type = ::ActiveSupport::StringInquirer.new(const.downcase)
+      end
+
+      # @return [Rails::Engine]
+      def loaded
+        @loaded ||= railtie || false
       end
 
       # @return [Class]
       def railtie(const = :Engine)
-        return @railtie if @railtie
-        return unless loaded?
-        @railtie = ::Piktur::Support::Inflector.constantize(const, namespace)
+        return @railtie if defined?(@railtie)
+        @namespace = Support::Inflector.constantize(namespace) || namespace
+        return unless @namespace.is_a?(Module)
+        @railtie = Support::Inflector.constantize(const, @namespace)
+      end
+
+      # @return [Services::Server]
+      def server
+        @server ||= Server.new(self)
       end
 
       # @return [Array]
@@ -102,23 +138,7 @@ module Piktur
     # Canonical data object for a `Rack` application
     class Application < Engine
 
-      # @!method uri
-      #   @see Services::Server#uri
-      #   @return [URI]
-      # @!method http?
-      # @!method https?
-      # @return [Boolean]
-      delegate :uri, :http?, :https?, to: :server
-
-      # @return [ActiveSupport::StringInquirer]
-      def type
-        @type ||= 'application'.inquiry
-      end
-
-      # @return [Services::Server]
-      def server
-        @server ||= Server.new(self)
-      end
+      # def engine?; true; end
 
       # @return [Class]
       def railtie
