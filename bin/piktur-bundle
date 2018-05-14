@@ -3,5 +3,5 @@
 
 load File.expand_path('piktur-env', __dir__)
 
-ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../Gemfile', __dir__)
+ENV['BUNDLE_GEMFILE'] ||= File.expand_path('Gemfile', Dir.pwd)
 load Gem.bin_path('bundler', 'bundle')
