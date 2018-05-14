@@ -72,7 +72,7 @@ module Piktur
     #   # => Piktur::API::V1::Admin::Asset::AudioSerializer
     # ```
     #
-    # @note Add deeply nested paths to `Rails.application.config.autoload_paths` to
+    # @note Add deeply nested paths to `Rails.configuration.autoload_paths` to
     #   limit redundancy in require statements. `require_dependency` must receive the relative path
     #   from `Rails.root` if called before `Rails.application.initialize!` after which
     #   `._all_autoload_paths` is defined.
