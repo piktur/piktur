@@ -5,10 +5,10 @@ cd ../piktur_admin
 # Ensure correct gemset is in use! If env var $rvm_bin_path is guaranteed to
 # exist use `$rvm_bin_path use gemset ruby-2.3.0@piktur`, otherwise
 source "$HOME/.rvm/scripts/rvm"
-rvm use gemset ruby-2.3.0@piktur
+rvm use gemset ${RUBY_VERSION}@piktur
 
 # bundle install
 
 # Start Piktur Admin development server
 # bundle exec puma -p ${PIKTUR_ADMIN_PORT}
-bundle exec rails s -p ${PIKTUR_ADMIN_PORT}
+bin/bundle exec rails s -p ${PIKTUR_ADMIN_PORT}
