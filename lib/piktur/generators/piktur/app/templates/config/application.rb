@@ -47,7 +47,7 @@ module Piktur
 
       # @!group
       # Run before each request
-      ActionDispatch::Callbacks.before(&prepare) unless Rails.env.production?
+      ActionDispatch::Callbacks.before(&prepare) unless ::Piktur.env.production?
 
       # Run after each request
       # ActionDispatch::Callbacks.after {}
