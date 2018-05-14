@@ -43,8 +43,8 @@ Gem::Specification.new do |s|
   # @!endgroup
 
   # @!group Utilities
-  s.add_dependency 'activesupport',                     '~> 5.1'
   s.add_dependency 'fast_underscore',                   '~> 0.3'
+  s.add_dependency 'activesupport',                     Piktur.rails_version
   s.add_dependency 'dry-configurable',                  '~> 0.7'
   s.add_dependency 'dry-monads',                        '~> 0.3'
   s.add_dependency 'dry-struct',                        '~> 0.3'
