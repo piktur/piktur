@@ -27,7 +27,7 @@ module Piktur
     #   @origin ||= URI.new(
     #     request.env['Origin'] ||
     #     request.env['HTTP_ORIGIN'] ||
-    #     Rails.env.development? && 'http://localhost'
+    #    ::Piktur.env.development? && 'http://localhost'
     #   )
     #
     class URI
