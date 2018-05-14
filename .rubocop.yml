@@ -20,7 +20,7 @@ AllCops:
   TargetRubyVersion: 2.4.1
   TargetRailsVersion: 5.0
 
-Style/AlignHash:
+Layout/AlignHash:
   EnforcedHashRocketStyle: key
   EnforcedColonStyle: table
   Exclude:
@@ -53,7 +53,7 @@ Style/Documentation:
 Style/Copyright:
   Enabled: false
 
-Style/CommentIndentation:
+Layout/CommentIndentation:
   Enabled: false
 
 Style/CommentAnnotation:
@@ -89,43 +89,37 @@ Style/CommentAnnotation:
     - '@!scope'
     - '@!visibility'
 
-Style/EmptyLineBetweenDefs:
+Layout/EmptyLineBetweenDefs:
   AllowAdjacentOneLineDefs: true
 
-Style/EmptyLinesAroundClassBody:
+Layout/EmptyLinesAroundClassBody:
   EnforcedStyle: empty_lines
 
-Style/EmptyLinesAroundModuleBody:
+Layout/EmptyLinesAroundModuleBody:
   EnforcedStyle: empty_lines
 
-Style/Encoding:
-  EnforcedStyle: when_needed
-
-Style/FileName:
+Naming/FileName:
   ExpectMatchingDefinition: false
 
 Style/FrozenStringLiteralComment:
   EnforcedStyle: when_needed
 
-Style/IfUnlessModifier:
-  MaxLineLength: 100
-
-Style/IndentationConsistency:
+Layout/IndentationConsistency:
   EnforcedStyle: rails
 
-Style/MultilineHashBraceLayout:
+Layout/MultilineHashBraceLayout:
   EnforcedStyle: new_line
 
-Style/MultilineMethodCallBraceLayout:
+Layout/MultilineMethodCallBraceLayout:
   EnforcedStyle: new_line
 
-Style/MultilineMethodCallIndentation:
+Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 
-Style/MultilineMethodDefinitionBraceLayout:
+Layout/MultilineMethodDefinitionBraceLayout:
   EnforcedStyle: new_line
 
-Style/MultilineOperationIndentation:
+Layout/MultilineOperationIndentation:
   EnforcedStyle: indented
 
 Style/Next:
@@ -144,7 +138,7 @@ Style/PercentLiteralDelimiters:
     '%w': '()'
     '%W': '()'
 
-Style/PredicateName:
+Naming/PredicateName:
   Exclude:
     - 'spec/**/*'
     - 'lib/**/spec/**/*'
@@ -169,9 +163,6 @@ Style/SingleLineBlockParams:
 Style/TrivialAccessors:
   ExactNameMatch: true
   AllowPredicates: false
-
-Style/WhileUntilModifier:
-  MaxLineLength: 100
 
 Style/WordArray:
   EnforcedStyle: percent
@@ -297,6 +288,9 @@ Lint/UnneededSplatExpansion:
 
 Rails:
   Enabled: true
+
+Rails/Delegate:
+  Enabled: false
 
 Rails/Date:
   EnforcedStyle: flexible
