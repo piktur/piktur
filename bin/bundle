@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-load File.expand_path('piktur-env', __dir__)
+load File.expand_path('piktur-bundle', __dir__)

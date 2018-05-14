@@ -3,5 +3,5 @@
 
 $LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 
-require 'piktur'
-require 'piktur/cli'
+require_relative '../lib/piktur.rb'
+require_relative '../lib/piktur/cli.rb'
