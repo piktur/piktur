@@ -73,22 +73,11 @@ Gem::Specification.new do |s|
   s.add_dependency 'yard',                              '~> 0.8'
   # @!endgroup
 
-  # @!group Test
-  s.add_dependency 'simplecov',                         '~> 0.12'
-  # @!endgroup
-
   s.add_dependency 'newrelic_rpm',                      '~> 3.17'
 
   # @!group Development
   # @note `add_development_dependency` does not make the library available to dependent libraries.
   #   Instead wrap these libraries in a `group` block within `Gemfile`
   s.add_dependency 'awesome_print',                     '~> 1.7'
-  s.add_dependency 'benchmark-ips',                     '~> 2.7'
-  s.add_dependency 'byebug',                            '~> 9.0'
-  s.add_dependency 'faker',                             '~> 1.6'
-  s.add_dependency 'pry',                               '~> 0.10'
-  s.add_dependency 'pry-rescue',                        '~> 1.4'
-  s.add_dependency 'pry-stack_explorer',                '~> 0.4'
-  s.add_dependency 'rubocop',                           '~> 0.40'
   # @!endgroup
 end

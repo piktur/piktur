@@ -25,6 +25,8 @@ gem 'fast_underscore',          require: false
 
 gem 'piktur_security',          git:    "#{bb}/piktur/piktur_security.git",
                                 branch: 'rails5'
+gem 'piktur_spec',              git:    "#{bb}/piktur/piktur_spec.git",
+                                branch: 'master'
 
 # @!group Utilities
 gem 'activesupport',            require: false
