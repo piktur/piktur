@@ -48,7 +48,7 @@ RSpec.describe Piktur::Support::Dependencies do
       piktur_api/app/controllers/piktur/api/v1/admin/catalogue/item/artworks_controller.rb
       piktur_api/app/controllers/piktur/api/v1/admin/asset/base_controller.rb
       piktur_api/app/controllers/piktur/api/v1/admin/asset/audios_controller.rb
-      piktur_api/app/controllers/piktur/api/v1/admin/site/base_controller.rb
+      piktur_api/app/controllers/piktur/api/v1/admin/site_controller.rb
     ).map! { |f| base_path.join(f) }
   end
   let(:models) do
@@ -59,7 +59,7 @@ RSpec.describe Piktur::Support::Dependencies do
       piktur_core/app/models/catalogue/item/artwork.rb
       piktur_core/app/models/asset/base.rb
       piktur_core/app/models/asset/audio.rb
-      piktur_core/app/models/site/base.rb
+      piktur_core/app/models/site.rb
     ).map! { |f| base_path.join(f) }
   end
   let(:policies) do
@@ -70,7 +70,7 @@ RSpec.describe Piktur::Support::Dependencies do
       piktur_core/app/policies/catalogue/item/artwork_policy.rb
       piktur_core/app/policies/asset/base_policy.rb
       piktur_core/app/policies/asset/audio_policy.rb
-      piktur_core/app/policies/site/base_policy.rb
+      piktur_core/app/policies/site_policy.rb
     ).map! { |f| base_path.join(f) }
   end
   let(:serializers) do
@@ -81,7 +81,7 @@ RSpec.describe Piktur::Support::Dependencies do
       piktur_api/app/serializers/piktur/api/v1/catalogue/item/artwork_serializer.rb
       piktur_api/app/serializers/piktur/api/v1/asset/base_serializer.rb
       piktur_api/app/serializers/piktur/api/v1/asset/audio_serializer.rb
-      piktur_api/app/serializers/piktur/api/v1/site/base_serializer.rb
+      piktur_api/app/serializers/piktur/api/v1/site_serializer.rb
     ).map! { |f| base_path.join(f) }
   end
 
