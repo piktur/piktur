@@ -60,7 +60,7 @@ group :development, :test do
   gem 'awesome_print',          source:  ENV['GEM_SOURCE'],
                                 require: false
   gem 'benchmark-ips',          require: false
-  gem 'byebug',                 require: false
+  # gem 'byebug',                 require: false
   gem 'faker'
   gem 'pry'
   gem 'pry-rescue'

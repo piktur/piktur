@@ -16,7 +16,6 @@ Gem::Specification.new do |s|
   # s.source      = 'https://bitbucket.org/piktur/piktur_core'
   s.description = 'Common utilities for Piktur apps'
   s.license     = ''
-  s.bindir      = 'bin'
   # @note Rubygems permits executable ruby scripts only, bash scripts ie.
   #   `s.executables.push('piktur_admin.sh')` not accepted
   s.files = Dir[
@@ -36,11 +35,7 @@ Gem::Specification.new do |s|
   ]
   s.test_files    = Dir['spec/**/*.rb']
   s.require_paths = %w(lib)
-  s.executables << 'piktur'
-  %w(bundle env rails rspec setup spring yarn).each do |e|
-    s.executables << "piktur-#{e}"
-  end
-  s.default_executable = 'piktur'
+  s.bindir        = 'bin'
 
   # @!group Security
   # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
