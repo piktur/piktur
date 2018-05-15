@@ -1,4 +1,14 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-load File.expand_path('piktur-env', __dir__)
+begin
+  gem 'dotenv' # Add the gem to $LOAD_PATH, we may not have run Bundler yet
+  require 'dotenv'
+
+  env   = ENV.fetch('RAILS_ENV') { 'development' }
+  paths = ['../.env.common', "../.env.#{env}"].map { |f| File.expand_path(f, Dir.pwd) }
+
+  Dotenv.overload(*paths)
+rescue LoadError => err
+  $stderr.puts err
+end

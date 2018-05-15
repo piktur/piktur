@@ -4,7 +4,7 @@
 # This file loads spring without using Bundler, in order to be fast.
 # It gets overwritten when you run the `spring binstub` command.
 
-load File.expand_path('piktur-env', __dir__)
+load File.expand_path('./env', __dir__)
 
 # @note Do not install Spring on production machine, run
 #   `bundle install --without development test`

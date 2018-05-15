@@ -5,9 +5,9 @@
 # installed from the root of your application.
 
 begin
-  load File.expand_path('./piktur-spring', __dir__)
+  load File.expand_path('./spring', __dir__)
 rescue LoadError => e
-  load File.expand_path('./piktur-env', __dir__)
+  load File.expand_path('./env', __dir__)
   raise unless e.message.include?('spring')
 end
 

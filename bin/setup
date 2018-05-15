@@ -26,7 +26,7 @@ require 'pathname'
 
 ENV['RAILS_ENV'] ||= 'development'
 
-APP_ROOT  = Pathname.new File.expand_path('../', __dir__)
+APP_ROOT  = Pathname.new File.expand_path('..', __dir__)
 DEV_ROOT  = APP_ROOT.parent # Pathname.pwd.join('piktur')
 BITBUCKET = 'https://${BUNDLE_BITBUCKET__ORG}@bitbucket.com/piktur'
 SERVICES  = %w(
@@ -41,12 +41,12 @@ SERVICES  = %w(
   piktur_store
 ).freeze
 
-def clone(repo, branch = 'maste')
+def clone(repo, branch = 'master')
   system "git clone #{BITBUCKET}/#{repo}.git -b #{branch}"
 end
 
 def bundler_local(repo)
-  system "bundle config --local local.#{repo} #{PIKTUR_ROOT}/#{repo}"
+  system "bundle config --local local.#{repo} #{PIKTUR_HOME}/#{repo}"
 end
 
 def bundle
