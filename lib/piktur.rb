@@ -91,7 +91,9 @@ module Piktur
 
   end
 
-  Secrets.overload
+  # @todo A proper production solution will have to be implemented.
+  #   For development, use bin/env to load variables from local **untracked** files.
+  # Secrets.overload
 
   # Install the optimised Inflector immediately
   Support.install(inflector: true)
