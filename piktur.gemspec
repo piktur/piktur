@@ -44,7 +44,7 @@ Gem::Specification.new do |s|
 
   # @!group Utilities
   s.add_dependency 'fast_underscore',                   '~> 0.3'
-  s.add_dependency 'activesupport',                     Piktur.rails_version
+  s.add_dependency 'activesupport',                     "= #{ENV.fetch('RAILS_VERSION')}"
   s.add_dependency 'dry-configurable',                  '~> 0.7'
   s.add_dependency 'dry-monads',                        '~> 0.3'
   s.add_dependency 'dry-struct',                        '~> 0.4', '< 0.5'
@@ -61,7 +61,7 @@ Gem::Specification.new do |s|
   # @!group Data
   # @see https://github.com/ohler55/oj#compatibility
   # @see https://github.com/ohler55/oj/issues/199
-  s.add_dependency 'oj',                                '~> 3.5', '< 3.6'
+  s.add_dependency 'oj',                                '~> 3.5'
   # @!endgroup
 
   # @!group Frontend
@@ -69,15 +69,39 @@ Gem::Specification.new do |s|
   s.add_dependency 'slim',                              '~> 3.0'
   # @!endgroup
 
-  # @!group Documentation
-  s.add_dependency 'yard',                              '~> 0.8'
-  # @!endgroup
-
   s.add_dependency 'newrelic_rpm',                      '~> 3.17'
+
+  # @!group Documentation
+  s.add_development_dependency 'yard',                              '~> 0.8'
+  # @!endgroup
 
   # @!group Development
   # @note `add_development_dependency` does not make the library available to dependent libraries.
   #   Instead wrap these libraries in a `group` block within `Gemfile`
-  s.add_dependency 'awesome_print',                     '~> 1.7'
+  s.add_development_dependency 'awesome_print',                     '~> 1.7'
+  # @!endgroup
+
+  # @!group Testing
+  s.add_development_dependency 'faker',                             '~> 1.6'
+  s.add_development_dependency 'listen',                            '>= 3.0.5', '< 3.2'
+  s.add_development_dependency 'rspec',                             '~> 3.7'
+  s.add_development_dependency 'simplecov',                         '~> 0.12'
+  s.add_development_dependency 'spring',                            '~> 2.0'
+  s.add_development_dependency 'spring-watcher-listen',             '~> 2.0'
+  # @!endgroup
+
+  # @!group Debug
+  s.add_development_dependency 'pry',                               '~> 0.10'
+  s.add_development_dependency 'pry-rescue',                        '~> 1.4'
+  s.add_development_dependency 'pry-stack_explorer',                '~> 0.4'
+  # @!endgroup
+
+  # @!group Code Quality
+  s.add_development_dependency 'rubocop',                           '~> 0.50'
+  # @!endgroup
+
+  # @!group Benchmarks
+  s.add_development_dependency 'benchmark-ips',                     '~> 2.7'
+  s.add_development_dependency 'ruby-prof',                         '~> 0.1'
   # @!endgroup
 end
