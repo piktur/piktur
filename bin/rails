@@ -3,20 +3,19 @@
 
 # This command will automatically be run when you run "rails" with Rails gems
 # installed from the root of your application.
+APP_ROOT ||= File.join(Object.const_get(:ENGINE_ROOT), 'spec/dummy')
+APP_PATH ||= File.join(APP_ROOT, 'config/application.rb')
 
-begin
-  load File.expand_path('./spring', __dir__)
-rescue LoadError => e
-  load File.expand_path('./env', __dir__)
-  raise unless e.message.include?('spring')
+ENV['BUNDLE_GEMFILE'] ||= File.join(Object.const_get(:ENGINE_ROOT), 'Gemfile')
+
+unless defined?(Spring)
+  begin
+    load File.expand_path('./spring', __dir__) # unless defined?(Spring)
+  rescue LoadError => e
+    load File.expand_path('./env', __dir__)
+    raise unless e.message.include?('spring')
+  end
 end
 
-# Set up gems listed in the Gemfile.
-ENV['BUNDLE_GEMFILE'] ||= File.join(Object.const_get(:ENGINE_ROOT), 'Gemfile')
-require 'bundler/setup' if File.exist?(ENV['BUNDLE_GEMFILE'])
-
-APP_ROOT ||= File.join(Object.const_get(:ENGINE_ROOT), 'spec/dummy')
-APP_PATH ||= File.join(APP_ROOT, 'config/application')
-
-require APP_PATH
+require_relative File.join(APP_ROOT, 'config/boot.rb')
 require 'rails/commands'
