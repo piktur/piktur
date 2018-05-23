@@ -25,12 +25,10 @@ module Piktur
 
   eager_autoload do
     autoload :Services
-    autoload :Secrets,     'piktur/env'
-    autoload :Environment, 'piktur/env'
+    autoload :Secrets
     autoload :Support
   end
 
-  autoload :Config
   autoload :Cache
 
   class << self
@@ -98,8 +96,7 @@ module Piktur
   # Install the optimised Inflector immediately
   Support.install(inflector: true)
 
-  require 'pry' unless env.production?
-
 end
 
+require_relative './piktur/env.rb'
 require_relative './piktur/config.rb'

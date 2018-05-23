@@ -104,19 +104,19 @@ module Piktur
       # @param [String, Symbol] env
       # @return [URI::Generic]
       def uri(env = self.env)
-        @uri[env]
+        @uri[env] ||= URI('')
       end
 
       # @param [String, Symbol] env
       # @return [ActiveSupport::StringInquirer]
       def scheme(env = self.env)
-        ::ActiveSupport::StringInquirer.new(uri(env).scheme)
+        ::ActiveSupport::StringInquirer.new(uri(env).scheme || '')
       end
 
       # @param [String, Symbol] env
       # @return [String]
       def host(env = self.env)
-        uri(env).host
+        uri(env)&.host
       end
 
       # @see http://stackoverflow.com/a/5196844 Subdomain matcher
@@ -129,19 +129,19 @@ module Piktur
       # @param [String, Symbol] env
       # @return [Integer]
       def port(env = self.env)
-        uri(env).port
+        uri(env)&.port
       end
 
       # @param [String, Symbol] env
       # @return [String]
       def userinfo(env = self.env)
-        uri(env).userinfo
+        uri(env)&.userinfo
       end
 
       # @param [String, Symbol] env
       # @return [String]
       def path(env = self.env)
-        uri(env).path
+        uri(env)&.path
       end
 
     end
