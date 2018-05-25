@@ -94,16 +94,19 @@ module Piktur
       #   @return [Boolean]
       # @!attribute [r] i18n_scope
       #   @return [Array<Symbol>]
+      # @!attribute [r] meta
+      #   @return [Hash, nil]
       class Value
 
-        attr_reader :key, :value, :matcher, :i18n_scope
+        attr_reader :key, :value, :matcher, :i18n_scope, :meta
 
-        def initialize(key:, value:, i18n_scope:, default: false)
+        def initialize(key:, value:, i18n_scope:, default: false, meta: nil)
           @key        = key.to_sym
           @matcher    = /\A#{key}\Z/
           @value      = value
           @default    = default
           @i18n_scope = i18n_scope
+          @meta       = meta&.freeze
           freeze
         end
 
@@ -115,6 +118,9 @@ module Piktur
 
         # @return [String]
         def to_s; human; end
+
+        # @return [Integer]
+        def to_i; value; end
 
         # @return [Boolean]
         def default?; @default; end # rubocop:disable TrivialAccessors
@@ -241,6 +247,10 @@ module Piktur
 
         # @return [Array]
         def select(&block); mapping.select(&block); end
+
+        # @param [Array<Symbol>] args
+        # @return [Array]
+        def values_at(*args); mapping.values_at(*args); end
 
         # @return [Enumerator]
         def to_enum; mapping.enum_for; end
