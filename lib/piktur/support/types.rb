@@ -22,8 +22,9 @@ module Piktur
       extend  ::Dry::Container::Mixin
       include ::Dry::Types.module
 
-      Enum     = Module.new
-      Entities = Module.new
+      def self.Enum(*args, &block)
+        Support::Enum.call(*args, &block)
+      end
 
       # @param [Module] base
       # @raise [Piktur::MethodDefinedError] if `:[]` already defined on `base`.
