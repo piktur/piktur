@@ -70,17 +70,17 @@ module Piktur
 
       I18N_NAMESPACE = :enum
 
-      DUPLICATE_KEY_MSG = <<~EOS
+      DUPLICATE_KEY_MSG = <<~MSG
         Key %{key} already defined.
-      EOS
+      MSG
 
-      DUPLICATE_VALUE_MSG = <<~EOS
+      DUPLICATE_VALUE_MSG = <<~MSG
         Value %{value} already defined. Provide a unique value for "%{key}".
-      EOS
+      MSG
 
-      NOT_FOUND_MSG = <<~EOS
+      NOT_FOUND_MSG = <<~MSG
         Value "%{value}" not in %{enum}.
-      EOS
+      MSG
 
       # Immutable object provides consistent representation of an enumerated value.
       #
