@@ -5,7 +5,7 @@ module Piktur
   # Utility modules
   module Support
 
-    extend ActiveSupport::Autoload
+    extend ::ActiveSupport::Autoload
 
     autoload :Dependencies
     autoload :Inheritable
