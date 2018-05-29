@@ -50,12 +50,12 @@ module Piktur
     # @param [String, Symbol] predicates Include {Predicates} for enumerated attribute
     # @param [String, Symbol] scopes Include {Scopes} for enumerated attribute
     # @param [Hash<Symbol=>Hash>] options Enumerated values and options
-    ::Enum = lambda do |namespace, collection, i18n_scope: nil, **options|
+    ::Enum = lambda do |namespace, collection, i18n_scope: nil, **options, &block|
       i18n_scope ||= namespace unless namespace == Object
       predicates_for, scopes_for = options.extract!(:predicates, :scopes).values
       const = Inflector.camelize(collection)
       enum  = ::Class.new(::Piktur::Support::Enum) do
-        enum collection, i18n_scope: i18n_scope, **options
+        enum(collection, i18n_scope: i18n_scope, **options, &block)
       end
 
       namespace.const_set(const, enum)
@@ -185,7 +185,7 @@ module Piktur
       #   Genders.male(false) # => <Piktur::Support::Enum::Value key=:male value=1>
       class << self
 
-        attr_accessor :collection, :mapping, :keys, :values
+        attr_reader :collection, :mapping, :keys, :values, :default
 
         # @param [Symbol] collection
         # @param [Array<Symbol>] i18n_scope
@@ -197,8 +197,16 @@ module Piktur
           enumerated.each { |key, options| declare!(key, i18n_scope: @i18n_scope, **options) }
           @keys, @values = mapping.keys.freeze, mapping.values.freeze
           @mapping.freeze
-          true
+          @default = @values.find { |e| e.default? }
+          @_key = @i18n_scope.join('.').tr('/', '.') # Piktur::Types.container key
+
           register_type(@_key)
+
+          yield if block_given?
+
+          freeze
+        end
+
         # @param [Symbol, String, Integer] input
         # @return [Value]
         def call(input)
