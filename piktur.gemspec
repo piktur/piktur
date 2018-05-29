@@ -103,5 +103,6 @@ Gem::Specification.new do |s|
   # @!group Benchmarks
   s.add_development_dependency 'benchmark-ips',                     '~> 2.7'
   s.add_development_dependency 'ruby-prof',                         '~> 0.1'
+  s.add_development_dependency 'hotch',                             '~> 0.5'
   # @!endgroup
 end

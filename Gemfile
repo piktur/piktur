@@ -48,7 +48,8 @@ gem 'slim',                     require: false
 
 group :benchmark do
   gem 'benchmark-ips'
-  gem 'ruby-prof'
+  gem 'ruby-prof',              require: false
+  gem 'hotch',                  require: false
 end
 
 group :development do
