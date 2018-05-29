@@ -104,6 +104,9 @@ Naming/FileName:
 Style/FrozenStringLiteralComment:
   EnforcedStyle: when_needed
 
+Style/FormatStringToken:
+  EnforcedStyle: template
+
 Layout/IndentationConsistency:
   EnforcedStyle: rails
 
