@@ -2,8 +2,6 @@
 
 # rubocop:disable ParallelAssignment, SymbolProc, FormatString
 
-require 'dry-types'
-
 module Piktur
 
   module Support
@@ -200,6 +198,16 @@ module Piktur
           @keys, @values = mapping.keys.freeze, mapping.values.freeze
           @mapping.freeze
           true
+          register_type(@_key)
+        # @param [Symbol, String, Integer] input
+        # @return [Value]
+        def call(input)
+          find(input) || default
+        end
+
+        # @return [Dry::Types::Constructor]
+        def type
+          Types[@_key]
         end
 
         # @!method find
@@ -232,8 +240,8 @@ module Piktur
         # @return [Boolean]
         def include?(value); find(value).present?; end
 
+        # @!attribute [r] default
         # @return [Enum::Value]
-        def default; @default ||= values.find { |e| e.default? }; end
 
         # @return [Integer]
         # @return [nil] if default value not set
@@ -271,20 +279,25 @@ module Piktur
         # @return [Module]
         def scopes(attribute); Scopes[attribute, self]; end
 
-        # Use to cast user input to {Enum::Value}
-        # @return [Dry::Types::Constructor]
-        def type
-          @type ||= ::Dry::Types['object'].constructor do |val|
-            find(val) || default
-          end
-        end
-
         private
 
           # @!method key()
           #   @return [Integer]
           # @!method key(false)
           #   @return [Value]
+
+          # Register coercer with Piktur::Types container. Coercer WILL return {Value}
+          # corresponding to input, otherwise default or nil.
+          #
+          # @param [String] key
+          # @return [Dry::Types::Constructor]
+          def register_type(key)
+            ::Piktur::Types
+              .register key,
+                        ::Dry::Types['object'].constructor { |input| call(input) },
+                        call:    false,
+                        memoize: false
+          end
 
           # * Store {Value} under `key`
           # * Define scoped `I18n` helper

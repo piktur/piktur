@@ -20,11 +20,13 @@ module Piktur
     autoload :JSON,            'piktur/support/json'
     autoload :Calc
     autoload :Format
+    autoload :Types
 
     EXTENSIONS = {
       hash:      :Hash,
       inflector: :Inflector,
       json:      :JSON
+      types:     :Types
     }.freeze
     private_constant :EXTENSIONS
 
