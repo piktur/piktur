@@ -518,4 +518,4 @@ module Piktur
 
 end
 
-Enum = Piktur::Support::Enum
+# Enum = Piktur::Support::Enum
