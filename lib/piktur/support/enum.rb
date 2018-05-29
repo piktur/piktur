@@ -79,7 +79,7 @@ module Piktur
         def default?; @default; end # rubocop:disable TrivialAccessors
 
         # @example
-        #   Enum[Object, :colours, red: { value: 0 }, green: { value: 1 }]
+        #   ::Piktur::Types.Enum(Object, :colours, red: { value: 0 }, green: { value: 1 })
         #   Colours[:red] == Colours[:red] # => true
         #   Colours[:red] == 'red'         # => true
         #   Colours[:red] == :red          # => true
@@ -193,12 +193,9 @@ module Piktur
       # @return [void]
       def initialize(collection, i18n_scope: nil, **enumerable)
         @collection, @mapping = collection.to_sym, {}
-        @i18n_scope = _i18n_scope(i18n_scope).freeze
-
+        i18n_scope(i18n_scope)
         map(enumerable)
-        default
-        const
-        key
+        default; const; key; to_s # memoize
 
         yield(self) if block_given?
 
@@ -269,6 +266,9 @@ module Piktur
       # @return [Enumerator]
       def to_enum; mapping.enum_for; end
 
+      # @return [String]
+      def to_s; @_str ||= Support::Inflector.humaninze(collection); end
+
       # @return [Hash]
       def to_hash; mapping.transform_values { |v| v.value }; end
       alias to_h to_hash
@@ -319,7 +319,7 @@ module Piktur
           namespace.include(self.scopes(scopes)) if scopes
         end
 
-        # Register coercer with Piktur::Types container. Coercer WILL return {Value}
+        # Register coercer with {Piktur::Types} container. Coercer WILL return {Value}
         # corresponding to input, otherwise default or nil.
         #
         # Coercer SHOULD BE used when presenting enumerated value for human consumption or when
@@ -367,24 +367,23 @@ module Piktur
 
         def duplicate_value?(value); mapping.find { |_, obj| value == obj.value }; end
 
-        def _i18n_scope(namespace)
-          namespace ||= self.class.parent_name
+        def i18n_scope(namespace)
           if namespace && namespace != Object
             namespace = Inflector.underscore(namespace.to_s).to_sym
           end
-          [I18N_NAMESPACE, *namespace, @collection]
+          @i18n_scope = [I18N_NAMESPACE, *namespace, @collection].freeze
         end
 
       # Enumerated attribute predicates
       # @example
       #   class Model
-      #     ::Enum[
+      #     ::Piktur::Types.Enum(
       #       self,
       #       :syntaxes,
       #       predicates: 'syntax',
       #       markdown: { value: 0, default: true },
       #       html: { value: 1 }
-      #     ]
+      #     )
       #     ::ApplicationModel[self, :Document, %w(syntax)]
       #   end
       Predicates = lambda do |attribute, enum|
@@ -407,24 +406,24 @@ module Piktur
       # @example
       #   # Given DB table with column syntax
       #   class Record < ::ApplicationRecord
-      #     ::Enum[
+      #     ::Piktur::Types.Enum(
       #       self,
       #       :syntaxes,
       #       scopes: 'syntax',
       #       markdown: { value: 0, default: true },
       #       html: { value: 1 }
-      #     ]
+      #     )
       #   end
       #
       #   # Given DB table with JSON column, provide JSON path as an Array to `:scopes` option.
       #   class Record < ::ApplicationRecord
-      #     ::Enum[
+      #     ::Piktur::Types.Enum(
       #       self,
       #       :syntaxes,
       #       scopes: %w(data branch syntax),
       #       markdown: { value: 0, default: true },
       #       html: { value: 1 }
-      #     ]
+      #     )
       #   end
       #
       #   Record.find_by_syntax(0) # => ActiveRecord_Relation
