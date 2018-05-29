@@ -94,7 +94,9 @@ module Piktur
   # Secrets.overload
 
   # Install the optimised Inflector immediately
-  Support.install(inflector: true)
+  Support.install(:inflector)
+
+  MethodDefinedError = ::Class.new(::StandardError)
 
 end
 

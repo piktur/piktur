@@ -25,25 +25,34 @@ module Piktur
     EXTENSIONS = {
       hash:      :Hash,
       inflector: :Inflector,
-      json:      :JSON
+      json:      :JSON,
       types:     :Types
     }.freeze
     private_constant :EXTENSIONS
 
-    # Load and/or install extensions
-    # Setup top-level aliases for convenience
-    # @param [Hash] options
+    # Load and/or install extensions and define constant aliases.
+    #
+    # @example
+    #   Support.install(:json, :types, inflection: { option: true })
+    #
+    # @param [Array<Symbol>] ext
+    # @param [Hash] configurable
+    #   Extension(s) accepting/expecting options
     # @return [void]
-    def self.install(**options)
-      options.delete(:helpers)&.each do |group|
+    def self.install(*ext, **configurable)
+      fn = lambda { |name, **options|
+        mod = const_get(EXTENSIONS[name], false)
+        mod.send(:install, options) if mod.respond_to?(:install, true)
+      }
+      ext.each(&fn)
+
+      return if configurable.blank?
+
+      configurable.delete(:helpers)&.each do |group|
         Object.const_set(const = Inflector.camelize(group), Inflector.constantize(const, Support))
       end
 
-      options.each do |k, v|
-        ext = const_get(EXTENSIONS[k], false)
-        next unless ext.respond_to?(:install, true)
-        ext.send(:install, v)
-      end
+      configurable.each { |e| fn[*e] }
     end
 
   end
