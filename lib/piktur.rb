@@ -101,4 +101,6 @@ module Piktur
 end
 
 require_relative './piktur/env.rb'
+require_relative './piktur/debugger.rb'
+require_relative './piktur/logger.rb'
 require_relative './piktur/config.rb'
