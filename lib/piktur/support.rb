@@ -9,6 +9,9 @@ module Piktur
 
     autoload :Dependencies
     autoload :Inheritable
+    autoload_under 'piktur/support/inheritable' do
+      autoload :Ext
+    end
     autoload :Inflector
     autoload :Enum
     autoload :Hash
@@ -58,3 +61,5 @@ module Piktur
   end
 
 end
+
+require_relative './support/errors.rb'
