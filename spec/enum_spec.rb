@@ -20,6 +20,18 @@ module Piktur::Support
       context 'with scoped attribute' do
         it 'should add scopes to includer'
       end
+
+      context 'when value(s) not numeric' do
+        it 'should raise NonNumericValueError'
+      end
+
+      context 'with duplicate key' do
+        it 'should raise ArgumentError'
+      end
+
+      context 'with duplicate value' do
+        it 'should raise ArgumentError'
+      end
     end
 
     describe '#initialize(collection, i18n_scope:, *enumerable, &block)' do
