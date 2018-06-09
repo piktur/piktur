@@ -27,8 +27,8 @@ Gem::Specification.new do |s|
     'DEVELOPMENT.markdown',
     'Gemfile',
     'init.development.sh',
-    'piktur.gemspec',
     'piktur*.sh',
+    'piktur.gemspec',
     'Procfile',
     'Rakefile',
     'README.markdown'
