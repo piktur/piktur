@@ -3,10 +3,11 @@
 
 # This command will automatically be run when you run "rails" with Rails gems
 # installed from the root of your application.
-APP_ROOT ||= File.join(Object.const_get(:ENGINE_ROOT), 'spec/dummy')
+ENGINE_ROOT ||= Dir.pwd
+APP_ROOT ||= File.join(ENGINE_ROOT, 'spec/dummy')
 APP_PATH ||= File.join(APP_ROOT, 'config/application.rb')
 
-ENV['BUNDLE_GEMFILE'] ||= File.join(Object.const_get(:ENGINE_ROOT), 'Gemfile')
+ENV['BUNDLE_GEMFILE'] ||= File.join(ENGINE_ROOT, 'Gemfile')
 
 unless defined?(Spring)
   begin
