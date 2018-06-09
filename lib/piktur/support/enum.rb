@@ -25,6 +25,8 @@ module Piktur
 
       I18N_NAMESPACE = :enum
 
+      NonNumericValuerError = Class.new(StandardError)
+
       DUPLICATE_KEY_MSG = <<~MSG
         Key %{key} already defined.
       MSG
@@ -35,6 +37,14 @@ module Piktur
 
       NOT_FOUND_MSG = <<~MSG
         Value "%{value}" not in %{enum}.
+      MSG
+
+      NAME_COLLISION_MSG = <<~MSG
+        Name Collision: method "%{m}" is already defined. %{file}:%{line}
+      MSG
+
+      NON_NUMERIC_VALUE_MSG = <<~MSG
+        Value %{value} MUST BE numeric.
       MSG
 
       # Immutable object provides consistent representation of an enumerated value.
@@ -267,7 +277,7 @@ module Piktur
       def to_enum; mapping.enum_for; end
 
       # @return [String]
-      def to_s; @_str ||= Support::Inflector.humaninze(collection); end
+      def to_s; @_str ||= Support::Inflector.humanize(collection); end
 
       # @return [Hash]
       def to_hash; mapping.transform_values { |v| v.value }; end
@@ -345,10 +355,13 @@ module Piktur
 
           return if key == :default # Prevent method override
 
-          warn "Name Collision: method #{@collection}.#{key} is already defined, #{__FILE__}:#{__LINE__}" if
-            singleton_class.method_defined?(key)
-
-          define_singleton_method(key) { |cast = true| cast ? obj.value : obj }
+          if singleton_class.method_defined?(key)
+            warn NAME_COLLISION_MSG % {
+              m: "#{@collection}.#{key}", file: __FILE__, line: __LINE__
+            }
+          else
+            define_singleton_method(key) { |cast = true| cast ? obj.value : obj }
+          end
         end
 
         def not_found!(value)
@@ -360,6 +373,9 @@ module Piktur
             duplicate_key?(key)
           raise ArgumentError, DUPLICATE_VALUE_MSG % { key: key, value: value } if
             duplicate_value?(value)
+          raise NonNumericValuerError, NON_NUMERIC_VALUE_MSG % { value: value } unless
+            value.is_a?(Numeric)
+
           true
         end
 
