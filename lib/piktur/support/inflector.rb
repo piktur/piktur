@@ -68,12 +68,13 @@ module Piktur
         # @param [String, Symbol] const The camel cased constant
         # @param [Class, Module] scope The namespace to search within
         # @option options [Boolean] camelize Perform transformation
+        # @option options [Boolean] traverse Traverse ancestry
         #
         # @return [Class, Module]
         # @return [nil] if constant not defined in scope
-        def constantize(const, scope = ::Object, camelize: false)
+        def constantize(const, scope = ::Object, camelize: false, traverse: false)
           camelize && (const = camelize(const))
-          constantize!(const, scope) if scope.const_defined?(const, false)
+          constantize!(const, scope, traverse) if scope.const_defined?(const, traverse)
         end
         alias safe_constantize constantize
 
@@ -90,11 +91,12 @@ module Piktur
         #   constatize!('Tree::Age') # => 1_000_000
         # @param [String, Symbol] const The camel cased constant
         # @param [Class, Module] scope The namespace to search within
+        # @param [Class, Module] traverse Traverse ancestry
         #
         # @raise [NameError] if constant not in `scope`
         # @return [Class, Module]
-        def constantize!(const, scope = ::Object)
-          scope.const_get(const, false)
+        def constantize!(const, scope = ::Object, traverse = false)
+          scope.const_get(const, traverse)
         end
 
         # @example
