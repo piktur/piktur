@@ -36,7 +36,7 @@ module Piktur
     # Returns absolute path to root directory
     # @return [Pathname]
     def root
-      Pathname.new(File.expand_path('../', __dir__))
+      ::Pathname.new(__dir__).join('..')
     end
 
     # @return [Piktur::Environment]
