@@ -85,6 +85,10 @@ module Piktur
 
     # @param [String] str
     # @return [void]
+    def debug(str); ::Piktur.logger.debug(str) end
+
+    # @param [String] str
+    # @return [void]
     def warn(str); ::Piktur.logger.warn(str); end
 
     # @param [String] str
