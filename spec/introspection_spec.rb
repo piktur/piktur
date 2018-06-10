@@ -11,31 +11,42 @@ require 'piktur/support/inflector'
 # @see file:spec/benchmark/constant.rb
 # @see https://bitbucket.org/piktur/piktur/src/master/spec/introspection_spec.rb
 
-class Module
+# Introspection = Module.new do
+#   def new(*)
+#     super.extend(Introspection)
+#   end
+#   # methods below ...
+# end
+#
+# Module.extend(Introspection)
 
-  %i(parents parent parent_name).each do |m|
-    undef_method(m) if method_defined?(:parents)
+class Module
+  # %i(parents parent parent_name).each do |m|
+  #   undef_method(m) if method_defined?(:parents)
+  # end
+
+  # Returns all the parents of a Module; from innermost to outermost.
+  # The receiver is not included.
+  #
+  # @return [Array<Module>]
+  def parents
+    return @_parents if defined?(@_parents)
+    @_parents = [Object]
+    name.split('::')[0..-2].inject(self) { |mod, e|
+      @_parents.unshift(mod = mod.const_get(e)); mod
+    } # ::Module.nesting
+    @_parents.freeze
   end
 
-end
+  # @return [Module]
+  def parent
+    @_parent ||= parents[0]
+  end
 
-# Returns all the parents of a Module; from innermost to outermost.
-# The receiver is not included.
-#
-# @return [Array<Module>]
-def Module.parents
-  binding.pry
-  @_parents ||= ::Module.nesting
-end
-
-# @return [Module]
-def Module.parent
-  @_parent ||= parents[0] # ::Inflector.constantize(parent_name)
-end
-
-# @return [String]
-def Module.parent_name
-  @_parent_name ||= parent&.name
+  # @return [String]
+  def parent_name
+    @_parent_name ||= parent&.name.freeze
+  end
 end
 
 RSpec.describe 'namespace introspection' do
@@ -43,7 +54,17 @@ RSpec.describe 'namespace introspection' do
     (1..5).map { |n| "#{char}#{n}".to_sym }
   end
 
-  def parents(names)
+  def mod(names)
+    Object.safe_get_const(names.join('::')) || names.inject(Object) do |mod, const|
+      mod.const_set(const, described_class.new)
+    end
+  end
+
+  subject { mod(names(char)) }
+
+  let(:char)  { 'L' }
+  let(:expected) do
+    names   = names(char)
     mod     = mod(names)
     n       = names.length - 1
     parents = []
@@ -52,81 +73,110 @@ RSpec.describe 'namespace introspection' do
     parents << Object
   end
 
-  def mod(names)
-    Object.safe_get_const(names.join('::')) || names.inject(Object) do |mod, const|
-      mod.const_set(const, Module.new)
+  describe Module do
+    describe '.parents' do
+      it 'should return all parents of a Module from innermost to outermost' do
+        actual = subject.parents
+
+        RSpec.debug(binding, actual - expected)
+
+        expect(actual).to eq(expected)
+      end
     end
-  end
 
-  before { load 'piktur/support/introspection.rb' }
-
-  subject { mod(names(char)) }
-
-  let(:char)     { 'L' }
-  let(:expected) { parents(names(char)) }
-
-  describe '.parents' do
-    it 'should return all parents of a Module from innermost to outermost' do
-      actual = subject.parents
-
-      RSpec.debug(binding, actual - expected)
-
-      expect(actual).to eq(expected)
+    describe '.parent' do
+      it 'should return the parent Module' do
+        expect(subject.parent).to eq(expected[0])
+      end
     end
-  end
 
-  describe '.parent' do
-    it 'should return the parent Module' do
-      expect(subject.parent).to eq(expected[0])
+    describe '.parent_name' do
+      it 'should return the name of the parent Module' do
+        expect(subject.parent_name).to eq(expected[0].name)
+      end
     end
-  end
 
-  describe '.parent_name' do
-    it 'should return the name of the parent Module' do
-      expect(subject.parent_name).to eq(expected[0].name)
-    end
-  end
+    context 'when defined with compact module definition style' do
+      let(:char) { 'A' }
 
-  context 'when defined with compact module definition style' do
-    let(:char) { 'A' }
-
-    before(:all) do
-      A1 = Module.new
-      A1::A2 = Module.new
-      A1::A2::A3 = Module.new
-      A1::A2::A3::A4 = Module.new
-      module A1::A2::A3::A4::A5
-        def self.parents
-          super
-          remove_instance_variable(:@_parents)
-          super
-        end
+      before(:all) do
+        A1 = Module.new
+        A1::A2 = Module.new
+        A1::A2::A3 = Module.new
+        A1::A2::A3::A4 = Module.new
+        module A1::A2::A3::A4::A5; end
       end
 
+      it do
+        expect(subject.parents).to eq(expected)
+      end
     end
 
-    it do
-      expect(subject.parents).to eq(expected)
-    end
-  end
+    context 'when defined with nested module definition style' do
+      let(:char) { 'B' }
 
-  context 'when defined with nested module definition style' do
-    let(:char) { 'B' }
-
-    before(:all) do
-      module B1
-        module B2
-          module B3
-            module B4
-              module B5
+      before(:all) do
+        module B1
+          module B2
+            module B3
+              module B4
+                module B5
+                end
               end
             end
           end
         end
       end
+
+      it { expect(subject.parents).to eq(expected) }
+    end
+  end
+
+  describe Class do
+    describe 'inheritance' do
+      let(:char) { 'C' }
+
+      subject { mod(names(char)) }
+
+      it 'should return all parents of a Class from innermost to outermost' do
+        actual = subject.parents
+
+        RSpec.debug(binding, actual - expected)
+
+        expect(actual).to eq(expected)
+      end
+
+      it do
+        class C1
+          self::Sub1 = Class.new(self::C2::C3::C4::C5)
+          class Sub2 < C2::C3::C4::C5; end
+        end
+        class C1::C2::C3::Sub3 < C1::C2::C3::C4; end
+
+        expect(C1::Sub1.parents).to eq([C1, Object])
+        expect(C1::Sub2.parents).to eq([C1, Object])
+        expect(C1::C2::C3::Sub3.parents).to eq([C1::C2::C3, C1::C2, C1, Object])
+      end
     end
 
-    it { expect(subject.parents).to eq(expected) }
+    context 'when defined with compact module definition style' do
+      let(:char) { 'D' }
+
+      before(:all) do
+        class D1
+          class D2
+            class D3
+              class D4
+                class D5
+                end
+              end
+            end
+          end
+        end
+      end
+
+      it { expect(subject.parents).to eq(expected) }
+    end
   end
 
   after(:all) { %i(L1 A1 B1).each { |const| Object.send(:remove_const, const) } }
