@@ -24,6 +24,15 @@ module Piktur
       #   @return [Hash]
       attr_reader :opts
 
+      # @!attribute [r]
+      #   If gem loaded, the actual path to the loaded gem
+      #   @return [Pathname]
+      attr_reader :path
+
+      # @!attribute [r]
+      #   Return the actual path to loaded gem
+      #   @return [Pathname]
+
       delegate :application?, :engine?, :library?, to: :type
 
       # @param [String, Symbol] name
@@ -32,12 +41,11 @@ module Piktur
       def initialize(name, position:, path: nil, namespace:, **opts)
         @name      = name.to_s
         @position  = position
-        @path      = path
         @namespace = namespace
         @opts      = opts
+        self.path  = path
       end
 
-      # @note `defined?(namespace)` will return false positive if `namespace` nil or a String.
       # @return [Module, Class]
       def loaded
         @loaded ||= constantize
@@ -45,26 +53,25 @@ module Piktur
 
       # @return [Boolean]
       def loaded?
-        loaded.is_a?(Module)
+        loaded.is_a?(::Module)
       end
 
+      # Bundler stubs the gemspec to mitigate penalty on load or whatever... Bottom line is
+      # when called on the stub, `Gem.loaded_specs[name]#files` returns a file list relative to
+      # `Dir.pwd` not the `Gem::Specification#gem_dir`. Furthermore, when `#gem_dir` is called on
+      # the legitimate spec, it returns a
+      #
       # @return [Gem::Specification]
       def gemspec
-        ::Gem.loaded_specs[name]
+        @gemspec ||= _gemspec_path && ::Bundler.load_gemspec(_gemspec_path)
       end
 
-      # Return path to gem installation
-      # @note There may be cases where the service is not a gem. The path cannot be inferred and
-      #   has to be declared explicitly, as in Test::Dummy application.
-      # @return [Pathname, nil]
-      def path
-        @path = if gemspec
-                  Pathname(gemspec.gem_dir)
-                elsif @path.is_a?(Array)
-                  root, path = @path
-                  Pathname(::Gem.loaded_specs[root].gem_dir).join(path)
-                elsif @path.is_a?(String)
-                  Pathname(path)
+      # @return [void]
+      def path=(value)
+        @path = if value.is_a?(String)
+                  _ensure_existent_directory(value)
+                elsif gemspec
+                  _ensure_existent_directory(gemspec.gem_dir)
                 end
       end
 
@@ -79,6 +86,37 @@ module Piktur
       def eager_load
         namespace
       end
+
+      # @return [String]
+      def inspect
+        %(<Service[#{name}] loaded=#{loaded?} root="#{path}">)
+      end
+
+      private
+
+        # @return [Bundler::StubSpecification]
+        # @return [nil] if gem not loaded
+        def _stub
+          ::Gem.loaded_specs[name]
+        end
+
+        # @return [String]
+        # @return [nil] if gem not loaded
+        def _gemspec_path
+          _stub&.loaded_from
+        end
+
+        # @param [String, nil]
+        #
+        # @return [Pathname]
+        # @return [nil] if gem not loaded
+        def _ensure_existent_directory(path)
+          if File.exist?(path)
+            Pathname(path)
+          elsif _gemspec_path
+            Pathname(_gemspec_path).parent
+          end
+        end
 
     end
 

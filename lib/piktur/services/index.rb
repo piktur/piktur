@@ -5,34 +5,8 @@ module Piktur
   module Services
 
     # @example
-    #   Index.new 'piktur_security', 'piktur_store'
+    #   Index.new 'piktur_security', 'piktur_store', component_types: [:model]
     class Index
-
-      # @!attribute [r] dependencies
-      #   @return [Array<Services::Service>]
-      attr_reader :dependencies
-
-      # @!attribute [r] railties
-      #   Return loaded `Rails::Railtie`s
-      #   @return [Array<Class>]
-      attr_reader :railties
-
-      # Returns Service object for current application
-      # @return [Services::Application]
-      attr_reader :application
-
-      # @!attribute [r] paths
-      #   Return root directories
-      #   @return [Array<Pathname>]
-      attr_reader :paths
-
-      # @!attribute [r] files
-      #   @return [Services::FileIndex]
-      attr_reader :files
-
-      # @!attribute [r] servers
-      #   @return [Services::Servers]
-      attr_reader :servers
 
       # @!method search
       #   @see Services::FileIndex#search
@@ -40,16 +14,17 @@ module Piktur
       delegate :search, to: :files
 
       # @param [String] services Gem name per service dependency
-      def initialize(*services)
-        @dependencies = all.select { |e| e if e.name.in?(services) }
+      # @param [Hash] options
+      #
+      # @option options [Array<Symbol>] :component_types (nil) A list of expected component types
+      def initialize(*services, component_types: nil)
         # @note Rails::Engline::Configuration#railties_order determined accordingly
         # (engines + applications).map(&:railtie).compact
-        @files       = Services::FileIndex.new(loaded)
-        @paths       = loaded { |arr| arr.map(&:path) }.to_set.freeze
-        @application = loaded.find { |e| e.application? && e.railtie }
-        @railties    = loaded { |arr| arr.select(&:engine?).map(&:railtie) }.to_set
-        @servers     = Services::Servers.new(applications)
-        (@railties << @application.railtie).freeze
+        self.dependencies = services
+        self.files        = component_types
+        %i(paths application railties servers eager_load_namespaces to_prepare).each { |m| send(m) }
+        (railties << application.railtie).freeze
+        freeze
       end
 
       # @return [Array<Services::Service>]
@@ -58,9 +33,9 @@ module Piktur
         n = -1
         @all = %w(libraries engines applications).each.with_object([]) do |e, a|
           klass    = Services.const_get(e.camelize.singularize, false)
-          services = Services.send(e).map { |e, opts| klass.new(e, position: n += 1, **opts) }
+          services = Services.send(e).map { |s, opts| klass.new(s, position: n += 1, **opts) }
           self.class.send(:define_method, e) { services }
-          a.concat services
+          a.concat(services)
         end.freeze
       end
       alias to_a all
@@ -79,6 +54,70 @@ module Piktur
         find { |service| service.name.end_with?(name.to_s) }
       end
 
+      # @!attribute [r] dependencies
+      #   @return [Array<Service>] A list of all required {Piktur} services
+      attr_reader :dependencies
+
+      # @param [Array<String>] services
+      #
+      # @return [void]
+      def dependencies=(services)
+        @dependencies = all.select { |e| e if e.name.in?(services) }
+      end
+
+      # @!attribute [r] application
+      #   @return [Application] A {Service} object for the loaded application
+      def application
+        @application ||= loaded.find { |e| e.application? && e.railtie }
+      end
+
+      # @!attribute [r] files
+      #   @return [Services::FileIndex]
+      attr_reader :files
+
+      # @param [Array<Symbol>]
+      #
+      # @return [void]
+      def files=(component_types)
+        @files = FileIndex.new(loaded, component_types: component_types)
+      end
+
+      # @!attribute [r] paths
+      #   @return [Set<Pathname>] An immutable list of root paths for all loaded services
+      def paths
+        @paths ||= loaded { |arr| arr.map(&:path) }.to_set.freeze
+      end
+
+      # @!attribute [r] railties
+      #   @return [Array<Class>] A list of all loaded `Rails::Railtie`s
+      def railties
+        @railties ||= loaded { |arr| arr.select(&:engine?).map(&:railtie) }.to_set
+      end
+
+      # @!attribute [r] servers
+      #   @return [Services::Servers]
+      def servers
+        @servers ||= Services::Servers.new(applications)
+      end
+
+      # @!attribute [r] to_prepare
+      #   @see Rails::Railtie::Configuration.eager_load_namespaces
+      #   @return [Set<Module, Class>]
+      def eager_load_namespaces
+        @eager_load_namespaces ||= Set.new loaded { |enum| enum.flat_map(&:eager_load) }
+      end
+
+      # @!attribute [r] to_prepare
+      #   Returns an Array of Modules to be initialized on boot
+      #   @see https://bitbucket.org/piktur/piktur_core/src/master/lib/piktur/setup/boot.rb
+      #   @return [Array]
+      def to_prepare
+        return @to_prepare if defined?(@to_prepare)
+        @to_prepare = Set[::Piktur]
+        @to_prepare << application.namespace if application.namespace.respond_to?(:to_prepare)
+        @to_prepare
+      end
+
       # @return [Array<String>]
       def names
         map(&:name)
@@ -86,9 +125,11 @@ module Piktur
 
       # @overload loaded(predicate: :method?)
       #   Select loaded Services where `predicate` true
+
       # @overload loaded(attr: :method)
       #   Collect `attr` for each loaded Service
       #   @return [Array<Object>]
+
       # @overload loaded(predicate: :method?, attr: :method)
 
       # @yieldparam [Array<Services::Service>] arr
@@ -101,24 +142,14 @@ module Piktur
         end
       end
 
-      # @see Rails::Railtie::Configuration.eager_load_namespaces
-      # @return [Set<Module, Class>]
-      def eager_load_namespaces
-        @_eager_load_namespaces ||= Set.new loaded { |enum| enum.flat_map(&:eager_load) }
-      end
-
-      # Return an Array of Modules for which setup hooks should be called on boot
-      # @return [Array]
-      def to_prepare
-        return @_to_prepare if defined?(@_to_prepare)
-        @_to_prepare ||= Set[::Piktur]
-        @_to_prepare << application.namespace if application.namespace.respond_to?(:setup)
-        @_to_prepare
-      end
-
       # @return [Boolean]
       def require
-        @dependencies.each { |e| require e.name }
+        dependencies.each { |e| require e.name }
+      end
+
+      # @return [String]
+      def inspect
+        "<#{self.class.name} services=#{loaded.map(&:name)}>"
       end
 
     end
