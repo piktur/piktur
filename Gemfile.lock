@@ -1,6 +1,6 @@
 GIT
   remote: https://bitbucket.org/piktur/piktur_security.git
-  revision: 9d6cce0c713f047d32fb219b22a8d3f2a4dead65
+  revision: 2c270460080b4659729fc72eee23ec3a0aca7d8d
   branch: rails5
   specs:
     piktur_security (0.0.1)
@@ -11,7 +11,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/piktur/piktur_spec.git
-  revision: 834aa7b5652e2ee91444b7b421194600eca41a92
+  revision: bc90dceb9e8b91b531881648086dcec9fd7278da
   branch: master
   specs:
     piktur_spec (0.0.1)
