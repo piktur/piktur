@@ -35,7 +35,11 @@ on_worker_boot do
   # See: {https://devcenter.heroku.com/articles/deploying-rails-applications-with-the-puma-web-server#on-worker-boot}
   # Establish database conntection when ActiveRecord loaded
   ActiveSupport.on_load(:active_record) do
-    ActiveRecord::Base.establish_connection
+    ::Piktur.debug(binding, warn: 'Ensure connection to ROM gateway established!')
+
+    # ROM.env.gateways[:default].connect
+
+    # ActiveRecord::Base.establish_connection
   end
 end
 
@@ -47,7 +51,11 @@ end
 # If you're preloading your application and using ActiveRecord, it's recommended that you close
 # any connections to the database here to prevent connection leakage.
 before_fork do
-  ActiveRecord::Base.establish_connection.disconnect!
+  ::Piktur.debug(binding, warn: 'Ensure connection to ROM gateway disconnected!')
+
+  # ROM.env.gateways[:default].disconnect
+
+  # ActiveRecord::Base.establish_connection.disconnect!
   Sidekiq.redis(&:disconnect!) if defined?(Sidekiq)
 end
 
