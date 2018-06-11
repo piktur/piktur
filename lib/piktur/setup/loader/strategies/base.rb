@@ -50,6 +50,9 @@ module Piktur
 
       # Again if you're going to use components dir you need to getting the absolute path for each
       # railtie.
+      #
+      # !! USE Piktur.services.files.type_matchers
+      #
       # absolute = ::Piktur.components_dir(root: )
       # relative = absolute.relative_path_from(::Pathname.pwd)
       # AUTOLOAD_MATCHERS = COMPONENTS.each_with_object({}) do |type, h|
@@ -57,6 +60,7 @@ module Piktur
       #   # const_set("#{type.upcase}_MATCHER", glob)
       #   h[type] = relative.join(glob)
       # end.freeze
+
 
       # @example
       #   Users.path(:model)          # => 'users/model'

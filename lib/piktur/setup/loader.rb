@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'trailblazer/loader'
-
 module Piktur
 
   # Loader handles code loading and setup for Piktur namespaces on boot and reload.
@@ -13,7 +11,6 @@ module Piktur
     STRATEGIES = %i(
       active_support
       dry
-      trailblazer
     ).freeze
 
     # @return [String]
