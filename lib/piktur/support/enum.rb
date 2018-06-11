@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
-# rubocop:disable ParallelAssignment, SymbolProc, FormatString, MemoizedInstanceVariableName
+# rubocop:disable FormatString, MemoizedInstanceVariableName
 
 module Piktur
 
   module Support
 
     # Enum maps static values and translation to a developer friendly identifier.
+    #
+    # @see https://bitbucket.org/piktur/piktur/issues/1/optimise-piktur-support-enum
     #
     # @example
     #   class Genders < Enum
@@ -83,7 +85,10 @@ module Piktur
         def human(**options); ::I18n.t(@key, scope: i18n_scope, **options); end
 
         # @return [String]
-        def to_s; human; end
+        def to_s; key.to_s; end
+
+        # @return [Symbol]
+        def to_sym; key; end
 
         # @return [Integer]
         def to_i; value; end
@@ -137,34 +142,15 @@ module Piktur
         end
         alias =~ match?
 
+        # @return [String]
+        def inspect
+          "<Enum::Value #{key}=#{value} default=#{@default}>"
+        end
+
       end
 
       class << self
 
-        # @example Performance of enumerated collection
-        # ```
-        #   require 'benchmark'
-        #   require 'benchmark/ips'
-        #
-        #   n = 1_000_000
-        #
-        #   male = ::Genders[:male]
-        #
-        #   Benchmark.bmbm do |x|
-        #     x.report('local var cache') { n.times { male } }
-        #     x.report('singleton method') { n.times { ::Genders.male(false) } }
-        #     x.report('find') { n.times { ::Genders[:male] } }
-        #   end
-        #
-        #   Benchmark.ips do |x|
-        #     x.report('local var cache') { male }
-        #     x.report('singleton method') { ::Genders.male(false) }
-        #     x.report('find') { ::Genders[:male] }
-        #
-        #     x.compare!
-        #   end
-        # ```
-        #
         # @example
         #   class Example
         #     ::Enum[
@@ -180,7 +166,7 @@ module Piktur
         #   Example::Enum[0].value # => 0
         #
         # @param [Class, Module] namespace
-        # @param [Symbol] collection The collection name
+        # @param [Symbol] name The collection name
         # @param [Array<Symbol>] i18n_scope
         # @param [String, Symbol] predicates Include {Predicates} for enumerated attribute
         # @param [String, Symbol] scopes Include {Scopes} for enumerated attribute
@@ -190,25 +176,25 @@ module Piktur
         # @option options [Symbol] :scopes (nil) the enumerated attribute name
         #
         # @return [Object] the immutable Enum instance
-        def call(namespace, collection, i18n_scope: nil, **options, &block)
+        def call(namespace, name, i18n_scope: nil, **options, &block)
           i18n_scope ||= namespace unless namespace == Object
           builders = options.extract!(:predicates, :scopes).values
-          enum = new(collection, i18n_scope: i18n_scope, **options, &block)
+          enum = new(name, i18n_scope: i18n_scope, **options, &block)
           enum.finalize!(namespace, *builders)
         end
         alias [] call
 
       end
 
-      attr_reader :collection, :mapping, :keys, :values
+      attr_reader :name, :mapping, :keys, :values
 
-      # @param [Symbol] collection
+      # @param [Symbol] name
       # @param [Array<Symbol>] i18n_scope
       # @param [Hash] enumerable
       # @yieldparam [Enum] enum
       # @return [void]
-      def initialize(collection, i18n_scope: nil, **enumerable)
-        @collection, @mapping = collection.to_sym, {}
+      def initialize(name, i18n_scope: nil, **enumerable)
+        @name = name.to_sym
         i18n_scope(i18n_scope)
         map(enumerable)
         default; const; key; to_s # memoize
@@ -227,20 +213,24 @@ module Piktur
         Types[key]
       end
 
-      # @!method find
       # @!method find_by_key
       # @!method find_by_value
+      #
       # @param [String, Symbol, Integer] value
-      # @return [Enum::Value]
+      #
+      # @return [Value]
+      def find(value); find_by_value(value) || find_by_key(value); end
 
-      def find(value); value && (find_by_value(value) || find_by_key(value)); end
-
-      def find!(value); find(value) || not_found!(value); end
+      # @raise [IndexError] if value out of range
+      # @raise [NameError] if key missing
+      #
+      # @return [Value]
+      def find!(value); mapping[value]; end
       alias [] find!
 
-      def find_by_key(key); values.find { |obj| obj == key }; end
+      def find_by_key(key); values.each { |obj| break(obj) if obj == key }; end
 
-      def find_by_value(value); values.find { |obj| obj == value }; end
+      def find_by_value(value); values.each { |obj| break(obj) if obj == value }; end
 
       # @!method []
       # @!method find!
@@ -250,41 +240,56 @@ module Piktur
       # @raise [ArgumentError]
       # @return [Enum::Value]
 
-      def find_by_key!(key); key && find_by_key(key) || not_found!(value); end
+      def find_by_key!(key); find_by_key(key) || not_found!(value); end
 
-      def find_by_value!(value); value && find_by_value(value) || not_found!(value); end
+      def find_by_value!(value); find_by_value(value) || not_found!(value); end
 
       # @return [Boolean]
       def include?(value); find(value).present?; end
 
       # @return [Enum::Value]
-      def default; @default ||= @values.find { |e| e.default? }; end
+      def default; @default ||= mapping.each { |e| break(e) if e.default? }; end
 
       # @return [Integer]
       # @return [nil] if default value not set
       def default_value; default&.value; end
 
-      # @return [Integer]
-      def size; values.size; end
+      # @return [Integer] the number of enumerated values
+      def size; mapping.size; end
+      alias length size
 
-      # @return [Array]
+      # @yieldparam [Value] value
+      #
+      # @return [Enumerator]
       def each(&block); mapping.each(&block); end
 
-      # @return [Array]
+      # @yieldparam [Symbol] key
+      # @yieldparam [Value] value
+      #
+      # @return [Enumerator]
+      def each_pair(&block); mapping.each_pair(&block); end
+
+      # @yieldparam [Value] value
+      #
+      # @return [Enumerator]
       def select(&block); mapping.select(&block); end
 
-      # @param [Array<Symbol>] args
-      # @return [Array]
+      # @param [Array<Integer, Symbol>] args
+      #
+      # @return [Array<Value>]
       def values_at(*args); mapping.values_at(*args); end
 
       # @return [Enumerator]
       def to_enum; mapping.enum_for; end
 
       # @return [String]
-      def to_s; @_str ||= Support::Inflector.humanize(collection); end
+      def human(*); Support::Inflector.humanize(name); end
+
+      # @return [String]
+      def to_s; name.to_s; end
 
       # @return [Hash]
-      def to_hash; mapping.transform_values { |v| v.value }; end
+      def to_hash; h = {}; each { |v| h[v.key] = v.value }; h; end
       alias to_h to_hash
 
       # @!method to_a
@@ -315,8 +320,8 @@ module Piktur
         raise(::RuntimeError, ENUM_FROZEN_MSG % inspect) if frozen?
 
         # namespace.const_set(@_const, self)
-        register_container_item
-        register_type
+        register_container_item if defined?(::Piktur::Container)
+        register_type if defined?(::Piktur::Types)
 
         namespace.include(self.predicates(predicates)) if predicates
         namespace.include(self.scopes(scopes)) if scopes
@@ -325,10 +330,23 @@ module Piktur
 
       # @return [String]
       def inspect
-        "<Enum[#{key}] #{mapping.map { |k, v| "#{k}=#{v.to_i}" }.join(' ')}>"
+        "<Enum[#{key}] #{each_pair.with_object(String.new) { |(k,v), s| s << " #{k}=#{v.to_i}" }}>"
       end
 
       private
+
+        # @return [true] if {#key} include the method name
+        def respond_to_missing?(method_name, include_private = false)
+          keys.include?(method_name) || super
+        end
+
+        # Forwards the method call to {#mapping}
+        #
+        # @raise [NoMethodError]
+        # @return [void]
+        def method_missing(method_name, *args)
+          respond_to_missing?(method_name) && mapping.send(method_name) || super
+        end
 
         # Register the instance with the application container.
         #
@@ -362,34 +380,31 @@ module Piktur
         # * Define method for `key`
         #
         # @return [void]
-        def declare!(key, value:, **options)
+        def declare!(key, value: nil, **options)
           validate!((key = key.to_sym), value)
-          obj = mapping[key] = Value.new(key: key, value: value, **options)
-
-          return if key == :default # Prevent method override
-
-          if singleton_class.method_defined?(key)
-            warn NAME_COLLISION_MSG % {
-              m: "#{@collection}.#{key}", file: __FILE__, line: __LINE__
-            }
-          else
-            define_singleton_method(key) { |cast = true| cast ? obj.value : obj }
-          end
+          Value.new(key: key, value: value, **options)
         end
 
         # Build {Value} for each in `enumerable` collection.
         #
         # @param [Hash] enumerable
+        #
         # @return [void]
         def map(enumerable)
-          enumerable.each { |key, options| declare!(key, i18n_scope: @i18n_scope, **options) }
-          @keys, @values = mapping.keys.freeze, mapping.values.freeze
+          @mapping = ::Struct.new(*enumerable.keys).allocate
+          enumerable.each.with_index do |(key, options), i|
+            options[:value] = i
+            value = declare!(key, i18n_scope: @i18n_scope, **options)
+            @mapping[key] = value
+          end
+          @keys   = @mapping.members.freeze
+          @values = @mapping.values.freeze
           @mapping.freeze
         end
 
         # @return [String] the camelized constant name
         def const
-          @_const ||= Inflector.camelize(@collection).freeze
+          @_const ||= Inflector.camelize(name).freeze
         end
 
         # @return [String] the container key
@@ -399,14 +414,14 @@ module Piktur
 
         # @return [String] the container key separator
         def separator
-          Container.config.namespace_separator
+          defined?(::Piktur::Container) && ::Piktur::Container.config.namespace_separator || '.'
         end
 
         # @param [Numeric] value
         #
         # @raise [ArgumentError] if value missing
         def not_found!(value)
-          raise ::ArgumentError, NOT_FOUND_MSG % { value: value, enum: @collection }
+          raise ::ArgumentError, NOT_FOUND_MSG % { value: value, enum: name }
         end
 
         # @param [Symbol] key
@@ -414,21 +429,26 @@ module Piktur
         #
         # @raise [ArgumentError] if value missing
         def validate!(key, value)
-          raise ::ArgumentError, DUPLICATE_KEY_MSG % { key: key } if
-            duplicate_key?(key)
-          raise ::ArgumentError, DUPLICATE_VALUE_MSG % { key: key, value: value } if
-            duplicate_value?(value)
-          raise NonNumericValuerError, NON_NUMERIC_VALUE_MSG % { value: value } unless
-            value.is_a?(Numeric)
+          # @note REDUNDANT - It's not possible to define a duplicate key within a Hash
+          # raise ::ArgumentError, DUPLICATE_KEY_MSG % { key: key } if
+          #   duplicate_key?(key)
+
+          # @note REDUNDANT - Use the index of the Struct instance
+          # raise ::ArgumentError, DUPLICATE_VALUE_MSG % { key: key, value: value } if
+          #   duplicate_value?(value)
+
+          # @note REDUNDANT - The index is numeric
+          # raise NonNumericValuerError, NON_NUMERIC_VALUE_MSG % { value: value } unless
+          #   value.is_a?(Numeric)
 
           true
         end
 
         # @return [Boolean]
-        def duplicate_key?(value); mapping.key?(value); end
+        # def duplicate_key?(value); mapping.members.include?(value); end
 
         # @return [Boolean]
-        def duplicate_value?(value); mapping.find { |_, obj| value == obj.value }; end
+        # def duplicate_value?(value); mapping.find { |_, obj| value == obj.value }; end
 
         # @param [Module]
         #
@@ -437,7 +457,7 @@ module Piktur
           if namespace && namespace != Object
             namespace = Inflector.underscore(namespace.to_s).to_sym
           end
-          @i18n_scope = [I18N_NAMESPACE, *namespace, @collection].freeze
+          @i18n_scope = [I18N_NAMESPACE, *namespace, name].freeze
         end
 
       # Enumerated attribute predicates
@@ -457,11 +477,11 @@ module Piktur
           setter = "#{attribute}=".to_sym # [:[]=, attribute]
           getter = attribute.to_sym       # [:[], attribute]
 
-          define_method("default_#{attribute}!".to_sym) { send setter, enum.default_value }
+          define_method("default_#{attribute}!".to_sym) { send(setter, enum.default_value) }
 
-          enum.each do |key, obj|
-            define_method("#{key}?".to_sym) { enum[key] == send(getter) }
-            define_method("#{key}!".to_sym) { send setter, obj.value }
+          enum.each do |obj|
+            define_method("#{key}?".to_sym) { obj == send(getter) }
+            define_method("#{key}!".to_sym) { send(setter, obj.value) }
           end
         end
       end
@@ -498,7 +518,7 @@ module Piktur
         Module.new do
           # Use define_singleton_method so that lambda context accessible
           define_singleton_method(:included) do |base|
-            m = "find_by_#{scope_name(enum.collection, plural: false)}"
+            m = "find_by_#{scope_name(enum.name, plural: false)}"
             base.scope m, ScopeBuilder.(base, path)
 
             enum.each do |key, obj|
