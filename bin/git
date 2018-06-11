@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift File.expand_path('../piktur/lib', Dir.pwd)
+
+require_relative '../lib/piktur/tasks/git.rb'
+
+Signal.trap('INT') { puts; exit(1) }
+
+Piktur::Git.()
