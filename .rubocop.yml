@@ -1,7 +1,3 @@
-# @example Use base config for all Piktur gems
-#   inherit_gem:
-#     piktur: .rubocop.yml
-
 AllCops:
   Exclude:
     - 'vendor/**/*'

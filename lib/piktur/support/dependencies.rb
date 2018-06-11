@@ -134,7 +134,7 @@ module Piktur
 
           # @return [Array<String>]
           def _files
-            @_files ||= Piktur.send(type)
+            @_files ||= ::Piktur.services.files.send(Inflector.pluralize(type).to_sym)
           end
 
           # @return [String]
@@ -348,12 +348,12 @@ module Piktur
         # @return [Array<String>]
         def search(path = 'app', except: nil, only: nil, &block)
           type  = _type_from_path(path)
-          files = Piktur.respond_to?(type) && Piktur.send(type)
-          files ||= Piktur.services.search(path).freeze
+          files = ::Piktur.respond_to?(m = Inflector.pluralize(type).to_sym) && ::Piktur.send(m)
+          files ||= ::Piktur.services.search(path).freeze
           files = if except
-                    files.reject { |e| e =~ Regexp.union(except) }
+                    files.reject { |e| e.match? ::Regexp.union(except) }
                   elsif only
-                    files.select { |e| e =~ Regexp.union(only) }
+                    files.select { |e| e.match? ::Regexp.union(only) }
                   end
           block ? yield(files) : files
         end
@@ -383,7 +383,7 @@ module Piktur
 
         # @return [void]
         def hook!
-          Object.class_eval { include ::Piktur::Support::Dependencies }
+          ::Object.class_eval { include ::Piktur::Support::Dependencies }
         end
 
       end
