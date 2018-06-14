@@ -1,0 +1,19 @@
+---
+include:
+- "lib/**/*.rb"
+- "app/**/*.rb"
+exclude:
+- spec/**/*
+- test/**/*
+- vendor/**/*
+- ".bundle/**/*"
+require:
+- dry/core
+- dry/types
+- oj
+domains: []
+reporters:
+- rubocop
+- require_not_found
+plugins: []
+max_files: 5000
