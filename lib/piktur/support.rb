@@ -61,4 +61,4 @@ module Piktur
 
 end
 
-require_relative './support/errors.rb'
+require_relative './support/constants.rb'

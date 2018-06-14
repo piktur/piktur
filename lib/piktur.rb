@@ -96,8 +96,6 @@ module Piktur
   # Install the optimised Inflector immediately
   Support.install(:inflector)
 
-  MethodDefinedError = ::Class.new(::StandardError)
-
 end
 
 require_relative './piktur/env.rb'
