@@ -54,7 +54,8 @@ end
 
 group :development do
   gem 'awesome_print',          source:  ENV['GEM_SOURCE'], require: false
-  gem 'rubocop',                require: false
+  gem 'solargraph'
+  gem 'rubocop'
   gem 'yard',                   source:  ENV['GEM_SOURCE'], require: false
 end
 

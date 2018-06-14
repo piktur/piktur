@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/BlockLength
+# rubocop:disable OrderedDependencies
 
 $LOAD_PATH.push File.expand_path('./lib', __dir__)
 
@@ -13,11 +13,8 @@ Gem::Specification.new do |s|
   s.email       = ['piktur.io@gmail.com']
   s.homepage    = 'https://bitbucket.org/piktur/piktur'
   s.summary     = 'Piktur a complete Portfolio Management System for Artists'
-  # s.source      = 'https://bitbucket.org/piktur/piktur_core'
   s.description = 'Common utilities for Piktur apps'
   s.license     = ''
-  # @note Rubygems permits executable ruby scripts only, bash scripts ie.
-  #   `s.executables.push('piktur_admin.sh')` not accepted
   s.files = Dir[
     '{bin,lib}/**/*.rb',
     '.rubocop.yml',
@@ -31,9 +28,12 @@ Gem::Specification.new do |s|
     'piktur.gemspec',
     'Procfile',
     'Rakefile',
-    'README.markdown'
+    'README.markdown',
+    base: __dir__
   ]
-  s.test_files    = Dir['spec/**/*.rb']
+  s.test_files    = Dir['spec/**/*.rb', base: __dir__]
+  # @note Rubygems permits executable ruby scripts only, bash scripts ie.
+  #   `s.executables.push('piktur_admin.sh')` not accepted
   s.require_paths = %w(lib)
   s.bindir        = 'bin'
 
@@ -46,10 +46,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'fast_underscore',                   '~> 0.3'
   s.add_dependency 'activesupport',                     "= #{ENV.fetch('RAILS_VERSION')}"
   s.add_dependency 'dry-configurable',                  '~> 0.7'
-  s.add_dependency 'dry-monads',                        '~> 0.3'
-  s.add_dependency 'dry-struct',                        '~> 0.4', '< 0.5'
-  s.add_dependency 'dry-types',                         '~> 0.12'
-  s.add_dependency 'dry-transaction',                   '~> 0.1'
+  s.add_dependency 'dry-types',                         '~> 0.13'
   s.add_dependency 'rake',                              '~> 12.0'
   # @!endgroup
 
@@ -98,11 +95,12 @@ Gem::Specification.new do |s|
 
   # @!group Code Quality
   s.add_development_dependency 'rubocop',                           '~> 0.50'
+  s.add_development_dependency 'solargraph',                        '~> 0.20'
   # @!endgroup
 
   # @!group Benchmarks
   s.add_development_dependency 'benchmark-ips',                     '~> 2.7'
-  s.add_development_dependency 'ruby-prof',                         '~> 0.1'
   s.add_development_dependency 'hotch',                             '~> 0.5'
+  s.add_development_dependency 'ruby-prof',                         '~> 0.1'
   # @!endgroup
 end

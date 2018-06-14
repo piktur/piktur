@@ -13,7 +13,7 @@ AllCops:
     - '../**/test/dummy/**/*'
     - '../**/spec/**/*'
   DisplayCopNames: true
-  TargetRubyVersion: 2.4.1
+  TargetRubyVersion: 2.5.1
   TargetRailsVersion: 5.0
 
 Layout/AlignHash:
@@ -264,6 +264,9 @@ Metrics/MethodLength:
 Metrics/ParameterLists:
   Max: 5
   CountKeywordArgs: false
+
+Lint/MissingCopEnableDirective:
+  Enabled: false
 
 Lint/AmbiguousBlockAssociation:
   Enabled: false
