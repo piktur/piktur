@@ -94,6 +94,21 @@ Layout/EmptyLinesAroundClassBody:
 Layout/EmptyLinesAroundModuleBody:
   EnforcedStyle: empty_lines
 
+Naming/UncommunicativeMethodParamName:
+  MinNameLength: 2
+  AllowNamesEndingInNumbers: true
+  AllowedNames:
+    - io
+    - id
+    - to
+    - by
+    - 'on'
+    - in
+    - at
+    - pp
+    - 'n'
+    - i
+
 Naming/FileName:
   ExpectMatchingDefinition: false
 
