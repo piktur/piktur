@@ -7,7 +7,6 @@ module Piktur
 
     extend ::ActiveSupport::Autoload
 
-    autoload :Dependencies
     autoload :Inheritable
     autoload_under 'piktur/support/inheritable' do
       autoload :Ext
