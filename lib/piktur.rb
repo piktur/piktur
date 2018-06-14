@@ -34,9 +34,10 @@ module Piktur
   class << self
 
     # Returns absolute path to root directory
+    #
     # @return [Pathname]
     def root
-      ::Pathname.new(__dir__).join('..')
+      ::Pathname.new(__dir__).parent
     end
 
     # @return [Piktur::Environment]
@@ -44,48 +45,50 @@ module Piktur
       Environment.instance
     end
 
-    # @!method config
-    #   @return [Piktur::Config]
-    # @!method configure(&block)
-    #   @return [void]
-    delegate :config, to: 'Piktur::Config'
+    # @return [Piktur::Config]
+    def config; Piktur::Config.config; end
 
-    # @!method services
-    #   @return [Services::Index]
-    delegate :services, to: :config
+    # @return [Services::Index]
+    def services; config.services; end
 
-    # @!method application
-    #   Returns Service object for current application
-    #   @return [Services::Service]
-    delegate :application, to: :services
+    # Returns Service object for current application
+    #
+    # @return [Services::Service]
+    def application; services.application; end
 
-    # @!method applications
-    # @!method engines
-    # @!method libraries
-    # @return [Array<Services::Service>]
-    delegate :applications, :engines, :libraries, to: :services
+    # @return [Array<Services::Application>]
+    def applications; services.applications; end
 
-    # @!method railties
-    #   @return [Array<Class>]
-    delegate :railties, to: :services
+    # @return [Array<Services::Engine>]
+    def engines; services.engines; end
 
-    # @!method dependencies
-    #   @return [Services::Index]
-    delegate :dependencies, to: :services
+    # @return [Array<Services::Library>]
+    def libraries; services.libraries; end
 
-    # @!method servers
-    #   Remote server metadata for Piktur services
-    #   @return [Services::Servers]
-    delegate :servers, to: :services
+    # @return [Array<Rails::Railtie>]
+    def railties; services.railties; end
 
-    # @!method domain
-    #   Base domain for Piktur services
-    #   @return [Object]
-    delegate :domain, to: :servers
+    # @return [Services::Index]
+    def dependencies; services.dependencies; end
+
+    # Remote server metadata for {.services}
+    #
+    # @return [Services::Servers]
+    def servers; services.servers; end
+
+    # Base domain for {.services}
+    # @return [Object]
+    def domain; servers.domain; end
 
     # @!method eager_load_namespaces
     #   @return [Array<Module, Class>]
-    delegate :eager_load_namespaces, to: :services
+    def eager_load_namespaces; services.eager_load_namespaces; end
+
+    # Returns the canonical file index for all loaded {.services}
+    #
+    # @return [Piktur::Services::FileIndex]
+    def files; services.file_index; end
+    alias file_index files
 
   end
 
