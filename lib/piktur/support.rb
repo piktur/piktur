@@ -13,6 +13,8 @@ module Piktur
     end
     autoload :Inflector
     autoload :Enum
+    autoload :FileMatcher, 'piktur/support/file_matcher'
+    autoload :FileSorter,  'piktur/support/file_sorter'
     autoload :Hash
     autoload :Object
     autoload_under 'piktur/support/hash' do
