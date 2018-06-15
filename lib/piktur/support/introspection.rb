@@ -6,9 +6,18 @@ module Piktur
 
     # Optimised `Module` introspection algorithm.
     #
+    # @example Usage
+    #   Support.install(:module)
+    #
     # @see https://github.com/rails/rails/blob/master/activesupport/lib/active_support/core_ext/module/introspection.rb
     #
     module Introspection
+
+      # @return [void]
+      def self.install(*)
+        ::Module.extend(self)
+        true
+      end
 
       # Returns all the parents of a Module from innermost to outermost.
       # The receiver is not included.

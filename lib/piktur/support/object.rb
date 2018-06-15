@@ -5,6 +5,9 @@ module Piktur
   module Support
 
     # DRY common constant accessor patterns.
+    #
+    # @example Usage
+    #   Support.install(:object)
     module Object
 
       # @return [void]

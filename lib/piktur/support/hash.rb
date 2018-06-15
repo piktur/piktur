@@ -5,6 +5,9 @@ module Piktur
   module Support
 
     # Ruby core Hash extension
+    #
+    # @example Usage
+    #   Support.install(:hash)
     module Hash
 
       def self.install(*)
@@ -46,9 +49,12 @@ module Piktur
       #   obj['abc'] = 123
       #   obj.abc # => 123
       #
-      WithAttrReader = Class.new(::Hash) do
+      class WithAttrReader < ::Hash
+
         # Recursively copy the hash structure to a new instance of WithAttrReader
+        #
         # @param [Hash] object
+        #
         # @return [WithAttrReader]
         def self.[](object, recursive: false)
           new.tap do |h|
@@ -59,21 +65,30 @@ module Piktur
           end
         end
 
-        def method_missing(method_name, *) # rubocop:disable MethodMissing
-          fetch(m = method_name[/\w+/]) { fetch(m.to_sym) { nil } }
-        end
-        private :method_missing
+        private
 
-        def respond_to_missing?(method_name, *)
-          method_name.match?(/\w$/) || super
-        end
-        private :respond_to_missing?
+          # @param [Symbol] method_name
+          #
+          # @return [Object]
+          # @return [nil] if {#key} undefined
+          def method_missing(method_name, *) # rubocop:disable MethodMissingSuper
+            fetch(m = method_name[/\w+/]) { fetch(m.to_sym) { nil } }
+          end
+
+          # @param [Symbol] method_name
+          #
+          # @return [Boolean]
+          def respond_to_missing?(method_name, *)
+            method_name.match?(/\w$/) || super
+          end
+
       end
 
       # @example Build nested hash from key array
       #   %w(1 2 3).reduce(h = {}) { |a, e| a[e] = {} }
 
       # Flatten Hash keys recursively
+      #
       # @example
       #   src = {
       #     root: {
@@ -88,10 +103,13 @@ module Piktur
       #   flat_hash(src) # => {['root', 'branch', 'leaf'] => nil, ...}
       #   flat_hash(src).transform_keys! { |e| e.join('.') }
       #   # => {"root.branch.leaf"=>nil, ...}
+      #
       # @param [Hash] h original
       # @param [String] path
       # @param [Hash] a accumulator
+      #
       # @see http://stackoverflow.com/a/23861946
+      #
       # @return [Hash]
       def flat_hash(h, path = [], a = {}) # rubocop:disable UncommunicativeMethodParamName
         return a.update(path => h) unless h.is_a?(::Hash) && h.present?

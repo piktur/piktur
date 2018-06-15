@@ -27,6 +27,9 @@ module Piktur
 
   module Support
 
+    # @example Usage
+    #   Support.install(:inflector)
+    #
     # @example
     #   Object.extend Inflector
     module Inflector

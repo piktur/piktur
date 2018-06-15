@@ -6,6 +6,9 @@ module Piktur
 
   module Support
 
+    # @example Usage
+    #   Support.install(:json)
+    #
     # @example
     #   json = ActiveSupport::JSON.encode(object)
     #   hash = ActiveSupport::JSON.decode(json)

@@ -13,6 +13,9 @@ module Piktur
     # @todo Items must be explictly registered or, if registered when on load, the definition
     #   must be loaded before key fetch.
     #
+    # @example Usage
+    #   Support.install(:types)
+    #
     # @example
     #   Piktur::Types['address']                         # => Address
     #   Piktur::Types['address'].(city: '', country: '') # <Address city='' country=''>

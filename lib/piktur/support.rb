@@ -3,6 +3,9 @@
 module Piktur
 
   # Utility modules
+  #
+  # @example
+  #   Support.install(:json, :types, inflection: { option: true })
   module Support
 
     extend ::ActiveSupport::Autoload
@@ -16,6 +19,7 @@ module Piktur
     autoload :FileMatcher, 'piktur/support/file_matcher'
     autoload :FileSorter,  'piktur/support/file_sorter'
     autoload :Hash
+    autoload :Introspection
     autoload :Object
     autoload_under 'piktur/support/hash' do
       autoload :WithAttrReader
@@ -28,11 +32,12 @@ module Piktur
     autoload :Types
 
     EXTENSIONS = {
-      hash:      :Hash,
-      inflector: :Inflector,
-      json:      :JSON,
-      object:    :Object,
-      types:     :Types
+      hash:      [:Hash],
+      inflector: [:Inflector],
+      json:      [:JSON],
+      module:    [:Introspection],
+      object:    [:Object],
+      types:     [:Types]
     }.freeze
     private_constant :EXTENSIONS
 
@@ -45,10 +50,12 @@ module Piktur
     # @param [Hash] configurable
     #   Extension(s) accepting/expecting options
     # @return [void]
-    def self.install(*ext, **configurable)
+    def self.install(*ext, **configurable) # rubocop:disable AbcSize, MethodLength
       fn = lambda { |name, **options|
-        mod = const_get(EXTENSIONS[name], false)
-        mod.send(:install, options) if mod.respond_to?(:install, true)
+        EXTENSIONS[name].each do |const|
+          mod = const_get(const, false)
+          mod.send(:install, options) if mod.respond_to?(:install, true)
+        end
       }
       ext.each(&fn)
 

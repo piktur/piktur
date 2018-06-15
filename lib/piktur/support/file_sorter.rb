@@ -26,7 +26,8 @@ module Piktur
         files.each do |f|
           (arr[0] ||= primary(f, var)) || (arr[1] ||= secondary(f)) || (arr << f)
         end
-        arr.compact
+        arr.compact!
+        arr
       end
 
       # @param [String] file

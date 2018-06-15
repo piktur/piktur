@@ -12,11 +12,13 @@ module Piktur
       module_function
 
       # @see https://stackoverflow.com/a/1404
+      #
       # @param [Date] birthday
+      #
       # @return [Integer]
       def age(birthday)
         birthday      = birthday.to_date unless birthday.is_a?(::Date)
-        current_date  = Date.today
+        current_date  = ::Time.zone.today
         current_year  = current_date.year
         birth_year    = birthday.year
 
@@ -26,16 +28,18 @@ module Piktur
         birthday > current_date.advance(years: -age) ? age - 1 : age
       end
 
-      # Return today full day name
-      # @return [Symbol]
+      # @return [Symbol] The full day name
       def day_name
         ::Time.zone.now.strftime('%A').downcase.to_sym
       end
 
       # Parse string representation of time and advance to time on the coming `day`
+      #
       # @param [String, Time] time string
       # @param [Symbol] day
-      def next_day(time, day)
+      #
+      # @return [ActiveSupport::TimeWithZone]
+      def next_day(time, day) # rubocop:disable AbcSize
         time = ::Time.zone.parse(time) if time.is_a?(String)
         from = ::Date::DAYS_INTO_WEEK[day_name] * SECONDS
         to   = ::Date::DAYS_INTO_WEEK[day.to_sym] * SECONDS
