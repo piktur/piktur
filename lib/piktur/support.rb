@@ -14,6 +14,7 @@ module Piktur
     autoload :Inflector
     autoload :Enum
     autoload :Hash
+    autoload :Object
     autoload_under 'piktur/support/hash' do
       autoload :WithAttrReader
     end
@@ -28,6 +29,7 @@ module Piktur
       hash:      :Hash,
       inflector: :Inflector,
       json:      :JSON,
+      object:    :Object,
       types:     :Types
     }.freeze
     private_constant :EXTENSIONS
