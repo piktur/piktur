@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 require 'active_support/core_ext/module/introspection'
+require 'piktur/support/introspection'
 require 'piktur/support/inflector'
 
 # active_support/core_ext/module/introspection.rb
@@ -20,34 +21,9 @@ require 'piktur/support/inflector'
 #
 # Module.extend(Introspection)
 
-class Module
-  # %i(parents parent parent_name).each do |m|
-  #   undef_method(m) if method_defined?(:parents)
-  # end
-
-  # Returns all the parents of a Module; from innermost to outermost.
-  # The receiver is not included.
-  #
-  # @return [Array<Module>]
-  def parents
-    return @_parents if defined?(@_parents)
-    @_parents = [Object]
-    name.split('::')[0..-2].inject(self) { |mod, e|
-      @_parents.unshift(mod = mod.const_get(e)); mod
-    } # ::Module.nesting
-    @_parents.freeze
-  end
-
-  # @return [Module]
-  def parent
-    @_parent ||= parents[0]
-  end
-
-  # @return [String]
-  def parent_name
-    @_parent_name ||= parent&.name.freeze
-  end
-end
+# %i(parents parent parent_name).each do |m|
+#   undef_method(m) if method_defined?(:parents)
+# end
 
 RSpec.describe 'namespace introspection' do
   def names(char)
@@ -55,7 +31,7 @@ RSpec.describe 'namespace introspection' do
   end
 
   def mod(names)
-    Object.safe_get_const(names.join('::')) || names.inject(Object) do |mod, const|
+    Object.safe_const_get(names.join('::')) || names.inject(Object) do |mod, const|
       mod.const_set(const, described_class.new)
     end
   end
