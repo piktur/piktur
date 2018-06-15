@@ -7,8 +7,9 @@ module Piktur
   module Support
 
     # @example
-    #   FileMatcher['models', 'repositories'] # => [/model/, /reposit/, /model|reposit/]
+    #   FileMatcher['models', 'repositories']
     #   FileMatcher[*Concepts::COMPONENTS, glob: true]
+    #   FileMatcher[*Concepts::COMPONENTS, glob: true, path: Dir.pwd]
     module FileMatcher
 
       module_function
@@ -28,11 +29,20 @@ module Piktur
         arr << combined_regex(arr)
       end
 
+      # @example
+      #   to_glob('model', 'models')              # => "**/model{*,**/*}.rb"
+      #   to_glob('repository', 'repositories')   # => "**/repositor{*,**/*}.rb"
+      #   to_glob('thing', 'things', path: 'dir') # => "dir/**/thing{*,**/*}.rb"
+      #
       # @see https://bitbucket.org/snippets/piktur/aeGpzM
+      #
+      # @param [String] a The singular form
+      # @param [String] b The plural form
+      #
+      # @return [String]
       def to_glob(a, b, path: nil)
         glob = "**/#{insersect(a, b)}{*,**/*}.rb"
-        return glob unless path
-        ::File.join(path, glob)
+        path ? "#{path}/#{glob}" : glob
       end
 
       # @example
@@ -53,10 +63,16 @@ module Piktur
         ::Regexp.new parts.join
       end
 
+      # @param [Array<Regexp>] arr
+      #
+      # @return [Regexp]
       def combined_regex(arr)
         /.*(#{arr.join('|')})/
       end
 
+      # @param [String] a The singular form
+      # @param [String] b The plural form
+      #
       # @return [String] the characters up to the difference of a and b
       def insersect(a, b)
         str = ::String.new
