@@ -4,10 +4,13 @@ module Piktur
 
   module Loader
 
+    # Exposes the public loader interface.
     module Ext
 
       # @return [Piktur::Loader] the loader instance
-      def loader; ::Piktur['loader']; end
+      def loader
+        ::Piktur::Config.loader[:instance]
+      end
 
       # @example
       #   components_dir(root: ::Rails.root)
@@ -16,30 +19,58 @@ module Piktur
       #
       # @return [Pathname] the relative path
       def components_dir(root: nil)
-        return ::Piktur.config.components_dir.expand_path(root) if root
-        ::Piktur.config.components_dir
+        return ::Piktur::Config.components_dir.expand_path(root) if root
+        ::Piktur::Config.components_dir
       end
 
-      # Load a concept and all dependencies on demand
+      # @param see (Loader::Filter#by_type)
       #
-      # @param [String] name
-      # @param [Hash] options
-      #
-      # @return [void]
-      def load_concept!(name, **options)
-        loader.load!(name, options)
+      # @return [Array<String>] A list of autoloadable file paths
+      def files(type, pattern = nil)
+        loader.send(:by_type, type, *pattern)
       end
 
-      # @param [Array<String>] args
-      # @param [Hash] options
+      # @return [Array<String>] A list of locale files
+      def locales
+        ::Rails.configuration.i18n.load_path
+      end
+
+      # @!method models
+      # @!method policies
+      # @!method repositories
+      # @!method schemas
+      # @!method transactions
+      # @return [Array<Pathname>]
+      # %i(models policies repositories schemas transactions)
+      #   .each { |aliaz| alias_method aliaz, :files }
+
+      # Load namespaces and/or type defintions and dependencies on demand.
+      #
+      # @param [String] namespaces A list of namespaces - the relative path from
+      #   {Piktur::Config.components_dir}
+      # @param [Symbol] types A list of {Concepts::COMPONENTS}
+      #
+      # @option see (Loader::ActiveSupport#call)
       #
       # @return [void]
-      def load_concepts!(*args, **options)
-        if args.present?
-          args.all? { |name| loader.load!(name, options) }
-        else
-          loader.load_all!(options)
+      def load(namespaces: nil, types: nil, **options)
+        if namespaces.present?
+          namespaces.each { |e| loader[namespace: e, **options] }
+        elsif types.present?
+          types.each { |e| loader[type: e, **options] }
+        else # Load all {Piktur.namespaces}
+          loader.call(options)
         end
+      end
+
+      # A reload will be trigged if called after application boot in non-production environments.
+      #
+      # @param [Array<String>] args
+      # @param see (#load)
+      #
+      # @return [void]
+      def load!(*args)
+        load(*args, force: ::Piktur.loader.booted?)
       end
 
     end

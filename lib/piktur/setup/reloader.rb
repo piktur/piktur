@@ -4,6 +4,8 @@ require_relative './evented_file_update_checker.rb'
 
 module Piktur
 
+  # @todo Reloader should be made redundant by incomoing {Loader} implementation
+  #
   # Configure {Piktur.component_dir} reloading
   module Reloader
 
@@ -16,6 +18,7 @@ module Piktur
     #
     # @return [void]
     def call(app)
+      reloader = self.reloader
       app.reloaders << reloader
 
       app.reloader.to_run do
@@ -26,7 +29,7 @@ module Piktur
       true
     end
 
-    # Returns the a new reloader instance with a pid matching that of the forked process.
+    # Returns a new reloader instance with a pid matching that of the forked process.
     #
     # @return [Piktur::EventedFileUpdateChecker]
     def reloader
@@ -36,11 +39,20 @@ module Piktur
     end
 
     # @note Extracted model namespace loading so that it occurs before SetupReloader on every
-    #   fork, not just when watched files changed. This is to ensure any top level configuration
+    #   fork, not just when watched files changed. This is to ensure any top level configuration is
     #   applied before nested constants loaded. Seems heavy handed, alternatively we could load
     #   parent concept before any nested concept. But time... none!
+    #
+    #
+    #
+    # REWRITE COMMENTS
+    #
+    #
+    #
     def before(*)
-      ::Piktur::Models.load_namespaces
+      ::Piktur.load!
+    rescue LoadError => error
+      ::Piktur.debug(binding, warn: "Did you set the correct name for the namespace in Piktur::Config#namespaces?")
     end
 
     # @param [Array] changes An Array containing `changed`, `added` and `deleted` file lists.
@@ -48,7 +60,7 @@ module Piktur
     # @return [void]
     def on_change(changes)
       if changes
-        ::Piktur::Loader.reload!(changes)
+        ::Piktur.loader.reload!(changes)
         ::Piktur.to_complete
       end
 
@@ -57,7 +69,10 @@ module Piktur
 
     def after(*); end
 
-    # @return [Hash{Pathname => [String]}] component_dir autoload paths for {Piktur.railties}.
+    # Returns a Hash mapping autoload paths to extensions for each {Piktur.railties} where
+    # {Piktur.component_dir} exists.
+    #
+    # @return [Hash{Pathname=>[String]}]
     def paths
       ::Piktur.railties.each_with_object({}) do |railtie, a|
         # @note Piktur::Store::Engine hasn't been loaded yet

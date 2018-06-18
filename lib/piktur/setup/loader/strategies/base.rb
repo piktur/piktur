@@ -4,109 +4,157 @@ module Piktur
 
   module Loader
 
+    # @abstract
     module Base
 
       # @param [Module] base
       # @return [void]
       def self.included(base)
-        base.extend ClassInterface
+        base.extend  self::ClassMethods
+        base.include Support::Pathname
+        base.include self::InstanceMethods
+        base.include Loader::Store
+        base.include Loader::Filter
+        base.include Loader::Load
       end
 
-      attr_reader :booted
-      alias booted? booted
+      # :nodoc
+      module ClassMethods
 
-      def initialize
-        @concepts = {}
-        @loaded   = Set.new
-        @booted   = false
+        # @!attribute [rw] default_proc
+        #   @return [Proc] The block to execute when loading a file
+        attr_accessor :default_proc
+
+        # @!attribute [rw] use_relative
+        #   @return [Boolean] if true paths will be scoped to {Filter#target}
+        attr_accessor :use_relative
+
       end
 
-      # @return [Hash]
-      def config; ::Piktur.config.loader; end
-      def call(**options, &block); end
-      def booted!; @booted = true; end
-      def load!(name, groups: nil, force: false, **); end
-      def load_all!(**options); end
-      def reload!(files); end
+      # :nodoc
+      module InstanceMethods
 
-      private
+        # @!attribute [r] loaded
+        #   @return [Set<String, Symbol>] A list of loaded namespaces
+        attr_reader :loaded
 
-        def debug(concept, files: []); end
-        def load_files(files, type = nil); end
-        def unloadable(file, type = nil); end
-        def relative_path(f); end
-        def prepare_options!(options); end
-        def merge!(concepts); end
-        def insert!(pipeline, args); end
-        def prepend!(pipeline, args); end
-        def match(f); end
-        def self.find_by_constant(); end
-        def self.find_by_path(); end
+        # @!attribute [r] booted
+        #   @return [Boolean] True after the first call to {#load!}
+        attr_reader :booted
+        alias booted? booted
 
-    end
-
-    # @todo HASHING OUT PREFERRED IMPLEMENTATION STILL A WAY TO GO YET
-    module Pending
-
-      # Again if you're going to use components dir you need to getting the absolute path for each
-      # railtie.
-      #
-      # !! USE Piktur.services.files.type_matchers
-      #
-      # absolute = ::Piktur.components_dir(root: )
-      # relative = absolute.relative_path_from(::Pathname.pwd)
-      # AUTOLOAD_MATCHERS = COMPONENTS.each_with_object({}) do |type, h|
-      #   glob = "**/#{::Inflector.singularize(type)}{*,**/*}.rb"
-      #   # const_set("#{type.upcase}_MATCHER", glob)
-      #   h[type] = relative.join(glob)
-      # end.freeze
-
-
-      # @example
-      #   Users.path(:model)          # => 'users/model'
-      #   Users.path(:schema)         # => 'users/schema'
-      #   Users.path(:model, 'admin') # => 'admins/model'
-      #
-      # @param [String, Symbol] component_type
-      # @param [String] variant
-      #
-      # @return [String] the relative path to the component definition
-      def path(component_type, variant = DEFAULT_VARIANT)
-        variant(component_type, variant, ::File::SEPARATOR)
-      end
-
-      # @raise [KeyError]
-      # @return [String] if
-      def find(component_type, variant = nil)
-        # components_dir = Config.components_dir.relative_path_from(root)
-        lookup_paths.fetch(component_type).each do |path|
-          # components_dir.join(path.call[variant]).exist?
-          result = path.call[variant]
-          break(result) if ::File.exist?(result)
+        def initialize(*)
+          @types = ::Piktur::Concepts::COMPONENTS
+            .map { |type| ::Inflector.pluralize(type).to_sym }
+          @loaded = ::Set.new
         end
-      end
 
-      # Returns the default lookup paths for
-      #
-      # @return [Array<Proc>]
-      def lookup_paths
-        return @_lookup_paths if defined?(@_lookup_path)
-        dir = concept_name.plural
-        @_lookup_paths = COMPONENTS.each_with_object({}) do |type, h|
-          type_dir = ::Inflector.pluralize(type)
-          h[type] = [
-            ->(*)       { "#{dir}/#{type}" },
-            ->(*)       { "#{dir}/#{type_dir}/#{Naming::DEFAULT_VARIANT}" },
-            ->(variant) { "#{dir}/#{type_dir}/#{variant}" }
-          ]
+        # :nodoc
+        # def call(*)
+        #   raise ::NotImplementedError
+        # end
+
+        # @return [Dry::Configurable]
+        def config; ::Piktur.config.loader; end
+
+        # @return [String]
+        def inspect
+          "<Loader booted=#{booted? || false} count=#{cache.size}>"
         end
-      end
 
-      # Tracks the constants dependencies and enables code reloading.
-      #
-      # @return [void]
-      def load
-        require_dependency find(component_type)
+        # @return [void]
+        def pretty_print(pp); pp.text inspect; end
+
+        protected
+
+          # Prepare the value to be stored
+          #
+          # @see Filter#globber
+          #
+          # @param [Pathname] root The service's root path
+          # @param [Pathname] path The absolute path to the directory
+          # @param [Pathname] fn  getter function to cache
+          #
+          # @raise [UncaughtThrowError]
+          #
+          # @return [Proc]
+          def prepare(root, path, &fn)
+            # Disregard if `path` is a {#leaf?}
+            throw(:abort) if path.nil? || leaf?(path)
+
+            # Return the given block, this value will be cached
+            return fn if fn
+
+            if path.directory?
+              globber(root, path)
+            else
+              # The globber is scoped to parent directory so that, when reloading, any **modified**
+              # file in the changes payload could be used to retrieve the contents of the parent
+              # directory.
+              globber(root, path.parent)
+            end
+          end
+
+          # @see #globber
+          # @see https://bitbucket.org/piktur/piktur_core/src/master/spec/benchmark/pattern_matching.rb
+          #   .dir_vs_pathname_glob
+          #
+          # @return [Proc]
+          def fn_get
+            @fn_get ||= method(self.class.use_relative ? :scoped_glob : :unscoped_glob).to_proc
+          end
+
+          # @see Store#_store_path
+          #
+          # @return [Proc]
+          def fn_set
+            @fn_set ||= method(:_store_path).to_proc
+          end
+
+          # :nodoc
+          # def load!(*)
+          #   raise ::NotImplementedError
+          # end
+
+          # @return [true]
+          def booted!; @booted = true; end
+
+          # @param [Array<Pathname>] paths The paths to load
+          #
+          # @return [void]
+          def load(paths)
+            throw(:abort) if paths.blank?
+            paths.each { |path| yield path }
+          end
+
+          # @param [String] id
+          #
+          # @return [Boolean]
+          def loaded?(id)
+            loaded.member?(id)
+          end
+
+          # @param [Symbol] paths The loaded paths
+          #
+          # @return [void]
+          def debug(paths)
+            return unless config.debug
+            ::Piktur.logger.info "Loaded: #{paths.map { |p| "  - #{p}" }.join("\n")}"
+          end
+
+          # @raise [NoMethodError] if non existent component type
+          #
+          # @return [void]
+          def method_missing(method_name, *args)
+            return super unless respond_to_missing?(method_name)
+            by_type(method_name)
+          end
+
+          # @return [Boolean]
+          def respond_to_missing?(method_name, include_private = false)
+            types.include?(method_name) || super
+          end
+
       end
 
     end

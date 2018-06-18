@@ -2,10 +2,42 @@
 
 module Piktur
 
-  # Loader handles code loading and setup for Piktur namespaces on boot and reload.
+  # Implements code re/loading for {Piktur.components_dir}.
+  #
+  # @example Configure the loading strategy
+  #   Piktur::Config.config.loader.instance = :active_support
+  #
+  # @example Retreive the loader instance
+  #   Piktur.loader # => <Loader[ActiveSupport] booted=true entries=100>
+  #
+  # @example Load all namespaces listed in {Piktur.namespaces}
+  #   Piktur.load!
+  #
+  # @example Load a subset
+  #   Piktur.load!(namespaces: %w(users accounts))
+  #
+  # @example Sort files
+  #   Piktur.loader.sort(:models) # => ['a/model.rb', 'a/models/variant.rb', 'z/model.rb']
+  #   Piktur.loader.sort('a', 'x', '*.js') # => ['a/x.js', 'a/a.js', 'a/b.js']
+  #
+  # @example Apply the sorting algorithm to an arbitrary file list
+  #   Piktur::Loader::Sorter.call(%w(path/z, path/a)) # => ['path/a', 'path/z']
   #
   # @see Piktur::Engine
+  # @see https://bitbucket.org/piktur/piktur/wiki/Structure.markdown#Components
   module Loader
+
+    extend ::ActiveSupport::Autoload
+
+    autoload :Ext,            'piktur/setup/loader/ext'
+    autoload :Strategies,     strategies = 'piktur/setup/loader/strategies'
+    autoload :ActiveSupport,  "#{strategies}/active_support"
+    autoload :Base,           "#{strategies}/base"
+    autoload :Dry,            "#{strategies}/dry"
+    autoload :Filter,         "#{strategies}/filter"
+    autoload :Load,           "#{strategies}/load"
+    autoload :Reload,         "#{strategies}/reload"
+    autoload :Store,          "#{strategies}/store"
 
     # @return [Array<Symbol>]
     STRATEGIES = %i(
@@ -16,34 +48,19 @@ module Piktur
     # @return [String]
     STRATEGY_UNDEFINED_MSG = "Strategy %s must be one of #{STRATEGIES.join(', ')}"
 
-    extend ::ActiveSupport::Autoload
-
-    %w(
-      ext
-      class_interface
-      strategies
-    ).each { |f| require_relative "./loader/#{f}.rb" }
-
-    # autoload :ClassInterface, 'piktur/setup/loader/class_interface'
-    # autoload :Ext,            'piktur/setup/loader/ext'
-    # autoload :Strategies,     'piktur/setup/loader/strategies'
-    # autoload :Reloader,       'piktur/setup/loader/reloader'
-
-    # autoload :Base,           'piktur/setup/loader/strategies/base'
-    # autoload :ActiveSupport,  'piktur/setup/loader/strategies/active_support'
-    # autoload :Dry,            'piktur/setup/loader/strategies/dry'
-    # autoload :Trailblazer,    'piktur/setup/loader/strategies/trailblazer'
+    Path    = Support::Pathname
+    Matcher = Path::Matcher
+    Sorter  = Path::Sorter
 
     # Initialize Loader for given `strategy`
     #
     # @param [Symbol] strategy
-    def self.call
-      strategy = Config.loader.strategy
-
+    #
+    # @return [Piktur::Loader::Base] instance
+    def self.call(strategy)
       raise StandardError, STRATEGY_UNDEFINED_MSG % strategy unless
         STRATEGIES.include?(strategy)
 
-      require_relative "./loader/strategies/#{strategy}.rb"
       ::Inflector.constantize(strategy, Loader, camelize: true).new
     end
 
