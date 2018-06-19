@@ -6,7 +6,7 @@ module Piktur
 
   module Loader
 
-    # Implements caching for a Loader instance.
+    # Provides a thread safe cache to the Loader instance.
     module Store
 
       # @param [Module] base
@@ -23,8 +23,9 @@ module Piktur
         # @return [Concurrent::Map]
         def cache; self.class.cache; end
 
-        # Assigns `value` as both `path` and {Path.relative_path_from_target} allowing retrieval on:
-        #   * load   -- where the provided key is likely to be a relative path
+        # Assigns `value` to both the absolute and relative autoloadable `path`
+        # allowing retrieval on:
+        #   * load   -- where the provided key is likely to be an autoloadable path
         #   * reload -- where the provided key will be an absolute path
         #
         # @param [Pathname] root The root path of the service owning the path
@@ -38,7 +39,7 @@ module Piktur
           value ||= prepare(root, path)
 
           if path.directory?
-            _store(Path.relative_path_from_target(path, target), value)
+            _store(Path.rpartition(path, target)[-1], value)
           else
             _store(path, value)
           end

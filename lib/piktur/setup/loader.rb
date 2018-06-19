@@ -4,6 +4,9 @@ module Piktur
 
   # Implements code re/loading for {Piktur.components_dir}.
   #
+  # @note Application components must be defined within their own file. DO NOT use
+  #   `./<components_dir>/<namespace>/setup.rb` to define multiple constants.
+  #
   # @example Configure the loading strategy
   #   Piktur::Config.config.loader.instance = :active_support
   #
@@ -25,19 +28,28 @@ module Piktur
   #
   # @see Piktur::Engine
   # @see https://bitbucket.org/piktur/piktur/wiki/Structure.markdown#Components
+  #
+  # {include:Loader::ActivSupport}
   module Loader
 
     extend ::ActiveSupport::Autoload
 
     autoload :Ext,            'piktur/setup/loader/ext'
+    autoload :Pathname,       'piktur/setup/loader/pathname'
     autoload :Strategies,     strategies = 'piktur/setup/loader/strategies'
     autoload :ActiveSupport,  "#{strategies}/active_support"
     autoload :Base,           "#{strategies}/base"
     autoload :Dry,            "#{strategies}/dry"
     autoload :Filter,         "#{strategies}/filter"
+    autoload :Filters,        "#{strategies}/filter"
     autoload :Load,           "#{strategies}/load"
     autoload :Reload,         "#{strategies}/reload"
     autoload :Store,          "#{strategies}/store"
+    autoload :ByPath,         "#{strategies}/filters/by_path"
+    autoload :ByType,         "#{strategies}/filters/by_type"
+    autoload :Matcher,        "#{strategies}/filters/matcher"
+    autoload :Predicates,     "#{strategies}/filters/predicates"
+    autoload :Sorter,         "#{strategies}/filters/sorter"
 
     # @return [Array<Symbol>]
     STRATEGIES = %i(
@@ -48,9 +60,7 @@ module Piktur
     # @return [String]
     STRATEGY_UNDEFINED_MSG = "Strategy %s must be one of #{STRATEGIES.join(', ')}"
 
-    Path    = Support::Pathname
-    Matcher = Path::Matcher
-    Sorter  = Path::Sorter
+    Path = Pathname
 
     # Initialize Loader for given `strategy`
     #

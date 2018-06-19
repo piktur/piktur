@@ -4,6 +4,7 @@ module Piktur
 
   module Loader
 
+    # :nodocs
     module Strategies; end
 
   end

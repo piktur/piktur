@@ -4,15 +4,11 @@ module Piktur
 
   module Loader
 
-    # Shouldn't be necessary to {Filter#_rescan} on change since only the {Store#globber} is
-    # cached. When the globber is called, the return value will always reflect the current state
-    # of the directory. A globber will be generated and cached for any new path during the call
-    # to {#load_path!}
+    # @deprecated
+    #   Shouldn't be necessary to {Index#_rescan} on change since only the {Filter#call} is
+    #   cached. When the query is called, the list of files will always be current.
+    #   The query will be cached for any new path when {Load#load} called.
     #
-    #   _, added, = changed
-    #   added.each { |path| _rescan(path) } if added.present?
-    #   modified.each { |path| _rescan(path) } if modified.present?
-    #   removed.each { |path| _rescan(path) } if removed.present?
     module Reload
 
       protected
@@ -26,13 +22,14 @@ module Piktur
         def reload!(changed)
           return if changed.all?(&:blank?)
 
+          # _, added, = changed
+          # added.each { |path| _rescan(path) } if added.present?
+          # modified.each { |path| _rescan(path) } if modified.present?
+          # removed.each { |path| _rescan(path) } if removed.present?
+
           changed.each do |group|
             group.each do |path|
-              load_path!(
-                Path.relative_path_from_target(path, target),
-                pattern: Filter::NAMESPACE_PATTERN,
-                force:   true
-              )
+              load_path!(Path.rpartition(path, target)[-1], force: true)
             end
           end
         end

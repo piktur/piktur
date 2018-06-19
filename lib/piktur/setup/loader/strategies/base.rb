@@ -4,6 +4,45 @@ module Piktur
 
   module Loader
 
+    # A Loader manages a {Filters#target} directory. The relative directory name is passed to the
+    # constructor and becomes the base scope for all future queries of the file system. The
+    #
+    # When querying the file system, the Loader will scan all {Filters#root_directories} in which
+    # the `target` exists.
+    #
+    # The query itself (a `Proc`) is cached, so that when called, the result (a list of files)
+    # is always current. The file paths are relative to the `target` and,
+    # if the path is **autoloadable**, and the constants within them cleared, can be reloaded.
+    #
+    # In non-production environments, when the application is reloaded, any new constant
+    # definitions can be **automatically** registered under the parent namespace or with a
+    # `Dry::Container` instance.
+    #
+    # @see {Concepts::DSL}
+    #
+    # ## Config
+    #
+    # At present, only `ActiveSupport::Dependencies` is integated. To implement a different strategy
+    # define your constant, include {Base} and assign the `:<loader_name>` to
+    # {Piktur::Config.loader.instance}. The defintion should be filed under
+    # `/lib/piktur/setup/loader/strategies/<loader_name>.rb`. An instance will be assigned to the
+    # {Piktur::Config} object. The instance should be `#call`able.
+    #
+    # Any **autoloadable** directory can be used, though typically, the configured
+    # {Piktur::Config.components_directory} is used. The list of component {Filters#types} is also
+    # configurable, use {Piktur::Config.component_types}, the loader refers to type in **plural**
+    # form.
+    #
+    # {include:Load}
+    #
+    # {include:Filters}
+    #
+    # {include:Filter}
+    #
+    # {include:Store}
+    #
+    # {include:Index}
+    #
     # @abstract
     module Base
 
@@ -11,11 +50,13 @@ module Piktur
       # @return [void]
       def self.included(base)
         base.extend  self::ClassMethods
-        base.include Support::Pathname
         base.include self::InstanceMethods
+        base.include Loader::Pathname
         base.include Loader::Store
-        base.include Loader::Filter
-        base.include Loader::Load
+        base.include Loader::Predicates
+        # base.include Loader::Index
+        base.include Loader::Filters
+        base.prepend Loader::Load
       end
 
       # :nodoc
@@ -29,30 +70,42 @@ module Piktur
         #   @return [Boolean] if true paths will be scoped to {Filter#target}
         attr_accessor :use_relative
 
+        # :nodoc
+        def new(*)
+          getter = Loader.method(use_relative ? :scoped_glob : :unscoped_glob).to_proc
+          super.instance_exec do
+            self.fn = ::Hash.new { |h, k| h[k] = Loader.const_get(k).new(self) }
+            fn[:set] = method(:_store_path).to_proc
+            fn[:get] = getter
+            self
+          end
+        end
+
       end
 
       # :nodoc
       module InstanceMethods
-
-        # @!attribute [r] loaded
-        #   @return [Set<String, Symbol>] A list of loaded namespaces
-        attr_reader :loaded
 
         # @!attribute [r] booted
         #   @return [Boolean] True after the first call to {#load!}
         attr_reader :booted
         alias booted? booted
 
-        def initialize(*)
-          @types = ::Piktur::Concepts::COMPONENTS
-            .map { |type| ::Inflector.pluralize(type).to_sym }
+        # @!attribute [r] fn
+        #   A store for `callable` functions and {Filter} instances.
+        #   @return [Hash{Symbol=>Object}]
+        attr_accessor :fn
+
+        # @!attribute [r] loaded
+        #   @return [Set<String, Symbol>] A list of loaded namespaces
+        attr_reader :loaded
+
+        def initialize
           @loaded = ::Set.new
         end
 
         # :nodoc
-        # def call(*)
-        #   raise ::NotImplementedError
-        # end
+        def call(*); raise ::NotImplementedError; end
 
         # @return [Dry::Configurable]
         def config; ::Piktur.config.loader; end
@@ -67,58 +120,6 @@ module Piktur
 
         protected
 
-          # Prepare the value to be stored
-          #
-          # @see Filter#globber
-          #
-          # @param [Pathname] root The service's root path
-          # @param [Pathname] path The absolute path to the directory
-          # @param [Pathname] fn  getter function to cache
-          #
-          # @raise [UncaughtThrowError]
-          #
-          # @return [Proc]
-          def prepare(root, path, &fn)
-            # Disregard if `path` is a {#leaf?}
-            throw(:abort) if path.nil? || leaf?(path)
-
-            # Return the given block, this value will be cached
-            return fn if fn
-
-            if path.directory?
-              globber(root, path)
-            else
-              # The globber is scoped to parent directory so that, when reloading, any **modified**
-              # file in the changes payload could be used to retrieve the contents of the parent
-              # directory.
-              globber(root, path.parent)
-            end
-          end
-
-          # @see #globber
-          # @see https://bitbucket.org/piktur/piktur_core/src/master/spec/benchmark/pattern_matching.rb
-          #   .dir_vs_pathname_glob
-          #
-          # @return [Proc]
-          def fn_get
-            @fn_get ||= method(self.class.use_relative ? :scoped_glob : :unscoped_glob).to_proc
-          end
-
-          # @see Store#_store_path
-          #
-          # @return [Proc]
-          def fn_set
-            @fn_set ||= method(:_store_path).to_proc
-          end
-
-          # :nodoc
-          # def load!(*)
-          #   raise ::NotImplementedError
-          # end
-
-          # @return [true]
-          def booted!; @booted = true; end
-
           # @param [Array<Pathname>] paths The paths to load
           #
           # @return [void]
@@ -130,9 +131,10 @@ module Piktur
           # @param [String] id
           #
           # @return [Boolean]
-          def loaded?(id)
-            loaded.member?(id)
-          end
+          def loaded?(id); loaded.member?(id); end
+
+          # @return [true]
+          def booted!; @booted = true; end
 
           # @param [Symbol] paths The loaded paths
           #

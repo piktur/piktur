@@ -4,7 +4,7 @@ require_relative './evented_file_update_checker.rb'
 
 module Piktur
 
-  # @todo Reloader should be made redundant by incomoing {Loader} implementation
+  # @deprecated Superceded by {Loader} implementation
   #
   # Configure {Piktur.component_dir} reloading
   module Reloader
@@ -38,21 +38,13 @@ module Piktur
         .instance_exec { @pid = Process.pid if @pid != Process.pid; self }
     end
 
-    # @note Extracted model namespace loading so that it occurs before SetupReloader on every
-    #   fork, not just when watched files changed. This is to ensure any top level configuration is
-    #   applied before nested constants loaded. Seems heavy handed, alternatively we could load
-    #   parent concept before any nested concept. But time... none!
-    #
-    #
-    #
-    # REWRITE COMMENTS
-    #
-    #
-    #
+    # :nodoc
     def before(*)
       ::Piktur.load!
     rescue LoadError => error
-      ::Piktur.debug(binding, warn: "Did you set the correct name for the namespace in Piktur::Config#namespaces?")
+      ::Piktur.debug(binding, warn: <<~WARN)
+        Did you set the correct name for the namespace in Piktur::Config#namespaces?
+      WARN
     end
 
     # @param [Array] changes An Array containing `changed`, `added` and `deleted` file lists.
@@ -79,7 +71,7 @@ module Piktur
         path = ::Piktur.components_dir(root: railtie.root)
         next unless path.exist?
         # BuildFileList[path, files]
-        a[path] = ['rb']
+        a[path] = %w(rb)
       end
     end
     private_class_method :paths

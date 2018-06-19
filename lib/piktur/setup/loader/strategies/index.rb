@@ -10,12 +10,10 @@ module Piktur
       private
 
         # @todo
-        #   We'll fetch what's needed when it's needed! There should be no need to preload, unless
-        #   in production -- to be determined.
+        #   Fetch what's needed when it's needed! DO NOT preload; unless in production --
+        #   to be determined.
         #
         # @note {#index!} cannot be called until Piktur::Config is {Piktur::Config.finalize!}d.
-        #   It **MUST NOT** be moved into the constructor at which point it would be called
-        #   before {Piktur::Config.services} is set.
         #
         # @see Filter#root_directories
         # @see #_flatten
@@ -24,11 +22,11 @@ module Piktur
         def index!
           ::Piktur.debug(binding, warn: "[PERFORMANCE] #{__FILE__}:#{__LINE__}")
 
-          _flatten(&fn_set)
+          _flatten(&fn[:set])
         end
 
-        # Aggregates and indexes the contents of the {#target} directory if it exists under
-        # any of the {#root_directories}
+        # Aggregates and indexes the contents of the {Filters#target} directory if it exists under
+        # any of the {Filters#root_directories}
         #
         # @see #index!
         #

@@ -4,21 +4,21 @@ module Piktur
 
   module Loader
 
-    # Implements the loading mechanism for a Loader instance.
+    # Provides methods to query the file system and load the resulting files.
     module Load
 
       include Reload
 
       protected
 
-        # Load path and dependencies matching `namespace` on demand. The namespace may be a relative
-        # path from {#target}
+        # Load path and dependencies matching `namespace` on demand.
+        # The namespace may be a relative path from {Filters#target}
         #
         # @param see (Loader::Load#load!)
         #
         # @return [void]
-        def load_path!(namespace, options = EMPTY_HASH)
-          load!(namespace, by_path(namespace, *options[:pattern]), options)
+        def load_path!(namespace, force: false, **options)
+          load(namespace, by_path(namespace, options), options)
         end
         alias load_namespace! load_path!
 
@@ -29,8 +29,8 @@ module Piktur
         # @param see (Loader::Load#load!)
         #
         # @return [void]
-        def load_type!(type, options = EMPTY_HASH)
-          load!(type, by_type(type, *options[:pattern]), options)
+        def load_type!(type, force: false, **options)
+          load(type, by_type(type, options), options)
         end
 
         # Load all namespaces in {Piktur.config.namespaces}
@@ -38,8 +38,8 @@ module Piktur
         # @param see (Loader::Load#load!)
         #
         # @return [void]
-        def load_all!(options = EMPTY_HASH)
-          ::Piktur.config.namespaces.each { |namespace| load_path!(namespace, options) }
+        def load_all!(options = EMPTY_OPTS)
+          ::Piktur.namespaces.each { |namespace| load_path!(namespace, options) }
         end
 
         # @param [String, Symbol] id A type, namespace or path identifier
@@ -50,14 +50,17 @@ module Piktur
         # @option options [Boolean] :force (false)
         #
         # @return [void]
-        def load!(id, paths, force: false, **)
+        def load(id, paths, force: false, **)
           return if !force && loaded?(id)
 
           catch(:abort) do
-            load(paths, &self.class.default_proc)
+            super(paths, &self.class.default_proc)
             debug(paths)
+
+            # Add the id to history
             loaded << id.to_s
-            return
+
+            return true
           end
 
           ::Piktur.debug(binding, error: "Could not load #{id} #{__FILE__}:#{__LINE__}")
