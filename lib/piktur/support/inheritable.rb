@@ -67,9 +67,11 @@ module Piktur
 
       end
 
+      # :nodoc
       module ClassMethods
 
         # @see Piktur::Support::Inheritable.inheritance_chain
+        #
         # @return [Array<Class>]
         def inheritance_chain(&block)
           Inheritable.inheritance_chain(self, &block)

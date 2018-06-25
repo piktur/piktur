@@ -2,9 +2,27 @@
 
 require 'dry/core/constants'
 
-module Piktur
+module Piktur # rubocop:disable Documentation
 
-  include ::Dry::Core::Constants
+  # Constants you may use to avoid memory allocations or identity checks.
+  module Constants
+
+    def self.included(base)
+      base.include ::Dry::Core::Constants
+    end
+
+    # @return [Pathname]
+    ROOT_PATH = Pathname('/').freeze
+
+    # @return [Pathname]
+    EMPTY_PATH = Pathname('').freeze
+
+    # @return [BasicObject]
+    EMPTY_OBJECT = BasicObject.allocate
+
+  end
+
+  include Constants
 
   # @return [String]
   Support::CLONE_WARNING = <<~MSG

@@ -10,26 +10,26 @@ module Piktur
 
     extend ::ActiveSupport::Autoload
 
+    autoload :Calc
+    autoload :Container
+    autoload :Enum
+    autoload :Format
     autoload :Inheritable
     autoload_under 'piktur/support/inheritable' do
       autoload :Ext
     end
     autoload :Inflector
-    autoload :Enum
-    autoload :FileMatcher, 'piktur/support/file_matcher'
-    autoload :FileSorter,  'piktur/support/file_sorter'
+    autoload :Pathname
     autoload :Hash
     autoload :Introspection
+    autoload :JSON, 'piktur/support/json'
     autoload :Object
     autoload_under 'piktur/support/hash' do
       autoload :WithAttrReader
     end
     autoload :SerializableURI, 'piktur/support/uri'
-    autoload :URI,             'piktur/support/uri'
-    autoload :JSON,            'piktur/support/json'
-    autoload :Calc
-    autoload :Format
     autoload :Types
+    autoload :URI, 'piktur/support/uri'
 
     EXTENSIONS = {
       hash:      [:Hash],
@@ -62,7 +62,10 @@ module Piktur
       return if configurable.blank?
 
       configurable.delete(:helpers)&.each do |group|
-        Object.const_set(const = Inflector.camelize(group), Inflector.constantize(const, Support))
+        ::Object.const_set(
+          const = Inflector.camelize(group),
+          Inflector.constantize(const, Support, camelize: true)
+        )
       end
 
       configurable.each { |e| fn[*e] }
@@ -73,3 +76,4 @@ module Piktur
 end
 
 require_relative './support/constants.rb'
+require_relative './support/container.rb'

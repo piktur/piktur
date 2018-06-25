@@ -275,11 +275,12 @@ module Piktur
             s.files = Dir[
               '{app,db,config,lib}/**/*.rb',
               'Rakefile',
-              'README.markdown'
+              'README.markdown',
+              base: __dir__
             ]
-            s.test_files = Dir['spec/**/*.rb']
+            s.test_files = Dir['spec/**/*.rb', base: __dir__]
 
-            s.add_dependency 'rails', '= 4.2.5.1'
+            s.add_dependency 'rails', '#{ENV['RAILS_VERSION']}'
           end
         RUBY
       end

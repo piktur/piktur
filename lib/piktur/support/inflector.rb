@@ -4,6 +4,7 @@ require 'fast_underscore'
 require 'active_support/inflector'
 
 ActiveSupport::Inflector.inflections(:en) do |inflector|
+  inflector.acronym 'DB'
   inflector.acronym 'DSL'
   inflector.acronym 'API'
   inflector.acronym 'JSON'
@@ -70,13 +71,16 @@ module Piktur
         #
         # @param [String, Symbol] const The camel cased constant
         # @param [Class, Module] scope The namespace to search within
+        #
+        # @option options [Boolean] classify Perform transformation
         # @option options [Boolean] camelize Perform transformation
         # @option options [Boolean] traverse Traverse ancestry
         #
         # @return [Class, Module]
         # @return [nil] if constant not defined in scope
-        def constantize(const, scope = ::Object, camelize: false, traverse: false)
-          camelize && (const = camelize(const))
+        def constantize(const, scope = ::Object, classify: false, camelize: false, traverse: false)
+          const = camelize(const) if camelize
+          const = classify(const) if classify
           constantize!(const, scope, traverse) if scope.const_defined?(const, traverse)
         end
         alias safe_constantize constantize

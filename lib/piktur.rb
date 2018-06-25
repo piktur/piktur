@@ -30,6 +30,7 @@ module Piktur
   end
 
   autoload :Cache
+  autoload :Constants, 'piktur/support/constants'
 
   class << self
 

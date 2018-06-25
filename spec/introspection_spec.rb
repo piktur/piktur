@@ -12,20 +12,15 @@ require 'piktur/support/inflector'
 # @see file:spec/benchmark/constant.rb
 # @see https://bitbucket.org/piktur/piktur/src/master/spec/introspection_spec.rb
 
-# Introspection = Module.new do
-#   def new(*)
-#     super.extend(Introspection)
-#   end
-#   # methods below ...
-# end
-#
-# Module.extend(Introspection)
+RSpec.describe Piktur::Support::Introspection do
+  before(:all) do
+    # %i(parents parent parent_name).each do |m|
+    #   Module.send(:undef_method, m) if Module.method_defined?(:parents)
+    # end
 
-# %i(parents parent parent_name).each do |m|
-#   undef_method(m) if method_defined?(:parents)
-# end
+    Piktur::Support.install(:module)
+  end
 
-RSpec.describe 'namespace introspection' do
   def names(char)
     (1..5).map { |n| "#{char}#{n}".to_sym }
   end
