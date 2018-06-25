@@ -5,25 +5,29 @@ module Piktur
   module Services
 
     # @example
-    #   Index.new 'piktur_security', 'piktur_store', component_types: [:model]
+    #   Index.new 'piktur_security', 'piktur_store'
     class Index
 
-      # @!method search
-      #   @see Services::FileIndex#search
-      #   @return [Array<String>]
-      delegate :search, to: :files
+      # @!attribute [r] dependencies
+      #   @return [Array<Service>] A list of all required {Piktur} services
+      attr_reader :dependencies
+
+      # @!attribute [r] file_index
+      #   @return [Services::FileIndex]
+      attr_reader :file_index
 
       # @param [String] services Gem name per service dependency
       # @param [Hash] options
       #
-      # @option options [Array<Symbol>] :component_types (nil) A list of expected component types
-      def initialize(*services, component_types: nil)
+      # @option options [Array<String>] :component_types (nil) A list of expected component types
+      def initialize(services, options = EMPTY_HASH)
         # @note Rails::Engline::Configuration#railties_order determined accordingly
-        # (engines + applications).map(&:railtie).compact
+        # (engines + applications).map(&:railtie).compact!
         self.dependencies = services
-        self.files        = component_types
-        %i(paths application railties servers eager_load_namespaces to_prepare).each { |m| send(m) }
-        (railties << application.railtie).freeze
+        %i(paths application railties servers eager_load_namespaces)
+          .each { |m| send(m) } # memoize attributes
+        (railties << application.railtie).freeze if application
+        @file_index = FileIndex.new(loaded)
         freeze
       end
 
@@ -39,47 +43,44 @@ module Piktur
         end.freeze
       end
       alias to_a all
-      delegate :each, :find, :map, :select, to: :all
+
+      # @param [Proc] block
+      #
+      # @yieldparam [Services::Service] service
+      #
+      # @return [Enumerator]
+      def each(&block); all.each(&block); end
+
+      # @!method find(&block)
+      # @!method map(&block)
+      # @!method select(&block)
+      # @param see (#each)
+      # @return [Enumerator]
+      delegate :find, :map, :select, to: :all
 
       # @example
       #   services = Services::Index.new
       #   services['piktur_api'] # => Services::Service
-      #   services['api']        # => Services::Service
-      #   services[:api]         # => Services::Service
+      #   services[:piktur_api]  # => Services::Service
+      #
+      # @param [String] name
       #
       # @return [Services::Service]
       def [](name)
-        # `String#end_with?` 14x faster than `=~` when `name` is a Symbol
-        # @see file:spec/benchmark/string_manipulation.rb SymbolConversionRegexpPerformance
-        find { |service| service.name.end_with?(name.to_s) }
+        find { |service| service.name == name.to_s }
       end
-
-      # @!attribute [r] dependencies
-      #   @return [Array<Service>] A list of all required {Piktur} services
-      attr_reader :dependencies
 
       # @param [Array<String>] services
       #
       # @return [void]
       def dependencies=(services)
-        @dependencies = all.select { |e| e if e.name.in?(services) }
+        @dependencies = all.select { |e| services.member?(e.name) }
       end
 
       # @!attribute [r] application
       #   @return [Application] A {Service} object for the loaded application
       def application
         @application ||= loaded.find { |e| e.application? && e.railtie }
-      end
-
-      # @!attribute [r] files
-      #   @return [Services::FileIndex]
-      attr_reader :files
-
-      # @param [Array<Symbol>]
-      #
-      # @return [void]
-      def files=(component_types)
-        @files = FileIndex.new(loaded, component_types: component_types)
       end
 
       # @!attribute [r] paths
@@ -98,24 +99,6 @@ module Piktur
       #   @return [Services::Servers]
       def servers
         @servers ||= Services::Servers.new(applications)
-      end
-
-      # @!attribute [r] to_prepare
-      #   @see Rails::Railtie::Configuration.eager_load_namespaces
-      #   @return [Set<Module, Class>]
-      def eager_load_namespaces
-        @eager_load_namespaces ||= Set.new loaded { |enum| enum.flat_map(&:eager_load) }
-      end
-
-      # @!attribute [r] to_prepare
-      #   Returns an Array of Modules to be initialized on boot
-      #   @see https://bitbucket.org/piktur/piktur_core/src/master/lib/piktur/setup/boot.rb
-      #   @return [Array]
-      def to_prepare
-        return @to_prepare if defined?(@to_prepare)
-        @to_prepare = Set[::Piktur]
-        @to_prepare << application.namespace if application.namespace.respond_to?(:to_prepare)
-        @to_prepare
       end
 
       # @return [Array<String>]
@@ -142,14 +125,48 @@ module Piktur
         end
       end
 
-      # @return [Boolean]
+      # Load all dependencies
+      # @return [void]
       def require
         dependencies.each { |e| require e.name }
       end
 
+      # @!attribute [r] to_prepare
+      #   @see Rails::Railtie::Configuration.eager_load_namespaces
+      #   @return [Set<Module, Class>]
+      def eager_load_namespaces
+        @eager_load_namespaces ||= Set[loaded { |arr| arr.flat_map(&:eager_load) }]
+      end
+
+      # @see https://bitbucket.org/piktur/piktur_core/src/master/lib/piktur/setup/boot.rb
+      #
+      # @return [true] unless :abort is thrown
+      def run_callbacks
+        error = catch(:abort) do
+          dependencies.each do |service|
+            next unless service.namespace.respond_to?(__callee__)
+            service.namespace.send(__callee__)
+          end
+
+          return true
+        end
+
+        ::Piktur.debug(binding, warn: "[FAILURE] #{error || __method__} #{__FILE__}:#{__LINE__}")
+      end
+
+      %i(
+        boot!
+        to_prepare
+        before_class_unload
+        after_class_unload
+        to_run
+        to_complete
+      ).each { |phase| alias_method(phase, :run_callbacks) }
+      private :run_callbacks # rubocop:disable AccessModifierDeclarations
+
       # @return [String]
       def inspect
-        "<#{self.class.name} services=#{loaded.map(&:name)}>"
+        "<#{self.class.name} loaded=#{loaded.map(&:name)}>"
       end
 
     end

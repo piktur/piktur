@@ -56,7 +56,9 @@ module Piktur
         file = ::Piktur.root.parent.join(fname)
         raise Errno::ENOENT, file unless file.exist?
         file
-      end.compact
+      end
+      args.compact!
+      args
     end
 
     # Return concatenated variables contained in existent files

@@ -79,9 +79,57 @@ module Piktur
 
     class << self
 
+      # @return [Bundler::Runtime]
+      def bundler_environment; ::Bundler.environment; end
+
+      # @return [Array<Bundler::Dependency>]
+      def bundler_dependencies; bundler_environment.dependencies; end
+
+      # Returns the `Bundler::Dependency` for each Piktur gem dependency
+      #
+      # @return [Array<Bundler::Dependency>]
+      def dependencies
+        bundler_dependencies.select { |e| e.name.start_with? 'piktur' }
+      end
+
+      # Returns the `Gem::Specification` for each Piktur gem dependency
+      #
+      # @see https://bitbucket.org/piktur/piktur/issues/2
+      #
+      # @return [Hash{String=>Gem::Specification}]
+      def specs
+        ::Hash[dependencies.map { |dependency| [dependency.name, dependency.to_spec] }]
+      end
+
+      # Returns the gemspec for a gem NOT listed in the Gemfile
+      #
+      # @param [String] name The service name
+      #
+      # @return [Gem::Specification]
+      # @return [nil] if no gemspec found
+      def load_gemspec!(name)
+        gemspec = Pathname('..').join(name, "#{name}.gemspec")
+        gemspec = find_gemspec(name)[0] unless gemspec.exist?
+
+        return if gemspec.nil?
+
+        ::Bundler.load_gemspec(gemspec)
+      end
+
       private
 
+        # @param [String] name The service name
+        #
+        # @return [Array<String>]
+        def find_gemspec(name)
+          ::Dir.glob(
+            "{gems/#{name}*/#{name}*,specifications/#{name}*}.gemspec",
+            base: ENV['GEM_HOME']
+          )
+        end
+
         # @param [Array<String>] services
+        #
         # @return [Array<Hash>]
         def services_data(services)
           services.zip SERVICES.values_at(*services)

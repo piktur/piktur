@@ -28,6 +28,7 @@ module Piktur
       #   If gem loaded, the actual path to the loaded gem
       #   @return [Pathname]
       attr_reader :path
+      alias root path
 
       # @!attribute [r]
       #   Return the actual path to loaded gem
@@ -56,26 +57,33 @@ module Piktur
         loaded.is_a?(::Module)
       end
 
-      # Bundler stubs the gemspec to mitigate penalty on load or whatever... Bottom line is
-      # when called on the stub, `Gem.loaded_specs[name]#files` returns a file list relative to
-      # `Dir.pwd` not the `Gem::Specification#gem_dir`. Furthermore, when `#gem_dir` is called on
-      # the legitimate spec, it returns a
+      # @see Services.specs
       #
       # @return [Gem::Specification]
       def gemspec
-        @gemspec ||= _gemspec_path && ::Bundler.load_gemspec(_gemspec_path)
+        @gemspec ||= Services.specs.fetch(name) { # rubocop:disable BlockDelimiters
+          Services.load_gemspec!(name) unless ::Piktur.env.production?
+        }
       end
 
+      # Returns the directory from which the service was loaded.
+      #
+      # @param [String] path The path specified in `piktur/config/services.json`, if any.
+      #
       # @return [void]
-      def path=(value)
-        @path = if value.is_a?(String)
-                  _ensure_existent_directory(value)
-                elsif gemspec
-                  _ensure_existent_directory(gemspec.gem_dir)
-                end
+      def path=(path)
+        [
+          *path,                 # A path specified in `piktur/config/services.json`.
+          *gemspec&.gem_dir,     # May be incorrect if remote gem source.
+          *gemspec&.loaded_from, # The gemspec path -- only necessary if remote source.
+          "../#{name}"           # Or try the local directory.
+        ].each { |candidate| break(path = candidate) if File.exist?(candidate) }
+
+        @path = Pathname(path).instance_exec { (file? ? parent : self).realpath }
       end
 
       # Load constant and replace {#namespace} if defined
+      #
       # @return [Module] if defined
       def constantize
         return unless namespace.is_a?(String) && Object.const_defined?(namespace)
@@ -91,32 +99,6 @@ module Piktur
       def inspect
         %(<Service[#{name}] loaded=#{loaded?} root="#{path}">)
       end
-
-      private
-
-        # @return [Bundler::StubSpecification]
-        # @return [nil] if gem not loaded
-        def _stub
-          ::Gem.loaded_specs[name]
-        end
-
-        # @return [String]
-        # @return [nil] if gem not loaded
-        def _gemspec_path
-          _stub&.loaded_from
-        end
-
-        # @param [String, nil]
-        #
-        # @return [Pathname]
-        # @return [nil] if gem not loaded
-        def _ensure_existent_directory(path)
-          if File.exist?(path)
-            Pathname(path)
-          elsif _gemspec_path
-            Pathname(_gemspec_path).parent
-          end
-        end
 
     end
 
@@ -136,10 +118,12 @@ module Piktur
       # @!method uri
       #   @see Services::Server#uri
       #   @return [URI]
+      delegate :uri, to: :server
+
       # @!method http?
       # @!method https?
       # @return [Boolean]
-      delegate :uri, :http?, :https?, to: :server
+      delegate :http?, :https?, to: :server
 
       # @return [Piktur::Support::StringInquirer]
       def type
@@ -150,7 +134,7 @@ module Piktur
 
       # @return [Rails::Engine]
       def loaded
-        @loaded ||= railtie || false
+        @loaded ||= (railtie || false)
       end
 
       # @return [Class]

@@ -86,9 +86,8 @@ module Piktur
 
     # Returns the canonical file index for all loaded {.services}
     #
-    # @return [Piktur::Services::FileIndex]
-    def files; services.file_index; end
-    alias file_index files
+    # @return [Array<Services::FileIndex::Pathname>]
+    def file_index; services.file_index.all; end
 
   end
 

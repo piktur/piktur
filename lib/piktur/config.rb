@@ -10,7 +10,7 @@ module Piktur
     extend ::ActiveSupport::Autoload
     extend ::Dry::Configurable
 
-    # @!method services
+    # @!attribute [rw] services
     #   @example
     #     Piktur::Config.configure do |config|
     #       config.services = %w(piktur_library piktur_engine piktur_application)
