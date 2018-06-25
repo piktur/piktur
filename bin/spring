@@ -4,15 +4,15 @@
 # This file loads spring without using Bundler, in order to be fast.
 # It gets overwritten when you run the `spring binstub` command.
 
-load File.expand_path('./env', __dir__)
-
 # @note Do not install Spring on production machine, run
 #   `bundle install --without development test`
+#
 # When booting production environment on development machine set "DISABLE_SPRING" or "RAILS_ENV"
 # to avoid loading via Spring.
+#
 # 'bin/rails' requires 'rails/commands' after requiring spring. Even though the preferred
-# environment specified `rails console -e production` RAILS_ENV is not set until `rails/commands`
-# loaded.
+# environment is specified with the command `rails console -e production`,
+# `ENV["RAILS_ENV"]` is not set until `rails/commands` loaded.
 unless defined?(Spring) || ENV['DISABLE_SPRING'] || ENV['RAILS_ENV'] == 'production'
   require 'rubygems'
   require 'bundler'

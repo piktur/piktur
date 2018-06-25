@@ -12,9 +12,10 @@ ENV['BUNDLE_GEMFILE'] ||= File.join(ENGINE_ROOT, 'Gemfile')
 unless defined?(Spring)
   begin
     load File.expand_path('./spring', __dir__) # unless defined?(Spring)
-  rescue LoadError => e
+  rescue LoadError => error
+    raise unless error.message.include?('spring')
+  ensure
     load File.expand_path('./env', __dir__)
-    raise unless e.message.include?('spring')
   end
 end
 
