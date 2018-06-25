@@ -5,20 +5,48 @@ require 'spec_helper'
 require_relative APP_ROOT.join('lib/piktur/support/enum.rb')
 
 module Piktur::Support
+  # context 'when block given to finalize' do
+  #   it 'should add the methods to the enum instance' do
+  #     expect(Piktur['enum.test.users.types']).to be_extended
+  #   end
+  # end
+
   RSpec.describe Enum do
-    describe '.call(namespace, collection, i18n_scope:, **options, &block)' do
-      it 'should map enumerable values'
+    let(:options)   { ::Hash[predicates: nil, scopes: nil, i18n_scope: nil] }
+    let(:name)      { :colours }
+    let(:namespace) { ::Test.safe_const_reset(:Palette, ::Module.new) }
+    let(:block) do
+      lambda do
+        default :black
+        value   :blue
+        value   :purple
+        value   :red
 
-      it 'should assign Enum to constant'
+        finalize do |enum|
+          def enum.extended?; true; end
+        end
+      end
+    end
 
-      it 'should register type'
+    subject(:enum) { Enum.new(namespace, name, options, &block) }
 
-      context 'with queryable attribute' do
-        it 'should add predicates to includer'
+    describe '.new(namespace, name, options, &block)' do
+      it 'should map enumerable values' do
+        expect(enum[:black]).to   eq(0)
+        expect(enum[:black]).to   eq(enum.default)
+        expect(enum[:blue]).to    eq(1)
+        expect(enum[:purple]).to  eq(2)
+        expect(enum[:red]).to     eq(3)
+
+        expect(enum).to be_extended
+      end
+
+      context 'with an attribute name' do
+        it 'should build predicate methods for the attribute'
       end
 
       context 'with scoped attribute' do
-        it 'should add scopes to includer'
+        it 'should build scopes for the attribute'
       end
 
       context 'when value(s) not numeric' do
