@@ -1,3 +1,5 @@
+inherit_from: .rubocop_todo.yml
+
 AllCops:
   Exclude:
     - 'vendor/**/*'
@@ -111,6 +113,11 @@ Naming/UncommunicativeMethodParamName:
 
 Naming/FileName:
   ExpectMatchingDefinition: false
+
+# @todo https://github.com/rubocop-hq/rubocop/commit/7a5cf1fdd11797441078a6ce66583c5b876535e3
+Naming/MemoizedInstanceVariableName:
+  Enabled: true
+  # EnforcedStyleForLeadingUnderscores: optional
 
 Style/FrozenStringLiteralComment:
   EnforcedStyle: when_needed
