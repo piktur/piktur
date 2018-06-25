@@ -8,3 +8,4 @@ coverage/**/*
 .bundle/
 vendor/bundle/**/*
 vendor/cache/**/*
+.rubocop_todo.yml
