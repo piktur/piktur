@@ -80,6 +80,7 @@ Gem::Specification.new do |s|
 
   # @!group Testing
   s.add_development_dependency 'faker',                             '~> 1.6'
+  s.add_development_dependency 'fakefs',                            '~> 0.1'
   s.add_development_dependency 'listen',                            '>= 3.0.5', '< 3.2'
   s.add_development_dependency 'rspec',                             '~> 3.7'
   s.add_development_dependency 'simplecov',                         '~> 0.12'

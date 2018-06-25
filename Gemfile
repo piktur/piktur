@@ -67,6 +67,7 @@ group :development, :test do
 end
 
 group :test do
+  gem 'fakefs',                 require: false
   gem 'piktur_spec',            git:    "#{bb}/piktur/piktur_spec.git",
                                 branch: 'master'
   gem 'rspec'
