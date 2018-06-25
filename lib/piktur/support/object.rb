@@ -17,51 +17,60 @@ module Piktur
       private_class_method :install
 
       # @param [Symbol, String] constant
-      # @param [Module] namespace Scope constant lookup
       #
       # @raise [NameError] if `constant` invalid
       #
       # @return [Object] the named value
       # @return [nil] if constant undefined
-      def safe_const_get(constant, namespace = ::Object)
+      def safe_const_get(constant)
         return if constant.nil?
-        namespace.const_get(constant) if namespace.const_defined?(constant)
+        const_get(constant, false) if const_defined?(constant, false)
       end
 
       # @param [Symbol, String] constant
       # @param [Object] value The new value
-      # @param [Module] namespace Scope constant lookup
       #
       # @raise [NameError] if `constant` invalid
       #
       # @return [Object] the named value
-      def safe_const_set(constant, value, namespace = ::Object)
+      # @return [nil] if constant defined
+      def safe_const_set(constant, value)
         return if constant.nil?
-        namespace.const_set(constant, value) unless namespace.const_defined?(constant)
+        const_set(constant, value) unless const_defined?(constant, false)
       end
 
       # @param [Symbol, String] constant
-      # @param [Module] namespace Scope constant lookup
       #
       # @raise [NameError] if `constant` invalid
       #
       # @return [Object] the unnamed value
-      def safe_remove_const(constant, namespace = ::Object)
+      # @return [nil] if constant undefined
+      def safe_remove_const(constant)
         return if constant.nil?
-        namespace.send(:remove_const, constant) if namespace.const_defined?(constant)
+        remove_const(constant) if const_defined?(constant, false)
+      end
+
+      # @param [Symbol, String] constant
+      # @param [Object] value The value to assign if constant undefined
+      #
+      # @raise [NameError] if `constant` invalid
+      #
+      # @return [Object] the existing or given value
+      def safe_const_get_or_set(constant, value = nil)
+        return if constant.nil?
+        safe_const_get(constant) || const_set(constant, block_given? ? yield : value)
       end
 
       # @param [Symbol, String] constant
       # @param [Object] value The new value
-      # @param [Module] namespace Scope constant lookup
       #
       # @raise [NameError] if `constant` invalid
       #
       # @return [Object] the named value
-      def safe_const_reset(constant, value = nil, namespace = ::Object)
+      def safe_const_reset(constant, value = nil)
         return if constant.nil?
-        ::Object.safe_remove_const(constant, namespace)
-        ::Object.safe_const_set(constant, value, namespace)
+        safe_remove_const(constant)
+        const_set(constant, block_given? ? yield : value)
       end
 
     end
