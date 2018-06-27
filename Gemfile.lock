@@ -11,7 +11,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/piktur/piktur_spec.git
-  revision: 8a997485f3437b0586e2c01c632f45981fb801fa
+  revision: 23c35289a2f3ab1c9441b943afbd8ab2273952a3
   branch: master
   specs:
     piktur_spec (0.0.1)
