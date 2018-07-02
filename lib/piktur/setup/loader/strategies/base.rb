@@ -30,8 +30,8 @@ module Piktur
     #
     # Any **autoloadable** directory can be used, though typically, the configured
     # {Piktur::Config.components_directory} is used. The list of component {Filters#types} is also
-    # configurable, use {Piktur::Config.component_types}, the loader refers to type in **plural**
-    # form.
+    # configurable, use {Piktur::Config.component_types}, the loader will references types in the
+    # form specified by {Piktur::Config.nouns}.
     #
     # {include:Load}
     #
@@ -67,7 +67,7 @@ module Piktur
         attr_accessor :default_proc
 
         # @!attribute [rw] use_relative
-        #   @return [Boolean] if true paths will be scoped to {Filter#target}
+        #   @return [Boolean] if true paths will be scoped to {Filters#target}
         attr_accessor :use_relative
 
         # :nodoc
@@ -108,11 +108,28 @@ module Piktur
         def call(*); raise ::NotImplementedError; end
 
         # @return [Dry::Configurable]
-        def config; ::Piktur.config.loader; end
+        def config; ::Piktur.config[:loader]; end
+
+        # Returns the segment of a file path corresponding to the constant defined within it.
+        #
+        # @note The path should begin with or be relative to {#target}
+        #
+        # @param [String] path The file path
+        # @option options [Regexp] :namespace (false)
+        # @option options [Regexp] :suffix (".rb") If matched, the `suffix` is removed.
+        #
+        # @return [String]
+        # @return [String] if `namespace` true, the directory name.
+        def to_constant_path(path, root = nil, namespace: false, suffix: /\.rb$/)
+          right_of(path, target(root), relative: true).tap do |str|
+            return str.rpartition(::File::SEPARATOR)[0] if namespace
+            str.sub!(suffix, EMPTY_STRING)
+          end
+        end
 
         # @return [String]
         def inspect
-          "<Loader booted=#{booted? || false} count=#{cache.size}>"
+          "<Loader target=\"#{target}\" booted=#{booted? || false} count=#{cache.size}>"
         end
 
         # @return [void]
@@ -154,7 +171,7 @@ module Piktur
 
           # @return [Boolean]
           def respond_to_missing?(method_name, include_private = false)
-            types.include?(method_name) || super
+            types&.include?(method_name) || super
           end
 
       end

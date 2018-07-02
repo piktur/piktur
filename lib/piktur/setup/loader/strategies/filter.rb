@@ -46,18 +46,33 @@ module Piktur
 
       # @!attribute [rw] target
       #   @return [Pathname] The managed directory name
-      attr_accessor :target
+      attr_writer :target
+
+      # @example
+      #   target(::Rails.root)
+      #
+      # @param [Pathname] root
+      #
+      # @return [Pathname] the relative path of the managed directory
+      # @return [Pathname] if `root` the absolute path of the managed directory from root
+      def target(root = nil)
+        root ? @target.expand_path(root) : @target
+      end
 
       # @!attribute [rw] types
-      #   A list of component types (plural) found in {#target} sub directories
+      #   A list of component types (in {Piktur::Config.nouns}) form found in {#target}
+      #   sub directories.
+      #
       #   @return [Array<Symbol>]
       attr_reader :types
 
+      # @see Piktur::Config.nouns
+      #
       # @param [Array<String, Symbol>] arr A list of component types
       #
       # @return [void]
       def types=(arr)
-        @types = arr.map { |type| ::Inflector.pluralize(type).to_sym }
+        @types = arr.map { |type| ::Inflector.send(::Piktur.config[:nouns], type).to_sym }
       end
 
       # Returns a list of existent directories matching {#target}
@@ -73,39 +88,13 @@ module Piktur
 
       # @!endgroup
 
-      # Returns a list of files within {#target} `path` matching the given `pattern`
-      #
-      # @param [Pathname, String] path An **autoloadable** path
-      # @param [String] pattern The match pattern
-      #
-      # @see https://ruby-doc.org/core-2.2.0/File.html#method-c-fnmatch-3F
-      #
-      # @return [Array<Pathname>]
-      def by_path(path, pattern: Loader.namespace_pattern)
-        fetch_or_store(path) { fn[:ByPath].call(path) }
-          &.call(pattern) || EMPTY_ARRAY
-      end
-
-      # Returns a list of files within {#target} `namespace` matching the given `pattern`
-      #
       # @param see (#by_path)
+      # @param see (#by_type)
       #
-      # @return [Array<Pathname>]
-      alias by_namespace by_path
-
-      # Returns a list of files within {#target} matching `type`
-      #
-      # @see https://bitbucket.org/piktur/piktur_core/src/master/spec/benchmark/pattern_matching.rb
-      #   .dir_vs_pathname_glob
-      #
-      # @param [Symbol] type The pluralized component type
-      # @param [String] pattern The match pattern
-      # @param [String] scope Apply match pattern to sub directory scope
-      #
-      # @return [Array<String>] A list of autoloadable file paths
-      def by_type(type, pattern: nil, scope: nil)
-        fetch_or_store(type) { fn[:ByType].call(type) }
-          .call(interpolate(type, pattern, scope))
+      # @return [Array<String>]
+      def files(path: nil, type: nil, **options)
+        by_type(type, options) if type
+        by_path(path, options) if path
       end
 
       # @!group Sort
@@ -139,10 +128,49 @@ module Piktur
 
       protected
 
+        # @!group Filter
+
+        # Returns a list of files within {#target} `path` matching the given `pattern`
+        #
+        # @param [Pathname, String] path An **autoloadable** path
+        # @param [String] pattern The match pattern
+        #
+        # @see https://ruby-doc.org/core-2.2.0/File.html#method-c-fnmatch-3F
+        #
+        # @return [Array<Pathname>]
+        def by_path(path, pattern: Loader.namespace_pattern)
+          fetch_or_store(path) { fn[:ByPath].call(path) }
+            &.call(pattern) || EMPTY_ARRAY
+        end
+
+        # Returns a list of files within {#target} `namespace` matching the given `pattern`
+        #
+        # @param see (#by_path)
+        #
+        # @return [Array<Pathname>]
+        alias by_namespace by_path
+
+        # Returns a list of files within {#target} matching `type`
+        #
+        # @see https://bitbucket.org/piktur/piktur_core/src/master/spec/benchmark/pattern_matching.rb
+        #   .dir_vs_pathname_glob
+        #
+        # @param [Symbol] type The component type
+        # @param [String] pattern The match pattern
+        # @param [String] scope Apply match pattern to sub directory scope
+        #
+        # @return [Array<String>] A list of autoloadable file paths
+        def by_type(type, pattern: nil, scope: '**')
+          fetch_or_store(type) { fn[:ByType].call(type) }
+            .call(interpolate(type, pattern, *scope))
+        end
+
+        # @!endgroup
+
         # @!group Pattern Matching
 
         # @!attribute [r] matchers
-        #   Returns a Hash mapping plural component type to a Regexp matching singular and plural
+        #   Returns a Hash mapping component type to a Regexp matching singular and plural
         #   forms of the type.
         #   @return [Hash{Symbol=>Regexp}]
         def matchers
@@ -150,7 +178,7 @@ module Piktur
         end
 
         # @!attribute [r] patterns
-        #   Returns a Hash mapping plural component type to a pattern matching singular and plural
+        #   Returns a Hash mapping component type to a pattern matching singular and plural
         #   forms of the type.
         #   @return [Hash{Symbol=>String}]
         def patterns
@@ -180,7 +208,7 @@ module Piktur
         # @param [String] scope Restrict the scope of the glob to a directory namespace
         #
         # @return [String]
-        def interpolate(type, pattern = nil, scope = nil)
+        def interpolate(type, pattern = nil, scope = '**')
           format(pattern || patterns.fetch(type) { Loader.scoped_type_pattern }, scope, type)
         end
 

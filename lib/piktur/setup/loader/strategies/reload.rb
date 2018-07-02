@@ -9,6 +9,7 @@ module Piktur
     #   cached. When the query is called, the list of files will always be current.
     #   The query will be cached for any new path when {Load#load} called.
     #
+    # @see Reloader
     module Reload
 
       protected

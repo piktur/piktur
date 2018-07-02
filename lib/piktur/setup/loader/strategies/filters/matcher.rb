@@ -93,16 +93,19 @@ module Piktur
         private_constant :WRAP_L, :WRAP_R
 
         # @return [String]
-        FILE_PATTERN = '*.rb'
-
-        # @return [String]
         SUB = '%s'
 
         # @return [String]
         DIR_PATTERN = '**'
 
         # @return [String]
+        FILE_PATTERN = '*.rb'
+
+        # @return [String]
         DEFAULT_PATTERN = '{*,**/*}.rb'
+
+        # @return [String]
+        INDEX_PATTERN = '%s.rb'
 
         # @return [String]
         NAMESPACE_PATTERN = '{%1$s,%1$s/**/*}.rb'

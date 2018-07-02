@@ -9,7 +9,7 @@ module Piktur
 
       # Returns a list of files within {Filters#target} matching `type`.
       #
-      # @param [Symbol] type The pluralized component type
+      # @param [Symbol] type The component type
       #
       # @return [Proc]
       def call(type)

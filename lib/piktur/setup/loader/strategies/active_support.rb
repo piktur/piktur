@@ -83,49 +83,32 @@ module Piktur
         ::Piktur.debug(binding, error: error)
       end
 
+      # @overload target=(path)
+      #   Must be one of `ActiveSupport.autoload_paths`
+
       # @param [Hash] options
       #
-      # @option options [String] :namespace (nil)
+      # @option options [String] :path (nil)
       # @option options [Symbol] :type (nil)
       #
       # @raise [LoadError]
       #
-      # @return [void]
-      def call(namespace: nil, type: nil, **options)
+      # @return [Array<String>] A list of loaded paths
+      def call(path: nil, type: nil, **options)
         # @example Prefetch (disabled -- likely unnecessary)
         #
         #   index! unless booted?
+        return load_type!(type, options) if type
 
-        if namespace
-          load_namespace!(namespace, options)
-        elsif type
-          load_type!(type, options)
+        if path
+          load_path!(path, options)
         else
           load_all!(options)
         end
-
-        booted! unless booted
       rescue ::LoadError => error
         ::Piktur.debug(binding, error: error)
       end
       alias [] call
-
-      # Returns the segment of a file path corresponding to the constant defined within it.
-      #
-      # @note The path should begin with or be relative to {#target}
-      #
-      # @param [String] path The file path
-      # @option options [Regexp] :namespace (false)
-      # @option options [Regexp] :suffix (".rb") If matched, the `suffix` is removed.
-      #
-      # @return [String]
-      # @return [String] if `namespace` true, the directory name.
-      def to_constant_path(path, root = target, namespace: false, suffix: /\.rb$/)
-        right_of(path, root, relative: true).tap do |str|
-          return str.rpartition(::File::SEPARATOR)[0] if namespace
-          str.sub!(suffix, EMPTY_STRING)
-        end
-      end
 
     end
 

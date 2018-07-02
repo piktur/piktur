@@ -4,9 +4,24 @@ require_relative './evented_file_update_checker.rb'
 
 module Piktur
 
-  # @deprecated Superceded by {Loader} implementation
+  # @deprecated ActiveSupport::Dependencies will clears all previously loaded constants on
+  #   `Rails.application.reloader.reload!`. Reloader is redundant as long as:
+  #   * `Rails.configuration.reload_classes_only_on_change` is true
+  #   * {Piktur.loader} {Piktur::Loader#target} is autoloadable
+  #   * components within `Piktur.loader.target` are defined within their own file
+  #     and the file is named accoding to the constant defined within it
+  #   * any constant(s) not inferrable from an autoloadable path **IS** added to
+  #     `ActiveSupport::Dependencies.explicitly_unloadable_constants`
+  #   * if necessary, load order **SHOULD** be declared by an **index** `<namespace>.rb`
+  #     located under {Piktur.components_dir}; the index **MUST** be loaded before references to
+  #     constants within its scope.
   #
-  # Configure {Piktur.component_dir} reloading
+  # A conservative {Reloader} watches a directory for changes reloading changed files if
+  # `Pathname('<Piktur.components_dir>/<namespace>').children` modified.
+  # If using {Piktur::Reloader}, eager loading **SHOULD** be disabled for the
+  # {Piktur.components_dir}.
+  #
+  # @see EventedFileUpdateChecker
   module Reloader
 
     module_function
@@ -22,7 +37,6 @@ module Piktur
       app.reloaders << reloader
 
       app.reloader.to_run do
-        ::Piktur::Reloader.before
         reloader.execute_if_updated # { require_unload_lock! }
       end
 
@@ -36,15 +50,6 @@ module Piktur
       ::Piktur::EventedFileUpdateChecker
         .new([], paths) { |changes| ::Piktur::Reloader.on_change(changes) }
         .instance_exec { @pid = Process.pid if @pid != Process.pid; self }
-    end
-
-    # :nodoc
-    def before(*)
-      ::Piktur.load!
-    rescue LoadError => error
-      ::Piktur.debug(binding, warn: <<~WARN)
-        Did you set the correct name for the namespace in Piktur::Config#namespaces?
-      WARN
     end
 
     # @param [Array] changes An Array containing `changed`, `added` and `deleted` file lists.
@@ -62,17 +67,11 @@ module Piktur
     def after(*); end
 
     # Returns a Hash mapping autoload paths to extensions for each {Piktur.railties} where
-    # {Piktur.component_dir} exists.
+    # {Piktur.components_dir} exists.
     #
     # @return [Hash{Pathname=>[String]}]
     def paths
-      ::Piktur.railties.each_with_object({}) do |railtie, a|
-        # @note Piktur::Store::Engine hasn't been loaded yet
-        path = ::Piktur.components_dir(root: railtie.root)
-        next unless path.exist?
-        # BuildFileList[path, files]
-        a[path] = %w(rb)
-      end
+      ::Piktur.loader.root_directories.each_with_object({}) { |path, a| a[path] = %w(rb) }
     end
     private_class_method :paths
 
