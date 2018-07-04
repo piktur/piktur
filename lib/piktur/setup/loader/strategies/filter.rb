@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable AccessModifierIndentation, AccessModifierDeclarations
+
 module Piktur
 
   # :nodoc
@@ -208,7 +210,7 @@ module Piktur
         # @param [String] scope Restrict the scope of the glob to a directory namespace
         #
         # @return [String]
-        def interpolate(type, pattern = nil, scope = '**')
+        private def interpolate(type, pattern = nil, scope = '**')
           format(pattern || patterns.fetch(type) { Loader.scoped_type_pattern }, scope, type)
         end
 
