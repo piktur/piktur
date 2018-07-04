@@ -95,8 +95,9 @@ module Piktur
       #
       # @return [Array<String>]
       def files(path: nil, type: nil, **options)
-        by_type(type, options) if type
-        by_path(path, options) if path
+        return by_type(type, options) if type
+        return by_path(path, options) if path
+        EMPTY_ARRAY
       end
 
       # @!group Sort
@@ -141,6 +142,7 @@ module Piktur
         #
         # @return [Array<Pathname>]
         def by_path(path, pattern: Loader.namespace_pattern)
+          binding.pry
           fetch_or_store(path) { fn[:ByPath].call(path) }
             &.call(pattern) || EMPTY_ARRAY
         end
