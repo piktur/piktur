@@ -144,7 +144,8 @@ module Piktur
         def by_path(path, pattern: Loader.namespace_pattern)
           binding.pry
           fetch_or_store(path) { fn[:ByPath].call(path) }
-            &.call(pattern) || EMPTY_ARRAY
+            &.call(pattern) || EMPTY_ARRAY # Use safe navigation, Piktur::Loader::ByPath.call
+                                           # may return nil.
         end
 
         # Returns a list of files within {#target} `namespace` matching the given `pattern`
