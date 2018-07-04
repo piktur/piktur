@@ -12,7 +12,7 @@ module Piktur::Support
   # end
 
   RSpec.describe Enum do
-    let(:options)   { ::Hash[predicates: nil, scopes: nil, i18n_scope: nil] }
+    let(:options)   { ::Hash[i18n_scope: nil] }
     let(:name)      { :colours }
     let(:namespace) { ::Test.safe_const_reset(:Palette, ::Module.new) }
     let(:block) do
@@ -21,6 +21,9 @@ module Piktur::Support
         value   :blue
         value   :purple
         value   :red
+
+        # predicates
+        # scopes
 
         finalize do |enum|
           def enum.extended?; true; end

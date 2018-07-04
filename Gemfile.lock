@@ -1,6 +1,6 @@
 GIT
   remote: https://bitbucket.org/piktur/piktur_security.git
-  revision: 0f6c03359b5b372228b13ce2a9970f25d6149a71
+  revision: 82aa184fe3a558b486b4ab8a10f561d160f0337e
   branch: rails5
   specs:
     piktur_security (0.0.1)
@@ -34,7 +34,7 @@ PATH
       slim (~> 3.0)
 
 GEM
-  remote: http://localhost:9292/
+  remote: https://rubygems.org/
   specs:
     activesupport (5.1.0)
       concurrent-ruby (~> 1.0, >= 1.0.2)
@@ -53,13 +53,13 @@ GEM
     debug_inspector (0.0.3)
     diff-lcs (1.3)
     docile (1.3.1)
-    dotenv (2.4.0)
+    dotenv (2.5.0)
     dry-configurable (0.7.0)
       concurrent-ruby (~> 1.0)
     dry-container (0.6.0)
       concurrent-ruby (~> 1.0)
       dry-configurable (~> 0.1, >= 0.1.3)
-    dry-core (0.4.6)
+    dry-core (0.4.7)
       concurrent-ruby (~> 1.0)
     dry-equalizer (0.2.1)
     dry-events (0.1.0)
@@ -98,7 +98,7 @@ GEM
       i18n (>= 0.7)
     fast_underscore (0.3.1)
     ffi (1.9.25)
-    foreman (0.84.0)
+    foreman (0.85.0)
       thor (~> 0.19.1)
     hotch (0.5.0)
       allocation_tracer (~> 0.6.3)
@@ -120,9 +120,9 @@ GEM
     mini_portile2 (2.3.0)
     minitest (5.11.3)
     newrelic_rpm (3.18.1.330)
-    nokogiri (1.8.2)
+    nokogiri (1.8.3)
       mini_portile2 (~> 2.3.0)
-    oj (3.6.2)
+    oj (3.6.3)
     parallel (1.12.1)
     parser (2.5.1.0)
       ast (~> 2.4.0)
@@ -180,7 +180,7 @@ GEM
     slim (3.0.9)
       temple (>= 0.7.6, < 0.9)
       tilt (>= 1.3.3, < 2.1)
-    solargraph (0.22.0)
+    solargraph (0.23.0)
       coderay (~> 1.1)
       eventmachine (~> 1.2, >= 1.2.5)
       htmlentities (~> 4.3, >= 4.3.4)
@@ -196,7 +196,7 @@ GEM
     spring-watcher-listen (2.0.1)
       listen (>= 2.7, < 4.0)
       spring (>= 1.2, < 3.0)
-    stackprof (0.2.11)
+    stackprof (0.2.12)
     temple (0.8.0)
     thor (0.19.4)
     thread_safe (0.3.6)
