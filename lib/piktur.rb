@@ -97,7 +97,7 @@ module Piktur
   # Secrets.overload
 
   # Install the optimised Inflector immediately
-  Support.install(:inflector)
+  Support.install(:module, :inflector)
 
 end
 

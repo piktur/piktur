@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'active_support/core_ext/module/introspection'
+
 module Piktur
 
   module Support
@@ -15,7 +17,8 @@ module Piktur
 
       # @return [void]
       def self.install(*)
-        ::Module.extend(self)
+        ::Module.prepend(self)
+
         true
       end
 
@@ -23,14 +26,22 @@ module Piktur
       # The receiver is not included.
       #
       # @return [Array<Module>]
-      def parents
+      def parents # rubocop:disable MethodLength
         return @_parents if defined?(@_parents)
+        return @_parents = [::Object] if singleton_class?
 
-        @_parents = [Object]
+        @_parents = []
 
-        name
-          .split('::')[0..-2]
-          .inject(self) { |a, e| @_parents.unshift(a = a.const_get(e, false)); a }
+        to_s.split('::').tap do |arr|
+          arr.pop
+
+          until arr.empty?
+            @_parents << ::Object.const_get(arr.join('::'), false)
+            arr.pop
+          end
+
+          @_parents << ::Object
+        end
 
         @_parents.freeze
       end
@@ -42,7 +53,8 @@ module Piktur
 
       # @return [String]
       def parent_name
-        parent.name
+        return EMPTY_STRING if parent == ::Object
+        parent.to_s
       end
 
     end

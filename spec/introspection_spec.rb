@@ -15,7 +15,7 @@ require 'piktur/support/inflector'
 RSpec.describe Piktur::Support::Introspection do
   before(:all) do
     # %i(parents parent parent_name).each do |m|
-    #   Module.send(:undef_method, m) if Module.method_defined?(:parents)
+    #   Module.send(:undef_method, m) if Module.method_defined?(m)
     # end
 
     Piktur::Support.install(:module)
