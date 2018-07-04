@@ -102,7 +102,7 @@ module Piktur
         raise StandardError, STRATEGY_UNDEFINED_MSG % strategy unless
           STRATEGIES.include?(strategy)
 
-        ::Inflector.constantize(strategy, Loader, camelize: true).new
+        ::Inflector.constantize(strategy, self, camelize: true).new
       end
 
       # @param see (Base#call)
