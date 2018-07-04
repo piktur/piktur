@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable AccessModifierDeclarations
+
 require 'fast_underscore'
 require 'active_support/inflector'
 
@@ -40,10 +42,9 @@ module Piktur
 
       class << self
 
-        def install(*)
+        private def install(*)
           ::Object.const_set(:Inflector, self)
         end
-        private :install
 
         include ::ActiveSupport::Inflector
 
