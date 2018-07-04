@@ -4,7 +4,7 @@ module Piktur
 
   module Support
 
-    class Enum
+    class Enum # rubocop:disable Documentation
 
       # @param [Module] namespace The parent module
       # @param [Symbol] name The collection name
@@ -56,7 +56,7 @@ module Piktur
         def self.call(namespace, options, &block)
           options[:i18n_scope] ||= namespace
 
-          dsl = new({}, options).tap do |dsl|
+          dsl = new({}, options).tap do |dsl| # rubocop:disable ShadowingOuterLocalVariable
             dsl.i18n_scope(namespace)
             dsl.instance_exec(&block)
           end
