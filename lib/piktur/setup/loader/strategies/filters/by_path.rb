@@ -14,8 +14,8 @@ module Piktur
       # @param [Pathname] path The path to scan
       #
       # @return [Proc]
+      # @return [nil] if `path` not found or is a {Predicates#leaf?}
       def call(path)
-        # Disregard if `path` is a {Predicates#leaf?}
         return if (root, path = find(path)).nil? || loader.leaf?(path)
 
         # The glob is scoped to the parent directory so that,
