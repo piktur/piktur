@@ -57,7 +57,7 @@ module Piktur
       module Delegates
 
         # @!attribute [rw] container
-        #   @return [Dry::Container] the {Container} instance
+        #   @return [Dry::Container{String => Object}] the {Container} instance
         attr_accessor :container
 
         # @!method register(key, contents = nil, options = {}, &block)
