@@ -142,7 +142,6 @@ module Piktur
         #
         # @return [Array<Pathname>]
         def by_path(path, pattern: Loader.namespace_pattern)
-          binding.pry
           fetch_or_store(path) { fn[:ByPath].call(path) }
             &.call(pattern) || EMPTY_ARRAY # Use safe navigation, Piktur::Loader::ByPath.call
                                            # may return nil.
