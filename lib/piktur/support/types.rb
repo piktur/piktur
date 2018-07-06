@@ -28,6 +28,11 @@ module Piktur
         include ::Dry::Container::Mixin
         include Support::Container::Mixin
 
+        # @return [void]
+        def finalize!
+          freeze if ::Piktur.env.production?
+        end
+
       end
 
       include ::Dry::Types.module
