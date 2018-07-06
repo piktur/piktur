@@ -89,12 +89,11 @@ module Piktur
         def i18n_scope(value)
           return if value == ::Object
 
-          options[:i18n_scope] =
-            case value
-            when ::Module then Support::Inflector.underscore(value.to_s).to_sym
-            when ::String then value.to_sym
-            when ::Symbol then value
-            end
+          options[:i18n_scope] = case value
+          when ::Module then Support::Inflector.underscore(value.to_s).to_sym
+          when ::String then value.to_sym
+          when ::Symbol then value
+          end
         end
 
         # Block to extend the Enum instance.

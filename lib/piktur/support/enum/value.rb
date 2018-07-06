@@ -92,8 +92,7 @@ module Piktur
         #   case gender
         #   when Genders[:male]   then 'blue'
         #   when Genders[:female] then 'red'
-        #   else
-        #     'black'
+        #   else 'black'
         #   end
         #
         # @return [Boolean]

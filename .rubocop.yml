@@ -16,14 +16,6 @@ AllCops:
   TargetRubyVersion: 2.5.1
   TargetRailsVersion: 5.0
 
-Layout/AlignHash:
-  EnforcedHashRocketStyle: key
-  EnforcedColonStyle: table
-  Exclude:
-    - 'locales/**/*'
-    - '**/locales/**/*'
-    - '../**/locales/**/*'
-
 Style/BracesAroundHashParameters:
   EnforcedStyle: context_dependent
 
@@ -47,9 +39,6 @@ Style/Documentation:
     - '../**/db/**/*'
 
 Style/Copyright:
-  Enabled: false
-
-Layout/CommentIndentation:
   Enabled: false
 
 Style/CommentAnnotation:
@@ -85,14 +74,11 @@ Style/CommentAnnotation:
     - '@!scope'
     - '@!visibility'
 
-Layout/EmptyLineBetweenDefs:
-  AllowAdjacentOneLineDefs: true
+Style/FrozenStringLiteralComment:
+  EnforcedStyle: when_needed
 
-Layout/EmptyLinesAroundClassBody:
-  EnforcedStyle: empty_lines
-
-Layout/EmptyLinesAroundModuleBody:
-  EnforcedStyle: empty_lines
+Style/FormatStringToken:
+  EnforcedStyle: template
 
 Naming/UncommunicativeMethodParamName:
   MinNameLength: 2
@@ -117,11 +103,31 @@ Naming/MemoizedInstanceVariableName:
   Enabled: true
   # EnforcedStyleForLeadingUnderscores: optional
 
-Style/FrozenStringLiteralComment:
-  EnforcedStyle: when_needed
+Layout/EmptyLineBetweenDefs:
+  AllowAdjacentOneLineDefs: true
 
-Style/FormatStringToken:
-  EnforcedStyle: template
+Layout/EmptyLinesAroundClassBody:
+  EnforcedStyle: empty_lines
+
+Layout/EmptyLinesAroundModuleBody:
+  EnforcedStyle: empty_lines
+
+Layout/AlignHash:
+  EnforcedHashRocketStyle: key
+  EnforcedColonStyle: table
+  Exclude:
+    - 'locales/**/*'
+    - '**/locales/**/*'
+    - '../**/locales/**/*'
+
+Layout/CommentIndentation:
+  Enabled: false
+
+Layout/CaseIndentation:
+  EnforcedStyle: end
+
+Layout/EndAlignment:
+  EnforcedStyleAlignWith: start_of_line
 
 Layout/IndentationConsistency:
   EnforcedStyle: rails
