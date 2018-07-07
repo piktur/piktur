@@ -90,7 +90,10 @@ module Piktur
           return if value == ::Object
 
           options[:i18n_scope] = case value
-          when ::Module then Support::Inflector.underscore(value.to_s).to_sym
+          when ::Module
+            if value.respond_to?(:Name) then value.Name.i18n_key
+            else Support::Inflector.underscore(value.to_s).to_sym
+            end
           when ::String then value.to_sym
           when ::Symbol then value
           end
