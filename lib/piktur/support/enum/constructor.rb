@@ -14,7 +14,7 @@ module Piktur
       # @option options [Symbol] :i18n_scope (nil)
       #
       # @return [Enum] an immutable Enum instance
-      def self.new(namespace, name, options = EMPTY_OPTS, &block)
+      def self.new(namespace, name, **options, &block)
         options, finisher = DSL.call(namespace, options, &block)
 
         super(name, options).finalize(namespace, options, &finisher)
