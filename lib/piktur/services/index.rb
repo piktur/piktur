@@ -144,7 +144,7 @@ module Piktur
       def run_callbacks
         error = catch(:abort) do
           dependencies.each do |service|
-            next unless service.namespace.respond_to?(__callee__)
+            next unless service.namespace.respond_to?(__callee__, true)
             service.namespace.send(__callee__)
           end
 
