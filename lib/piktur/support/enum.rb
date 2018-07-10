@@ -215,7 +215,8 @@ module Piktur
 
       # @return [String]
       def inspect
-        "<Enum[#{key}] #{each_pair.with_object(String.new) { |(k,v), s| s << " #{k}=#{v.to_i}" }}>"
+        str = ::String.new
+        "<Enum[#{key}] #{each_pair { |k, v| str << " #{k}=#{v.to_i}" }; str}>"
       end
 
       private
