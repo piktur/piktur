@@ -38,7 +38,6 @@ module Piktur
       #
       #   bundle config --local local.piktur_core $ROOT
       #   bundle config --local local.amoeba $CACHE/amoeba
-      #   bundle config --local local.annotate $CACHE/annotate_models
       #   bundle config --local local.awesome_print $CACHE/awesome_print
       #   bundle config --local local.yard $CACHE/yard
       #
@@ -56,7 +55,7 @@ module Piktur
 
         # Setup local source for git repositories
         local_gems_path = Piktur.root.parent.parent.join('gems')
-        %w(amoeba annotate awesome_print yard).each do |e|
+        %w(amoeba awesome_print yard).each do |e|
           run "bundle config --local local.#{e} #{local_gems_path.join(e)}"
         end
 

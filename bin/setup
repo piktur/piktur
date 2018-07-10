@@ -17,7 +17,6 @@
 # @todo We may also want to clone forked gems
 #   * yard
 #   * amoeba
-#   * annotate_models
 #   * awesome_print
 #
 # @todo [Host secrets privately or store encrypted files on git, then decrypt on clone.](https://trello.com/c/iymYXp4X/203-env)
