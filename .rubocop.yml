@@ -312,6 +312,9 @@ Lint/UnderscorePrefixedVariableName:
 Lint/UnneededSplatExpansion:
   Enabled: false
 
+Bundler/OrderedGems:
+  Enabled: false
+
 Rails:
   Enabled: true
 
