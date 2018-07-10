@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable FormatString
+# rubocop:disable FormatString, DynamicFindBy
 
 module Piktur
 
