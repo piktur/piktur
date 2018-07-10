@@ -146,7 +146,11 @@ module Piktur
       def include?(value); find(value).present?; end
 
       # @return [Enum::Value]
-      def default; @default ||= mapping.each { |e| break(e) if e.default? }; end
+      # @return [nil] if default value not set
+      def default
+        return @default if defined?(@default) # @default may be nil
+        @default = mapping.find(&:default?)
+      end
 
       # @return [Integer]
       # @return [nil] if default value not set
