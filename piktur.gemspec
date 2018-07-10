@@ -96,7 +96,7 @@ Gem::Specification.new do |s|
 
   # @!group Code Quality
   s.add_development_dependency 'rubocop',                           '~> 0.50'
-  s.add_development_dependency 'solargraph',                        '~> 0.20'
+  s.add_development_dependency 'solargraph',                        '~> 0.2'
   # @!endgroup
 
   # @!group Benchmarks
