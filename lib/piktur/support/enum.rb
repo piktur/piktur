@@ -223,7 +223,7 @@ module Piktur
 
         # @return [true] if {#key} include the method name
         def respond_to_missing?(method_name, include_private = false)
-          keys.include?(method_name) || super
+          keys.include?(method_name) || super # rubocop:disable InefficientHashSearch
         end
 
         # Forwards the method call to {#mapping}
