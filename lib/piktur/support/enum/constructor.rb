@@ -6,21 +6,21 @@ module Piktur
 
     class Enum # rubocop:disable Documentation
 
-      # @param [Module] namespace The parent module
       # @param [Symbol] name The collection name
       # @param [Hash] options
       #
+      # @option options [Module] :namespace (Object) the parent module
       # @option options [Symbol] :predicates (nil) the enumerated attribute name
       # @option options [Symbol] :i18n_scope (nil)
       #
       # @return [Enum] an immutable Enum instance
-      def self.new(namespace, name, **options, &block)
+      def self.new(name, namespace: ::Object, **options, &block)
         options, finisher = DSL.call(namespace, options, &block)
 
         super(name, options).finalize(namespace, options, &finisher)
       end
 
-      def initialize(name, values:, i18n_scope:)
+      def initialize(name, values:, i18n_scope:, **)
         @name = name.to_sym
         self.i18n_scope = i18n_scope
 
