@@ -35,17 +35,20 @@ module Piktur
       #
       # @option options [String, Symbol] :predicates
       #   Include {Predicates} for enumerated attribute
+      # @option options [Boolean] :register
+      #   Register the enum with the application {Piktur.container}
       #
       # @yieldparam [self] enum The {Enum} instance
       #
       # @raise [RuntimeError]
       #
       # @return [Piktur::Support::Enum]
-      def finalize(namespace, predicates: nil, **)
+      def finalize(namespace, predicates: nil, register: false, **)
         raise(::RuntimeError, ENUM_FROZEN_MSG % inspect) if frozen?
 
         yield(self) if block_given?
 
+        ::Piktur.register(i18n_scope, self) if register
         namespace.include(self.predicates(predicates)) if predicates
 
         freeze
@@ -97,6 +100,13 @@ module Piktur
           when ::String then value.to_sym
           when ::Symbol then value
           end
+        end
+
+        # Record intention to register Enum with the application container
+        #
+        # @return [void]
+        def register
+          options[:register] = true
         end
 
         # Block to extend the Enum instance.
