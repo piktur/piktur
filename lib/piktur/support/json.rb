@@ -83,7 +83,7 @@ module ActiveSupport
 
       # @overload decode(json, symbol_keys: true)
       #   Return symbol keyed Hash. Oj 2x faster than `Hash#deep_symbolize_keys!`
-      #   @see http://bitbucket.org/piktur/piktur_core/spec/benchmark/json.rb
+      #   @see http://bitbucket.org/piktur/piktur_core/benchmark//json.rb
       #   @return [Hash{Symbol=>Object}]
 
       # Decodes a JSON string into a Hash with Oj

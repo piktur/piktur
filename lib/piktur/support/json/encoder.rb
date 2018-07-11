@@ -27,7 +27,7 @@ module Piktur
       # @see https://github.com/rails/rails/blob/master/activesupport/lib/active_support/json/encoding.rb#L168
       # @see https://gist.github.com/chancancode/ff3093b101d934065d1f
       # @see https://precompile.com/2015/07/25/rails-activesupport-json.html
-      # @see file:http://bitbucket.org/piktur/piktur_core/spec/benchmark/json.rb Benchmarks
+      # @see file:http://bitbucket.org/piktur/piktur_core/benchmark//json.rb Benchmarks
       #
       class Encoder < ::ActiveSupport::JSON::Encoding::JSONGemEncoder
 

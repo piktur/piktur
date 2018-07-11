@@ -20,8 +20,8 @@ module Piktur
 
     # {URI} mimics `URI` providing limited interface with improved performance.
     #
-    # @see file:spec/benchmark/requests.rb URI vs Struct
-    # @see file:spec/benchmark/requests.rb BaseController#origin
+    # @see file:benchmark//requests.rb URI vs Struct
+    # @see file:benchmark//requests.rb BaseController#origin
     #
     # @example Split uri like string into components
     #   @origin ||= URI.new(

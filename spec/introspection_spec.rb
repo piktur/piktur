@@ -9,7 +9,7 @@ require 'piktur/support/inflector'
 # active_support/core_ext/module/introspection.rb
 #   Module.nesting[1..-1] << Object
 #
-# @see file:spec/benchmark/constant.rb
+# @see file:benchmark//constant.rb
 # @see https://bitbucket.org/piktur/piktur/src/master/spec/introspection_spec.rb
 
 RSpec.describe Piktur::Support::Introspection do
