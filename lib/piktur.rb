@@ -93,6 +93,11 @@ module Piktur
     # @return [Array<Services::FileIndex::Pathname>]
     def file_index; services.file_index.all; end
 
+    # @return [Plugins::Registry]
+    def plugins
+      @plugins ||= Plugins::Registry.new
+    end
+
   end
 
   # @todo A proper production solution will have to be implemented.

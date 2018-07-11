@@ -36,7 +36,7 @@ module Piktur
   class Cache
 
     extend  ::Dry::Core::Cache
-    include Support::ReadMulti
+    include Support::Cache::ReadMulti
 
   end
 

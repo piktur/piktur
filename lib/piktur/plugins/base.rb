@@ -25,16 +25,25 @@ module Piktur
       def initialize(mod, options)
         @mod = mod
         @options = options
-        @type = options.fetch(:type)
+        @type = options.fetch(:type) { :default }
       end
 
       # Apply this plugin to the provided class
       #
-      # @param [Module] base
+      # @param [Class] klass The component definition
+      # @param [Hash] options
       #
       # @return [void]
-      def apply_to(*)
-        raise NotImplementedError, "#{self.class}#apply_to not implemented"
+      def apply_to(klass, options = EMPTY_HASH)
+        if mod.respond_to?(:apply)
+          mod.apply(klass, options)
+        elsif mod.respond_to?(:new)
+          # Wrap dynamic methods in anonymous module closure; include
+          klass.send(:include, mod.new(options))
+        else
+          # Include static module
+          klass.send(:include, mod)
+        end
       end
 
     end
