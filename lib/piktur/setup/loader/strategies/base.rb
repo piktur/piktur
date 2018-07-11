@@ -158,7 +158,7 @@ module Piktur
           # @return [void]
           def debug(paths)
             return unless config.debug
-            ::Piktur.logger.info "Loaded: #{paths.map { |p| "  - #{p}" }.join("\n")}"
+            ::Piktur.logger.info "Loaded:\n#{paths.map { |p| "  - #{p}" }.join("\n")}"
           end
 
           # @raise [NoMethodError] if non existent component type

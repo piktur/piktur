@@ -5,7 +5,7 @@ require 'active_support/evented_file_update_checker'
 module Piktur
 
   # @note Ruby cannot share threads between processes. Forking will render the listener useless.
-  #   Be sure to boot the listener after forking, ie. when using Spring in devlopment.
+  #   Be sure to boot the listener after forking, ie. when using Spring in development.
   #
   # @see https://github.com/guard/listen/issues/398#issuecomment-223957952
   #
