@@ -24,13 +24,16 @@ module Piktur
   extend ::ActiveSupport::Autoload
 
   eager_autoload do
-    autoload :Services
     autoload :Secrets
+    autoload :Services
     autoload :Support
   end
 
-  autoload :Cache
-  autoload :Constants, 'piktur/support/constants'
+  autoload :Cache, 'piktur/support/cache'
+  autoload :Constants
+  autoload :Plugin
+  autoload :Plugins
+  autoload :Registry
 
   class << self
 
