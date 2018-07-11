@@ -9,6 +9,5 @@
 --markup markdown
 --exclude lib/piktur/generators/**
 lib/**/*.rb
-app/**/*.rb
 -
 README.markdown
