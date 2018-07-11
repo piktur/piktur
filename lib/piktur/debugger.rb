@@ -91,9 +91,14 @@ module Piktur
     # @return [void]
     def warn(str); ::Piktur.logger.warn(str); end
 
-    # @param [String] str
+    # @param [String, Exception] error
     # @return [void]
-    def error(str); ::Piktur.logger.error(str); end
+    def error(err)
+      case err
+      when String then ::Piktur.logger.error(err)
+      when Exception then ::Piktur.logger.error(err.full_message)
+      end
+    end
 
     # @param [Symbol] sym
     # @return [void]

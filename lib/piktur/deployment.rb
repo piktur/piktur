@@ -2,8 +2,11 @@
 
 module Piktur
 
+  # @api private
+  #
   # @todo add CLI actions
   # @todo deploy to AWS Elastic Beanstalk with `eb` CLI
+  #
   # @see Thor::Actions::ClassMethods
   module Deployment
 

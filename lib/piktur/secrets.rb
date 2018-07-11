@@ -2,6 +2,8 @@
 
 module Piktur
 
+  # @todo Host secrets privately or store encrypted files on git [task](https://trello.com/c/iymYXp4X/203-env)
+  #
   # Set ENV variables from values contained in local files
   #
   # ## Environment Configuration

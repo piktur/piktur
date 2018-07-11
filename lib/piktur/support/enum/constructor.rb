@@ -42,17 +42,17 @@ module Piktur
       #
       # @raise [RuntimeError]
       #
-      # @return [Piktur::Support::Enum]
+      # @return [self]
       def finalize(namespace, predicates: nil, register: false, **)
         raise(::RuntimeError, ENUM_FROZEN_MSG % inspect) if frozen?
 
         yield(self) if block_given?
 
-        ::Piktur.register(i18n_scope, self) if register
+        ::Piktur.register(key, self) if register
+
         namespace.include(self.predicates(predicates)) if predicates
 
         freeze
-        self
       end
 
       DSL = ::Struct.new(:values, :options) do
