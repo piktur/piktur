@@ -2,25 +2,6 @@
 
 # frozen_string_literal: true
 
-# |-- /gem_server        # Private gem server
-# |-- /gems              # Store forked gems
-# |-- <project_name>     # Store common config and untracked files ie. `.env`
-#   |-- /piktur          # Piktur
-#   |-- /piktur_admin    # Piktur::Admin
-#   |-- /piktur_api      # Piktur::Api
-#   |-- /piktur_blog     #
-#   |-- /piktur_client   # Piktur::Client
-#   |-- /piktur_core     # Piktur::Core
-#   |-- /piktur_docs     # Piktur::Docs
-#   |-- /piktur_security # Piktur::Security
-#
-# @todo We may also want to clone forked gems
-#   * yard
-#   * amoeba
-#   * awesome_print
-#
-# @todo [Host secrets privately or store encrypted files on git, then decrypt on clone.](https://trello.com/c/iymYXp4X/203-env)
-
 require 'pathname'
 
 ENV['RAILS_ENV'] ||= 'development'
