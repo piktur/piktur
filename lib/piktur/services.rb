@@ -2,19 +2,21 @@
 
 module Piktur
 
-  # {Services} provides metadata and configuration to assist communication between Piktur
-  # {SERVICES}.
-  #
-  # Basic service data is stored in `/config/services.json`.
+  # {Services} exposes functionality to **boot** and communicate with other Piktur {SERVICES}.
   #
   # @note The term **"service"** -- as in **Service Oriented Architecture (SOA)** -- is used to
   #   emphasise **separation of responsibility**.
+  #
   #   A service exposes a public api that may be accessible via HTTP ie. {Application} or
   #   extends an existing interface as in {Engine} or {Library}.
+  #
+  # @see file:/config/services.json Services configuration
   #
   # ## Developer directory structure
   #
   # Run `bin/piktur setup` to prepare development directory
+  #
+  # @see https://bitbucket.org/piktur/piktur/wiki/Structure.md
   #
   # ```
   #   |-- /gem_server        # Private gem server
@@ -28,24 +30,24 @@ module Piktur
   #     |-- /piktur_core     # Piktur::Core
   #     |-- /piktur_docs     # Piktur::Docs
   #     |-- /piktur_security # Piktur::Security
+  #     |-- /piktur_sites    # Piktur::Sites
   #     |-- /piktur_store    # Piktur::Store
   #     |-- /piktur_spec     # Piktur::Spec
   # ```
-  #
   module Services
-
-    require 'oj'
 
     extend ::ActiveSupport::Autoload
 
     autoload :Application, 'piktur/services/service'
-    autoload :Engine,      'piktur/services/service'
+    autoload :Engine, 'piktur/services/service'
     autoload :FileIndex
     autoload :Index
-    autoload :Library,     'piktur/services/service'
-    autoload :Server,      'piktur/services/servers'
+    autoload :Library, 'piktur/services/service'
+    autoload :Server, 'piktur/services/servers'
     autoload :Servers
     autoload :Service
+
+    require 'oj'
 
     # @see file:config/services.json
     # @return [Hash{Symbol=>Object}]
@@ -57,12 +59,15 @@ module Piktur
 
     LIBRARIES = %i(
       piktur
+      piktur_docs
       piktur_security
+      piktur_spec
     ).freeze
     private_constant :LIBRARIES
 
     ENGINES = %i(
       piktur_core
+      piktur_sites
       piktur_store
     ).freeze
     private_constant :ENGINES
@@ -73,7 +78,6 @@ module Piktur
       piktur_blog
       piktur_client
       piktur_docs
-      piktur_spec
     ).freeze
     private_constant :APPLICATIONS
 

@@ -22,20 +22,17 @@
     "piktur_core": {
       "namespace": "Piktur"
     },
-    "piktur_store": {
-      "namespace": "Piktur::Store"
-    },
     "piktur_security": {
       "namespace": "Piktur::Security"
     },
+    "piktur_sites": {
+      "namespace": "Piktur::Sites"
+    },
+    "piktur_store": {
+      "namespace": "Piktur::Store"
+    },
     "piktur_spec": {
-      "namespace": "Piktur::Spec",
-      "uri": {
-        "production": null,
-        "development": "http://localhost:3001",
-        "staging": null,
-        "test": "http://localhost:3001"
-      }
+      "namespace": "Piktur::Spec"
     },
     "piktur_admin": {
       "namespace": "Piktur::Admin",

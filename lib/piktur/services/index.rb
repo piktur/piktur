@@ -24,10 +24,14 @@ module Piktur
         # @note Rails::Engline::Configuration#railties_order determined accordingly
         # (engines + applications).map(&:railtie).compact!
         self.dependencies = services
+
         %i(paths application railties servers eager_load_namespaces)
           .each { |m| send(m) } # memoize attributes
+
         (railties << application.railtie).freeze if application
+
         @file_index = FileIndex.new(loaded)
+
         freeze
       end
 
@@ -78,9 +82,12 @@ module Piktur
       end
 
       # @!attribute [r] application
-      #   @return [Application] A {Service} object for the loaded application
+      #   @return [Service] A {Service} object for the loaded application
       def application
-        @application ||= loaded.find { |e| e.application? && e.railtie }
+        return @application if defined?(@application)
+
+        @application = loaded.find { |e| e.application? && e.railtie }
+        # || self['piktur_spec'].loaded? && self['piktur_spec'].namespace
       end
 
       # @!attribute [r] paths
