@@ -6,7 +6,7 @@ module Piktur
 
   module Loader
 
-    # @see https://bitbucket.org/piktur/piktur_core/src/master/spec/benchmark/pattern_matching.rb
+    # @see https://bitbucket.org/piktur/piktur_core/src/master/benchmark//pattern_matching.rb
     #   ::Benchmark.fnmatch_vs_match_combined
     #
     # @example
@@ -41,7 +41,7 @@ module Piktur
         [Inflector.singularize(input), Inflector.pluralize(input)]
       end
 
-      # @see https://bitbucket.org/piktur/piktur_core/src/master/spec/benchmark/pattern_matching.rb
+      # @see https://bitbucket.org/piktur/piktur_core/src/master/benchmark//pattern_matching.rb
       #
       # @param [Array<String, Symbol>] arr
       # @param [Hash] options

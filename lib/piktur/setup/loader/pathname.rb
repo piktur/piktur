@@ -170,7 +170,7 @@ module Piktur
       end
       private_class_method :_relative
 
-      # @see https://bitbucket.org/piktur/piktur_core/src/master/spec/benchmark/pattern_matching.rb
+      # @see https://bitbucket.org/piktur/piktur_core/src/master/benchmark//pattern_matching.rb
       #   .string_wrap_conditional
       #
       # @param [String] str

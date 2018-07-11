@@ -156,7 +156,7 @@ module Piktur
 
         # Returns a list of files within {#target} matching `type`
         #
-        # @see https://bitbucket.org/piktur/piktur_core/src/master/spec/benchmark/pattern_matching.rb
+        # @see https://bitbucket.org/piktur/piktur_core/src/master/benchmark//pattern_matching.rb
         #   .dir_vs_pathname_glob
         #
         # @param [Symbol] type The component type
@@ -220,7 +220,7 @@ module Piktur
 
     end
 
-    # @see https://bitbucket.org/piktur/piktur_core/src/master/spec/benchmark/pattern_matching.rb
+    # @see https://bitbucket.org/piktur/piktur_core/src/master/benchmark//pattern_matching.rb
     #   .dir_vs_pathname_glob
     class Filter
 
