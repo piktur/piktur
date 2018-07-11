@@ -10,6 +10,7 @@ module Piktur
 
     extend ::ActiveSupport::Autoload
 
+    autoload :Cache
     autoload :Calc
     autoload :Container
     autoload :Enum
@@ -31,49 +32,10 @@ module Piktur
     autoload :Types
     autoload :URI, 'piktur/support/uri'
 
-    EXTENSIONS = {
-      hash:      [:Hash],
-      inflector: [:Inflector],
-      json:      [:JSON],
-      module:    [:Introspection],
-      object:    [:Object],
-      types:     [:Types]
-    }.freeze
-    private_constant :EXTENSIONS
-
-    # Load and/or install extensions and define constant aliases.
-    #
-    # @example
-    #   Support.install(:json, :types, inflection: { option: true })
-    #
-    # @param [Array<Symbol>] ext
-    # @param [Hash] configurable
-    #   Extension(s) accepting/expecting options
-    # @return [void]
-    def self.install(*ext, **configurable) # rubocop:disable AbcSize, MethodLength
-      fn = lambda { |name, **options|
-        EXTENSIONS[name].each do |const|
-          mod = const_get(const, false)
-          mod.send(:install, options) if mod.respond_to?(:install, true)
-        end
-      }
-      ext.each(&fn)
-
-      return if configurable.blank?
-
-      configurable.delete(:helpers)&.each do |group|
-        ::Object.const_set(
-          const = Inflector.camelize(group),
-          Inflector.constantize(const, Support, camelize: true)
-        )
-      end
-
-      configurable.each { |e| fn[*e] }
-    end
-
   end
 
 end
 
-require_relative './support/constants.rb'
+require_relative './constants.rb'
+require_relative './support/extensions.rb'
 require_relative './support/container.rb'
