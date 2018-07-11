@@ -30,6 +30,7 @@ module Piktur
   end
 
   autoload :Cache, 'piktur/support/cache'
+  autoload :Container
   autoload :Constants
   autoload :Plugin
   autoload :Plugins
@@ -93,6 +94,9 @@ module Piktur
     # @return [Array<Services::FileIndex::Pathname>]
     def file_index; services.file_index.all; end
 
+    # @return [Dry::Container{String => Object}]
+    def container; @container ||= Container.new; end
+
     # @return [Plugins::Registry]
     def plugins
       @plugins ||= Plugins::Registry.new
@@ -105,7 +109,7 @@ module Piktur
   # Secrets.overload
 
   # Install the optimised Inflector immediately
-  Support.install(:module, :inflector)
+  Support.install(:object, :module, :inflector)
 
 end
 
