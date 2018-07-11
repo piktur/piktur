@@ -7,7 +7,7 @@ require 'pathname'
 ENV['RAILS_ENV'] ||= 'development'
 
 APP_ROOT  = Pathname.new File.expand_path('..', __dir__)
-DEV_ROOT  = APP_ROOT.parent # Pathname.pwd.join('piktur')
+DEV_ROOT  = APP_ROOT.parent
 BITBUCKET = 'https://${BUNDLE_BITBUCKET__ORG}@bitbucket.com/piktur'
 SERVICES  = %w(
   piktur
@@ -18,19 +18,26 @@ SERVICES  = %w(
   piktur_core
   piktur_docs
   piktur_security
+  piktur_sites
+  piktur_spec
   piktur_store
 ).freeze
 
-def clone(repo, branch = 'master')
-  system "git clone #{BITBUCKET}/#{repo}.git -b #{branch}"
+def clone(repo)
+  system "git clone #{BITBUCKET}/#{repo}.git"
+end
+
+def update(branch = nil)
+  system 'git pull --all'
+  system "git checkout #{branch}" if branch
 end
 
 def bundler_local(repo)
-  system "bundle config --local local.#{repo} #{PIKTUR_HOME}/#{repo}"
+  system "bin/bundle config --local local.#{repo} #{PIKTUR_HOME}/#{repo}"
 end
 
 def bundle
-  system 'bundle check || bundle install'
+  system 'bin/bundle check || bin/bundle install'
 end
 
 Dir.chdir DEV_ROOT do
@@ -47,6 +54,7 @@ Dir.chdir DEV_ROOT do
 
   SERVICES.each do |repo|
     Dir.chdir DEV_ROOT.join(repo) do
+      update(repo) # rubocop:disable SaveBang
       bundler_local(repo)
       bundle
     end
