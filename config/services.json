@@ -25,8 +25,8 @@
     "piktur_security": {
       "namespace": "Piktur::Security"
     },
-    "piktur_sites": {
-      "namespace": "Piktur::Sites"
+    "piktur_assets": {
+      "namespace": "Piktur::Assets"
     },
     "piktur_stores": {
       "namespace": "Piktur::Stores"

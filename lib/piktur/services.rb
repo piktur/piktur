@@ -28,6 +28,7 @@ module Piktur
   #     |-- /piktur_blog     #
   #     |-- /piktur_core     # Piktur::Core
   #     |-- /piktur_docs     # Piktur::Docs
+  #     |-- /piktur_assets   # Piktur::Assets
   #     |-- /piktur_security # Piktur::Security
   #     |-- /piktur_sites    # Piktur::Sites
   #     |-- /piktur_stores   # Piktur::Stores
@@ -66,6 +67,7 @@ module Piktur
 
     ENGINES = %i(
       piktur_core
+      piktur_assets
       piktur_sites
       piktur_stores
     ).freeze
@@ -75,7 +77,6 @@ module Piktur
       piktur_api
       piktur_admin
       piktur_blog
-      piktur_sites
       piktur_docs
     ).freeze
     private_constant :APPLICATIONS
