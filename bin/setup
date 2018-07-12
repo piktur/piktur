@@ -14,7 +14,7 @@ SERVICES  = %w(
   piktur_admin
   piktur_api
   piktur_blog
-  piktur_client
+  piktur_sites
   piktur_core
   piktur_docs
   piktur_security

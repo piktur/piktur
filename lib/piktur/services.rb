@@ -26,7 +26,6 @@ module Piktur
   #     |-- /piktur_admin    # Piktur::Admin
   #     |-- /piktur_api      # Piktur::API
   #     |-- /piktur_blog     #
-  #     |-- /piktur_client   # Piktur::Client
   #     |-- /piktur_core     # Piktur::Core
   #     |-- /piktur_docs     # Piktur::Docs
   #     |-- /piktur_security # Piktur::Security
@@ -76,7 +75,7 @@ module Piktur
       piktur_api
       piktur_admin
       piktur_blog
-      piktur_client
+      piktur_sites
       piktur_docs
     ).freeze
     private_constant :APPLICATIONS

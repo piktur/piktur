@@ -5,8 +5,8 @@
 #   - admin webpack
 #   - api
 #   - blog
-#   - client
-#   - client webpack
+#   - sites
+#   - sites webpack
 #
 # Following example of Service Oriented Architecture (SOA) whereby multiple
 # Rails applications may be coordinated.
@@ -50,8 +50,8 @@
 web1:    ./piktur_admin.sh
 web2:    ./piktur_api.sh
 # web3:    ./piktur_blog.sh
-# web4:    ./piktur_client.sh
+# web4:    ./piktur_sites.sh
 worker1: ./piktur_admin_webpack.sh
-# worker2: ./piktur_client_webpack.sh
+# worker2: ./piktur_sites_webpack.sh
 worker3: redis-server
 worker4: cd ../piktur_api; bundle exec sidekiq
