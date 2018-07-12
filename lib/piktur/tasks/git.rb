@@ -40,7 +40,6 @@ module Piktur
         `git mv -k #{from}/* #{to} #{options}`
       end
 
-      binding.pry
       files.zip(destination(from_root, to_root, files)).each do |(from, to)|
         `git mv -k #{from} #{to} #{options}`
       end
