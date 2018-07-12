@@ -55,6 +55,24 @@ module Piktur
 
     UnknownPluginError = Class.new(::StandardError)
 
+    module Ext
+
+      # @example
+      #   module Users
+      #     use :plugin_name, { key => value }
+      #   end
+      #
+      # @param [Symbol] plugin
+      # @param [Hash] options
+      # @option options [Symbol]
+      #
+      # @return [void]
+      def use(plugin, options = EMPTY_HASH)
+        plugins.fetch(plugin).apply_to(self, options)
+      end
+
+    end
+
   end
 
 end
