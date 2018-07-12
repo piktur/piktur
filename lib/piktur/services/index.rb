@@ -5,7 +5,7 @@ module Piktur
   module Services
 
     # @example
-    #   Index.new 'piktur_security', 'piktur_store'
+    #   Index.new 'piktur_security', 'piktur_stores'
     class Index
 
       # @!attribute [r] dependencies

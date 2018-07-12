@@ -28,8 +28,8 @@
     "piktur_sites": {
       "namespace": "Piktur::Sites"
     },
-    "piktur_store": {
-      "namespace": "Piktur::Store"
+    "piktur_stores": {
+      "namespace": "Piktur::Stores"
     },
     "piktur_spec": {
       "namespace": "Piktur::Spec"

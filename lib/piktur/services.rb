@@ -31,7 +31,7 @@ module Piktur
   #     |-- /piktur_docs     # Piktur::Docs
   #     |-- /piktur_security # Piktur::Security
   #     |-- /piktur_sites    # Piktur::Sites
-  #     |-- /piktur_store    # Piktur::Store
+  #     |-- /piktur_stores   # Piktur::Stores
   #     |-- /piktur_spec     # Piktur::Spec
   # ```
   module Services
@@ -68,7 +68,7 @@ module Piktur
     ENGINES = %i(
       piktur_core
       piktur_sites
-      piktur_store
+      piktur_stores
     ).freeze
     private_constant :ENGINES
 

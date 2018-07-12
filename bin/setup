@@ -20,7 +20,7 @@ SERVICES  = %w(
   piktur_security
   piktur_sites
   piktur_spec
-  piktur_store
+  piktur_stores
 ).freeze
 
 def clone(repo)
