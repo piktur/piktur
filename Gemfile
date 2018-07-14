@@ -2,6 +2,7 @@
 
 # rubocop:disable ExtraSpacing
 
+gh = 'https://github.com'
 bb = 'https://bitbucket.org'
 
 # @note RubyGems will not load unbuilt dependencies from git sources. Private gems are
@@ -28,6 +29,8 @@ gem 'piktur_security',          git:    "#{bb}/piktur/piktur_security.git",
 
 # @!group Utilities
 gem 'activesupport',            require: false
+gem 'concurrent-ruby',          git:    "#{gh}/ruby-concurrency/concurrent-ruby.git",
+                                branch: 'master'
 gem 'dry-configurable',         require: false
 gem 'dry-monads',               require: false
 gem 'dry-struct',               require: false
