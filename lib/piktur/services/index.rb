@@ -173,8 +173,11 @@ module Piktur
 
       # @return [String]
       def inspect
-        "<#{self.class.name} loaded=#{loaded.map(&:name)}>"
+        "#<#{self.class.name} loaded=#{loaded.map(&:name)}>"
       end
+
+      # @return [void]
+      def pretty_print(pp); pp.text inspect; end
 
     end
 

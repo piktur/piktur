@@ -97,8 +97,11 @@ module Piktur
 
       # @return [String]
       def inspect
-        %(<Service[#{name}] loaded=#{loaded?} root="#{path}">)
+        %(#<Service[#{name}] loaded=#{loaded?} root="#{path}">)
       end
+
+      # @return [void]
+      def pretty_print(pp); pp.text inspect; end
 
     end
 

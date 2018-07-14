@@ -35,8 +35,11 @@ module Piktur
       def inspect
         # services = root_directories
         #   .map { |e| "\"#{e.instance_variable_get(:@path)[/\/piktur_\w+(?:|-)/]}\"" }
-        "<FileIndex count=#{files.size}>"
+        "#<FileIndex count=#{files.size}>"
       end
+
+      # @return [void]
+      def pretty_print(pp); pp.text inspect; end
 
       private
 
