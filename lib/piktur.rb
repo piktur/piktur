@@ -78,12 +78,19 @@ module Piktur
 
     # Remote server metadata for {.services}
     #
-    # @return [Services::Servers]
+    # @return [Services::Server]
     def servers; services.servers; end
 
-    # Base domain for {.services}
-    # @return [Object]
-    def domain; servers.domain; end
+    # @note Defaults to localhost if running dummy app
+    #
+    # @return [URI::Generic]
+    def server
+      if application.nil? || application.engine?
+        servers.default
+      else
+        application.server.uri
+      end
+    end
 
     # @!method eager_load_namespaces
     #   @return [Array<Module, Class>]

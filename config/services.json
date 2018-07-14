@@ -9,8 +9,9 @@
       "scheme": "http"
     },
     "staging": {
-      "host": null,
-      "scheme": null
+      "host": "piktur.io",
+      "subdomain": "staging",
+      "scheme": "https"
     },
     "test": {
       "host": "localhost",
@@ -37,46 +38,126 @@
     "piktur_admin": {
       "namespace": "Piktur::Admin",
       "uri": {
-        "production": "https://admin.piktur.io",
-        "development": "http://localhost:3001",
-        "staging": null,
-        "test": "http://localhost:3001"
+        "production": {
+          "host": "piktur.io",
+          "subdomain": "admin",
+          "scheme": "https"
+        },
+        "development": {
+          "host": "localhost",
+          "port": 3001,
+          "scheme": "http"
+        },
+        "staging": {
+          "host": "piktur.io",
+          "subdomain": "staging.admin",
+          "scheme": "https"
+        },
+        "test": {
+          "host": "localhost",
+          "port": 3001,
+          "scheme": "http"
+        }
       }
     },
     "piktur_api": {
       "namespace": "Piktur::API",
       "uri": {
-        "production": "https://api.piktur.io",
-        "development": "http://localhost:3000",
-        "staging": null,
-        "test": "http://localhost:3000"
+        "production": {
+          "host": "piktur.io",
+          "subdomain": "api",
+          "scheme": "https"
+        },
+        "development": {
+          "host": "localhost",
+          "port": 3000,
+          "scheme": "http"
+        },
+        "staging": {
+          "host": "piktur.io",
+          "subdomain": "staging.api",
+          "scheme": "https"
+        },
+        "test": {
+          "host": "localhost",
+          "port": 3000,
+          "scheme": "http"
+        }
       }
     },
     "piktur_blog": {
       "namespace": "Piktur::Blog",
       "uri": {
-        "production": "https://blog.piktur.io",
-        "development": "http://localhost:2368",
-        "staging": null,
-        "test": "http://localhost:2368"
+        "production": {
+          "host": "piktur.io",
+          "subdomain": "blog",
+          "scheme": "https"
+        },
+        "development": {
+          "host": "localhost",
+          "port": 2368,
+          "scheme": "http"
+        },
+        "staging": {
+          "host": "piktur.io",
+          "subdomain": "staging.blog",
+          "scheme": "https"
+        },
+        "test": {
+          "host": "localhost",
+          "port": 2368,
+          "scheme": "http"
+        }
       }
     },
     "piktur_sites": {
       "namespace": "Piktur::Sites",
       "uri": {
-        "production": "https://client.piktur.io",
-        "development": "http://localhost:3002",
-        "staging": null,
-        "test": "http://localhost:3002"
+        "production": {
+          "host": "piktur.io",
+          "subdomain": "sites",
+          "scheme": "https"
+        },
+        "development": {
+          "host": "localhost",
+          "port": 3002,
+          "scheme": "http"
+        },
+        "staging": {
+          "host": "piktur.io",
+          "subdomain": "staging.sites",
+          "scheme": "https"
+        },
+        "test": {
+          "host": "localhost",
+          "port": 3002,
+          "scheme": "http"
+        }
       }
     },
     "piktur_docs": {
       "namespace": "Piktur::Docs",
       "uri": {
-        "production": "https://docs.piktur.io",
-        "development": "http://localhost:3003",
-        "staging": null,
-        "test": "http://localhost:3003"
+        "production": {
+          "host": "piktur.io",
+          "subdomain": "docs",
+          "scheme": "https"
+        },
+        "development": {
+          "host": "localhost",
+          "port": 3003,
+          "scheme": "http"
+        },
+        "staging": {
+          "host": "piktur.io",
+          "subdomain": "staging.docs",
+          "scheme": "https"
+        },
+        "test": {
+          "host": "localhost",
+          "port": 3003,
+          "scheme": "http"
+        }
       }
     }
   }
