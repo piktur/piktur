@@ -25,7 +25,8 @@ module Piktur
       # @param [Array<Services::Service>] services
       def initialize(services)
         @root_directories = services.map(&:root)
-        @files            = _build_file_index(services)
+        @files = _build_file_index(services)
+
         freeze
       end
 
