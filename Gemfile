@@ -33,7 +33,9 @@ gem 'concurrent-ruby',          git:    "#{gh}/ruby-concurrency/concurrent-ruby.
                                 branch: 'master'
 gem 'dry-configurable',         require: false
 gem 'dry-monads',               require: false
-gem 'dry-struct',               require: false
+gem 'dry-struct',               git:    "#{gh}/noname00000123/dry-struct.git",
+                                branch: 'master',
+                                require: false
 gem 'dry-types',                require: false
 gem 'dry-transaction',          require: false
 gem 'rake',                     require: false
