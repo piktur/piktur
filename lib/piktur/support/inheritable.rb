@@ -10,6 +10,7 @@ module Piktur
       class << self
 
         # @param [Module] base
+        #
         # @return [void]
         def extended(base)
           base.extend Inheritable::ClassMethods
@@ -58,6 +59,7 @@ module Piktur
 
       end
 
+      # :nodoc
       module Ext
 
         def extended(base)
@@ -70,8 +72,6 @@ module Piktur
       # :nodoc
       module ClassMethods
 
-        # @see Piktur::Support::Inheritable.inheritance_chain
-        #
         # @return [Array<Class>]
         def inheritance_chain(&block)
           Inheritable.inheritance_chain(self, &block)
@@ -79,7 +79,7 @@ module Piktur
 
         # @param [Method] method
         #
-        # @see Piktur::Support::Inheritable.inheritance_chain
+        # @see .inheritance_chain
         #
         # @return [Array<Method>]
         def super_method_chain(method, &block)

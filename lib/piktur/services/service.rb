@@ -61,9 +61,9 @@ module Piktur
       #
       # @return [Gem::Specification]
       def gemspec
-        @gemspec ||= Services.specs.fetch(name) { # rubocop:disable BlockDelimiters
+        @gemspec ||= Services.specs.fetch(name) do
           Services.load_gemspec!(name) unless ::Piktur.env.production?
-        }
+        end
       end
 
       # Returns the directory from which the service was loaded.
@@ -77,17 +77,17 @@ module Piktur
           *gemspec&.gem_dir,     # May be incorrect if remote gem source.
           *gemspec&.loaded_from, # The gemspec path -- only necessary if remote source.
           "../#{name}"           # Or try the local directory.
-        ].each { |candidate| break(path = candidate) if File.exist?(candidate) }
+        ].each { |candidate| break(path = candidate) if ::File.exist?(candidate) }
 
-        @path = Pathname(path).instance_exec { (file? ? parent : self).realpath }
+        @path = Pathname(path).instance_eval { (file? ? parent : self).realpath }
       end
 
       # Load constant and replace {#namespace} if defined
       #
       # @return [Module] if defined
       def constantize
-        return unless namespace.is_a?(String) && Object.const_defined?(namespace)
-        @namespace = Object.const_get(namespace)
+        return unless namespace.is_a?(String) && ::Object.const_defined?(namespace)
+        @namespace = ::Object.const_get(namespace)
       end
 
       # @return [Module]

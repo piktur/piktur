@@ -40,7 +40,7 @@ module Piktur
         return @all if defined?(@all)
         n = -1
         @all = %w(libraries engines applications).each.with_object([]) do |e, a|
-          klass    = Services.const_get(e.camelize.singularize, false)
+          klass    = Services.const_get(Support::Inflector.classify(e), false)
           services = Services.send(e).map { |s, opts| klass.new(s, position: n += 1, **opts) }
           self.class.send(:define_method, e) { services }
           a.concat(services)
@@ -169,7 +169,7 @@ module Piktur
         to_run
         to_complete
       ).each { |phase| alias_method(phase, :run_callbacks) }
-      private :run_callbacks # rubocop:disable AccessModifierDeclarations
+      private :run_callbacks
 
       # @return [String]
       def inspect
