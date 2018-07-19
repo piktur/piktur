@@ -32,6 +32,7 @@ module Piktur
   autoload :Cache, 'piktur/support/cache'
   autoload :Container
   autoload :Constants
+  autoload :Logger
   autoload :Plugin
   autoload :Plugins
   autoload :Registry
@@ -107,6 +108,11 @@ module Piktur
     # @return [Plugins::Registry]
     def plugins
       @plugins ||= Plugins::Registry.new
+    end
+
+    # @return [Logger]
+    def logger
+      @logger ||= Logger.new
     end
 
   end
