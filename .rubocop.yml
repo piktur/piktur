@@ -101,6 +101,9 @@ Naming/FileName:
 Naming/MemoizedInstanceVariableName:
   EnforcedStyleForLeadingUnderscores: optional
 
+Style/AccessModifierDeclarations:
+  Enabled: false
+
 Layout/EmptyLineBetweenDefs:
   AllowAdjacentOneLineDefs: true
 
