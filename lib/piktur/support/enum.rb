@@ -192,6 +192,11 @@ module Piktur
       #   @return [Array<Enum::Value>]
       alias to_a values
 
+      # @param [Array] other
+      #
+      # @return [Array<Enum::Value>]
+      def &(other); values & other; end
+
       # @!endgroup
 
       # @return [String]
