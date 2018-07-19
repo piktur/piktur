@@ -155,6 +155,9 @@ module Piktur
             service.namespace.send(__callee__)
           end
 
+          application.namespace.send(__callee__) if application &&
+              application.namespace.respond_to?(__callee__, true)
+
           return true
         end
 
