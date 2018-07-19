@@ -2,6 +2,8 @@
 
 require 'spec_helper'
 
+RSpec.require_support 'env'
+
 RSpec.describe Piktur do
   let(:object)  { binding }
   let(:diff)    { 1 }
@@ -25,8 +27,16 @@ RSpec.describe Piktur do
 
   shared_examples 'exception' do
     context 'if error given' do
+      after { Piktur.debug(object, diff, error: 'msg', **options) }
+
+      it 'should log error' do
+        expect(Piktur.logger).to receive(:error).with('msg')
+      end
+    end
+
+    context 'if raise' do
       it 'should raise error' do
-        expect { Piktur.debug(object, diff, error: 'msg', **options) }.to raise_error
+        expect { Piktur.debug(object, diff, raise: StandardError) }.to raise_error
       end
     end
   end
@@ -55,13 +65,9 @@ RSpec.describe Piktur do
     end
 
     context 'when IN production mode' do
+      include_context 'env', 'production'
+
       before do
-        env = Object.new
-        def env.production?; true; end
-        def env.development?; false; end
-        allow(Piktur).to receive(:env).and_return(env)
-        allow(Piktur.env).to receive(:production?).and_return(true)
-        allow(Piktur.env).to receive(:development?).and_return(false)
         allow(Piktur::DEBUGGER).to receive(:call).and_return(nil)
 
         load File.expand_path('./lib/piktur/debugger.rb', Dir.pwd)
@@ -94,13 +100,6 @@ RSpec.describe Piktur do
       before(:all) { ENV['DEBUG'] = '1' }
 
       before do
-        env = Object.new
-        def env.development?; true; end
-        def env.production?; false; end
-        allow(Piktur).to receive(:env).and_return(env)
-        allow(Piktur.env).to receive(:development?).and_return(true)
-        allow(Piktur.env).to receive(:production?).and_return(false)
-
         load File.expand_path('./lib/piktur/debugger.rb', Dir.pwd)
 
         allow(object).to receive(:pry).and_return(nil) # Mock pry session
@@ -120,10 +119,12 @@ RSpec.describe Piktur do
         it 'should log error' do
           expect(Piktur.logger).to receive(:error).with('msg')
         end
+      end
 
-        # it 'should NOT raise error' do
-        #   expect { Piktur.debug(object, diff, error: 'msg', **options) }.not_to raise_error
-        # end
+      context 'if raise given' do
+        it 'should raise error' do
+          expect { Piktur.debug(object, diff, raise: StandardError) }.to raise_error
+        end
       end
     end
   end

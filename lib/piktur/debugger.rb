@@ -35,19 +35,19 @@ Piktur::DEBUGGER ||= ->(object, diff) { object.pry if ENV['DEBUG'] && diff.prese
 #
 # @return [void]
 if Piktur.env.production?
-  def Piktur.debug(*, warning: nil, error: nil, **)
-    ::Piktur::Errors.raise(raise)  if raise
-    ::Piktur::Errors.throw(throw)  if throw
-    ::Piktur::Errors.error(error)  if error
+  def Piktur.debug(*, warning: nil, error: nil, **options)
+    ::Piktur::Errors.raise(options[:raise]) if options[:raise]
+    ::Piktur::Errors.throw(options[:throw]) if options[:throw]
+    ::Piktur::Errors.error(error) if error
     ::Piktur::Errors.warn(warning) if warning
   end
 else
-  def Piktur.debug(object, diff = true, warning: nil, error: nil, throw: nil, raise: nil, **)
+  def Piktur.debug(object, diff = true, warning: nil, error: nil, **options)
     ::Piktur::Errors.warn(warning) if warning
-    ::Piktur::Errors.error(error)  if error
+    ::Piktur::Errors.error(error) if error
     ::Piktur::DEBUGGER[object, diff]
-    ::Piktur::Errors.throw(throw)  if throw
-    ::Piktur::Errors.raise(raise)  if raise
+    ::Piktur::Errors.throw(options[:throw]) if options[:throw]
+    ::Piktur::Errors.raise(options[:raise]) if options[:raise]
   end
 end
 
