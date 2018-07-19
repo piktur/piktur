@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'dry/container'
-require 'dry/container/stub'
+
 require 'piktur/spec/helpers/container'
+
 require 'piktur/support/enum'
 require 'piktur/support/types'
 
@@ -48,7 +48,7 @@ module Piktur
       describe '.Enum(name, namespace, options, &block)' do
         include_context 'stub container', Types
 
-        let(:options)   { ::Hash[predicates: nil, scopes: nil, i18n_scope: nil] }
+        let(:options)   { ::Hash[predicates: nil, i18n_scope: nil] }
         let(:name)      { :colours }
         let(:namespace) { ::Test.safe_const_reset(:Palette, ::Module.new) }
         let(:key)       { 'enum.test.palette.colours' }
@@ -63,7 +63,7 @@ module Piktur
         end
 
         before do
-          Types.Enum(namespace, name, options, &block)
+          Types.Enum(name, namespace: namespace, **options, &block)
         end
 
         let(:result) { Types.container[key] }
