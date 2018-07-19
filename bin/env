@@ -3,7 +3,7 @@
 
 env = ENV.fetch('RAILS_ENV') { 'development' }
 
-raise StandardError, "Production environment variables cannot be loaded from untracked files" if
+raise StandardError, 'Production environment variables cannot be loaded from untracked files' if
   env == 'production'
 
 paths = Dir["../.env.{common,#{env}}"]
