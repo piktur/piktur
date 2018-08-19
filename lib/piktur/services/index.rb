@@ -148,7 +148,7 @@ module Piktur
       # @see https://bitbucket.org/piktur/piktur_core/src/master/lib/piktur/setup/boot.rb
       #
       # @return [true] unless :abort is thrown
-      def run_callbacks
+      def run_callbacks # rubocop:disable AbcSize
         error = catch(:abort) do
           dependencies.each do |service|
             next unless service.namespace.respond_to?(__callee__, true)
@@ -161,7 +161,7 @@ module Piktur
           return true
         end
 
-        ::Piktur.debug(binding, warn: "[FAILURE] #{error || __method__} #{__FILE__}:#{__LINE__}")
+        ::NAMESPACE.debug(binding, warn: "[FAILURE] #{error || __method__} #{__FILE__}:#{__LINE__}")
       end
 
       %i(

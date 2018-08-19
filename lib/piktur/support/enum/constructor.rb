@@ -36,7 +36,7 @@ module Piktur
       # @option options [String, Symbol] :predicates
       #   Include {Predicates} for enumerated attribute
       # @option options [Boolean] :register
-      #   Register the enum with the application {Piktur.container}
+      #   Register the enum with the application {Piktur::Interface.container}
       #
       # @yieldparam [self] enum The {Enum} instance
       #
@@ -47,8 +47,8 @@ module Piktur
         raise(::RuntimeError, ENUM_FROZEN_MSG % inspect) if frozen?
 
         yield(self) if block_given?
-
-        ::Piktur.register(key, self) if register
+        
+        ::NAMESPACE.register(key, self) if register
 
         namespace.include(self.predicates(predicates)) if predicates
 

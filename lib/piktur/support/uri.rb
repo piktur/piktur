@@ -9,11 +9,12 @@ module Piktur
 
       # Implement `#as_json` on instance of `Object.URI`.
       # When called returns a String rather than `instance_values` Hash.
+      #
       # @return [URI]
       def URI(str) # rubocop:disable MethodName
-        Object.send(:URI, str).instance_eval do
-          def as_json(*); to_s; end; self
-        end
+        str = ::Object.send(:URI, str)
+        def str.as_json(*); to_s; end
+        str
       end
 
     end
@@ -27,7 +28,7 @@ module Piktur
     #   @origin ||= URI.new(
     #     request.env['Origin'] ||
     #     request.env['HTTP_ORIGIN'] ||
-    #    ::Piktur.env.development? && 'http://localhost'
+    #    ::NAMESPACE.env.development? && 'http://localhost'
     #   )
     #
     class URI
@@ -49,7 +50,7 @@ module Piktur
 
       # @param [String] uri
       def initialize(uri)
-        @uri = uri.match(REGEX)[0]
+        (@uri = uri) =~ REGEX
         @scheme, @host, @path = $1, $2, $3 # rubocop:disable ParallelAssignment
         @port = $4.to_i if $4.present?
       end

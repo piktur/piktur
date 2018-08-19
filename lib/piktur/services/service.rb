@@ -62,7 +62,7 @@ module Piktur
       # @return [Gem::Specification]
       def gemspec
         @gemspec ||= Services.specs.fetch(name) do
-          Services.load_gemspec!(name) unless ::Piktur.env.production?
+          Services.load_gemspec!(name) unless ::NAMESPACE.env.production?
         end
       end
 

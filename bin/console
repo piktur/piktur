@@ -13,5 +13,6 @@ Bundler.require(:default)
 
 require 'pry'
 require 'piktur'
+require_relative BOOT_PATH if Object.const_defined?(:BOOT_PATH)
 
 Pry.start

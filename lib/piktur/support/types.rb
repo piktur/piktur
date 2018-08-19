@@ -30,7 +30,7 @@ module Piktur
 
         # @return [void]
         def finalize!
-          freeze if ::Piktur.env.production?
+          freeze if ::NAMESPACE.env.production?
         end
 
       end
@@ -96,7 +96,7 @@ module Piktur
           container.register(key, constructor, call: false, memoize: false)
           constructor
         rescue ::Dry::Container::Error => error
-          ::Piktur.debug(binding, error: error)
+          ::NAMESPACE.debug(binding, error: error)
         end
 
         # @see https://github.com/rom-rb/rom-rails/blob/master/lib/generators/rom/install/templates/types.rb
@@ -109,7 +109,7 @@ module Piktur
 
           # @return [void]
           def install(*)
-            ::Piktur.const_set(:Types, self)
+            ::NAMESPACE.const_set(:Types, self)
             true
           end
 

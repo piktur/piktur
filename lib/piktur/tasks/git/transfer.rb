@@ -7,13 +7,11 @@
 
 require 'optparse'
 
-ROOT = ENV['PIKTUR_HOME']
-
 from, to, regex = nil
 
 OptionParser.new do |opts|
-  opts.on('--from=MANDATORY') { |val| from = File.join(ROOT, val) }
-  opts.on('--to=MANDATORY') { |val| to = File.join(ROOT, val) }
+  opts.on('--from=MANDATORY') { |val| from = File.expand_path(val, Dir.pwd) }
+  opts.on('--to=MANDATORY') { |val| to = File.expand_path(val, Dir.pwd) }
   opts.on('--regex=MANDATORY') { |val| regex = Regexp.new(val) }
 end.parse!
 

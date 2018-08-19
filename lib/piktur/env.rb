@@ -22,12 +22,10 @@ module Piktur
   #   require 'benchmark/ips'
   #   Benchmark.ips do |x|
   #     x.report('Piktur::Environment') do
-  #       Environment.instance.testing?
   #       Environment.instance.test?
   #       Environment.instance.development?
   #     end
   #     x.report('Rails.env') do
-  #       R.env.testing?
   #       R.env.test?
   #       R.env.development?
   #     end
@@ -56,14 +54,12 @@ module Piktur
     end
 
     def development?; self == DEVELOPMENT; end
-    alias dev? development?
 
     def production?; self == PRODUCTION; end
 
     def staging?; self == STAGING; end
 
     def testing?; self == TESTING; end
-    alias test? testing?
 
     private
 

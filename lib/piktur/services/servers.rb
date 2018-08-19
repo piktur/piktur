@@ -31,7 +31,9 @@ module Piktur
       def default; Server.development; end
 
       # @return [String]
-      def inspect; "#<Servers[#{::Piktur.env}] #{send(::Piktur.env).join(', ')}>"; end
+      def inspect
+        "#<Servers[#{::NAMESPACE.env}] #{send(::NAMESPACE.env).join(', ')}>"
+      end
 
     end
 
@@ -80,7 +82,7 @@ module Piktur
       end
 
       # @return [Hash]
-      def self.config; Services.const_get(:SERVICES); end
+      def self.config; Services.services; end
 
       # :nocov
       DEFAULT = uri(port: DEFAULT_PORT = 3000, **config.fetch(:development))
@@ -102,14 +104,14 @@ module Piktur
         # @!attribute [r] development
         # @!attribute [r] test
         %i(production staging development test).each { |env| alias_method env, :defaults }
-        private :defaults # rubocop:disable AccessModifierDeclarations
+        private :defaults
 
       end
 
       # @return [Regexp]
-      MATCHER = case ::Piktur.env
+      MATCHER = case ::NAMESPACE.env
       when 'production', 'staging'
-        /\A#{send(::Piktur.env).scheme}:\/\/(?:.*\.)?#{send(::Piktur.env).host}\Z/
+        /\A#{send(::NAMESPACE.env).scheme}:\/\/(?:.*\.)?#{send(::NAMESPACE.env).host}\Z/
       else /\A#{DEFAULT.scheme}:\/\/#{DEFAULT.host}|127[\.0]*:\d+\Z/
       end
 
@@ -123,19 +125,19 @@ module Piktur
 
       # @param [String, Symbol] env
       # @return [URI::Generic]
-      def uri(env = ::Piktur.env)
+      def uri(env = ::NAMESPACE.env)
         components = @service.fetch(env = env.to_sym) { return self.class.send(env) }
         self.class.uri(components)
       end
 
       # @param [String, Symbol] env
       # @return [String] the URI::Generic attribute
-      def get(env = ::Piktur.env)
+      def get(env = ::NAMESPACE.env)
         uri(env).send(__callee__)
       end
       %i(scheme host subdomain port userinfo path http? https?)
         .each { |aliaz| alias_method aliaz, :get }
-      private :get # rubocop:disable AccessModifierDeclarations
+      private :get
 
     end
 

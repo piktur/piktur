@@ -89,7 +89,7 @@ module Piktur
         def [](key)
           container.resolve(key)
         rescue ::Dry::Container::Error => error
-          ::Piktur.debug(binding, error: error)
+          ::NAMESPACE.debug(binding, error: error)
         end
         alias resolve []
 

@@ -80,12 +80,10 @@ module Piktur
           return super if other.is_a?(Value)
           return false if defined?(Undefined) && other == Undefined
 
-          value == other || key == other || match?(other)
+          (value == other) || (key == other) || match?(other)
         end
         alias == eql?
 
-        # Implement equality operator so that Enum::Value may be used within in case statements.
-        #
         # @example
         #   gender = :male
         #
@@ -98,7 +96,7 @@ module Piktur
         # @return [Boolean]
         def ===(other)
           return self == other if other.is_a?(Value)
-          value == other || key == other
+          (value == other) || (key == other)
         end
 
         # @example

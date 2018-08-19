@@ -2,7 +2,7 @@
 
 module Piktur
 
-  # {Services} exposes functionality to **boot** and communicate with other Piktur {SERVICES}.
+  # {Services} exposes functionality to **boot** and communicate with hosted application modules.
   #
   # @note The term **"service"** -- as in **Service Oriented Architecture (SOA)** -- is used to
   #   emphasise **separation of responsibility**.
@@ -10,30 +10,40 @@ module Piktur
   #   A service exposes a public api that may be accessible via HTTP ie. {Application} or
   #   extends an existing interface as in {Engine} or {Library}.
   #
-  # @see file:/config/services.json Services configuration
+  # @example Configure services
+  #   /config/services.json
+  #   {
+  #     "services": {
+  #       <environment>: {
+  #         "host": String,
+  #         "scheme": String[https|http]
+  #       },
+  #       <gem_name>: {
+  #         "namespace": String
+  #       },
+  #       <gem_name>: {
+  #         "namespace": String,
+  #         "uri": {
+  #           <environment>: {
+  #             "host": String,
+  #             "subdomain": String,
+  #             "port": Integer,
+  #             "scheme": String[https|http]
+  #           }
+  #         }
+  #       }
+  #     }
+  #   }
   #
-  # ## Developer directory structure
+  #   module Namespace
+  #     Piktur.install(self) # Install Piktur utilities
   #
-  # Run `bin/piktur setup` to prepare development directory
-  #
-  # @see https://bitbucket.org/piktur/piktur/wiki/Structure.md
-  #
-  # ```
-  #   |-- /gem_server        # Private gem server
-  #   |-- /gems              # Store forked gems
-  #   |-- <project_name>     # Store common config and untracked files ie. `.env`
-  #     |-- /piktur          # Piktur
-  #     |-- /piktur_admin    # Piktur::Admin
-  #     |-- /piktur_api      # Piktur::API
-  #     |-- /piktur_blog     #
-  #     |-- /piktur_core     # Piktur::Core
-  #     |-- /piktur_docs     # Piktur::Docs
-  #     |-- /piktur_assets   # Piktur::Assets
-  #     |-- /piktur_security # Piktur::Security
-  #     |-- /piktur_sites    # Piktur::Sites
-  #     |-- /piktur_stores   # Piktur::Stores
-  #     |-- /piktur_spec     # Piktur::Spec
-  # ```
+  #     Services.define(
+  #       applications: %i(app),
+  #       engines:      %i(engine),
+  #       libraries:    %i(lib)
+  #     )
+  #   end
   module Services
 
     extend ::ActiveSupport::Autoload
@@ -47,41 +57,39 @@ module Piktur
     autoload :Servers
     autoload :Service
 
-    require 'oj'
-
-    # @see file:config/services.json
-    # @return [Hash{Symbol=>Object}]
-    SERVICES = ::Oj
-      .load_file(::Piktur.root.join('config', 'services.json').to_s)['services']
-      .deep_symbolize_keys!
-      .freeze
-    private_constant :SERVICES
-
-    LIBRARIES = %i(
-      piktur
-      piktur_docs
-      piktur_security
-      piktur_spec
-    ).freeze
-    private_constant :LIBRARIES
-
-    ENGINES = %i(
-      piktur_core
-      piktur_assets
-      piktur_sites
-      piktur_stores
-    ).freeze
-    private_constant :ENGINES
-
-    APPLICATIONS = %i(
-      piktur_api
-      piktur_admin
-      piktur_blog
-      piktur_docs
-    ).freeze
-    private_constant :APPLICATIONS
-
     class << self
+
+      # Parse service gem metadata and assign to constants
+      #
+      # @param [String, Pathname] root The application root path
+      # @param [Hash{type=>Array<Symbol>}] options
+      #
+      # @option options [Array<Symbol>] :applications
+      # @option options [Array<Symbol>] :engines
+      # @option options [Array<Symbol>] :libraries
+      #
+      # @return [void]
+      def define(root, **options) # rubocop:disable MethodLength, AbcSize
+        require('oj') unless defined?(::Oj)
+
+        path = ::File.expand_path(::File.join('config', 'services.json'), root)
+
+        parent.safe_const_set(
+          :SERVICES,
+          ::Oj.load_file(path, symbol_keys: true)[:services].freeze
+        )
+        parent.send(:private_constant, :SERVICES)
+
+        options.each do |type, gems|
+          parent.safe_const_set(type.upcase, gems)
+          parent.send(:private_constant, type.upcase)
+        end
+      end
+
+      # @raise [NameError] if constant undefined
+      #
+      # @return [Hash]
+      def services; parent.const_get(:SERVICES); end
 
       # @return [Bundler::Runtime]
       def bundler_environment; ::Bundler.environment; end
@@ -113,7 +121,7 @@ module Piktur
       # @return [nil] if no gemspec found
       def load_gemspec!(name)
         gemspec = Pathname('..').join(name, "#{name}.gemspec")
-        gemspec = find_gemspec(name)[0] unless gemspec.exist?
+        gemspec = _find_gemspec(name)[0] unless gemspec.exist?
 
         return if gemspec.nil?
 
@@ -125,34 +133,28 @@ module Piktur
         # @param [String] name The service name
         #
         # @return [Array<String>]
-        def find_gemspec(name)
+        def _find_gemspec(name)
           ::Dir.glob(
             "{gems/#{name}*/#{name}*,specifications/#{name}*}.gemspec",
-            base: ENV['GEM_HOME']
+            base: ::ENV['GEM_HOME']
           )
         end
 
-        # @param [Array<String>] services
+        # @param [Module] namespace The root namespace
+        # @param [Array<String>] args A list of gem names
         #
         # @return [Array<Hash>]
-        def services_data(services)
-          services.zip SERVICES.values_at(*services)
+        def _services(args)
+          args.zip(services.values_at(*args))
         end
 
+        # @param [Array<Symbol>] args A list of gem names
+        #
         # @return [Array<Hash>]
-        def libraries
-          services_data LIBRARIES
+        def _get
+          _services(parent.const_get(__callee__.upcase))
         end
-
-        # @return [Array<Hash>]
-        def engines
-          services_data ENGINES
-        end
-
-        # @return [Array<Hash>]
-        def applications
-          services_data APPLICATIONS
-        end
+        %i(applications engines libraries).each { |aliaz| alias_method(aliaz, :_get) }
 
     end
 
