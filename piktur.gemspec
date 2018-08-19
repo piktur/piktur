@@ -69,7 +69,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'newrelic_rpm',                      '~> 3.17'
 
   # @!group Documentation
-  s.add_development_dependency 'yard',                              '~> 0.8'
+  s.add_development_dependency 'yard',                              '~> 0.9'
   # @!endgroup
 
   # @!group Development
