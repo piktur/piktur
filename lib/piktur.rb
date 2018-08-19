@@ -9,50 +9,54 @@ require 'pathname'
   core_ext/module/delegation
 ).each { |f| require "active_support/#{f}" }
 
-# Basic config/utilities for Piktur applications.
-# `piktur` must remain portable.
-#
-#   * Minimize **redundancy**
-#   * Maintain **separation of concerns**
-#   * Be DRY
+# Reusable configuration and utility modules for Piktur applications.
+# Use {.install} to expose this interface within your application.
 #
 # @see https://trello.com/c/gcytwRuV/79-decouple-core-dependencies
-# @see https://bitbucket.org/piktur/piktur_core/issues/21/decouple-core-dependencies #21
-#
+# @see https://bitbucket.org/piktur/piktur_core/issues/21
 module Piktur
 
   extend ::ActiveSupport::Autoload
 
-  eager_autoload do
-    autoload :Secrets
-    autoload :Services
-    autoload :Support
-  end
-
   autoload :Cache, 'piktur/support/cache'
-  autoload :Container
   autoload :Constants
+  autoload :Container
+  autoload :DEBUGGER, 'piktur/debugger'
+  autoload :Deprecation
+  autoload :Errors
   autoload :Logger
   autoload :Plugin
   autoload :Plugins
   autoload :Registry
+  autoload :Support
+  autoload :Secrets
+  autoload :Services
 
-  class << self
+  require_relative './piktur/env.rb'
+  require_relative './piktur/config.rb'
 
+  # :nodoc
+  module Interface
+
+    # @param [Module] base
+    #
+    # @return [void]
+    def self.extended(base)
+      # Avoid explicit calls to `Piktur`, instead assign `base` to root scope and Use
+      # this alias `NAMESPACE` to reference the dependent's namespace. 
+      ::Object.const_set(:NAMESPACE, base)
+    end
+    
     # Returns absolute path to root directory
     #
     # @return [Pathname]
-    def root
-      Pathname(__dir__).parent
-    end
+    def root; Pathname(__dir__).parent; end
 
     # @return [Piktur::Environment]
-    def env
-      Environment.instance
-    end
+    def env; self::Environment.instance; end
 
-    # @return [Piktur::Config]
-    def config; Piktur::Config.config; end
+    # @return [Config]
+    def config; self::Config.config; end
 
     # @return [Services::Index]
     def services; config.services; end
@@ -93,8 +97,7 @@ module Piktur
       end
     end
 
-    # @!method eager_load_namespaces
-    #   @return [Array<Module, Class>]
+    # @return [Array<Module>]
     def eager_load_namespaces; services.eager_load_namespaces; end
 
     # Returns the canonical file index for all loaded {.services}
@@ -102,30 +105,88 @@ module Piktur
     # @return [Array<Services::FileIndex::Pathname>]
     def file_index; services.file_index.all; end
 
+    include Support::Container::Delegates
+
     # @return [Dry::Container{String => Object}]
-    def container; @container ||= Container.new; end
+    def container; @container ||= self::Container.new; end
 
     # @return [Plugins::Registry]
-    def plugins
-      @plugins ||= Plugins::Registry.new
-    end
+    def plugins; @plugins ||= self::Plugins::Registry.new; end
 
     # @return [Logger]
-    def logger
-      @logger ||= Logger.new
+    def logger; @logger ||= self::Logger.new; end
+
+    # Set a conditional debugger entry point.
+    # The debugger is triggered in debug mode only.
+    #
+    # @example Raise Exception after degugger session closed.
+    #   begin
+    #     do(something)
+    #   rescue CriticalError => error
+    #     ::NAMESPACE.debug(binding, true, error: error)
+    #   end
+    #
+    # @example Log warning before debugger session opened.
+    #   begin
+    #     do(something)
+    #   rescue TrivialError => error
+    #     ::NAMESPACE.debug(binding, true, warning: error)
+    #   end
+    #
+    # @param [Object] obj The Object to debug, typically a `Binding`.
+    # @param [Object] diff
+    # @param [Hash] options
+    #
+    # @option [String] options :warning
+    # @option [String] options :error
+    # @option [Symbol] options :throw
+    # @option [Exception] options :raise
+    #
+    # @see Piktur::DEBUGGER
+    #
+    # @return [void]
+    def debug(obj = binding, diff = true, warning: nil, error: nil, **options)
+      const_get(:DEBUGGER)[obj, diff] unless env.production?
+
+      if options[:raise]
+        self::Errors.raise(options[:raise])
+      elsif options[:throw]
+        self::Errors.throw(options[:throw])
+      elsif error
+        self::Errors.error(error)
+      elsif warning
+        self::Errors.warn(warning)
+      end
     end
 
   end
+  private_constant :Interface
 
-  # @todo A proper production solution will have to be implemented.
-  #   For development, use bin/env to load variables from local **untracked** files.
+  extend Interface if ::File.basename(::Dir.pwd).start_with?('piktur')
+
+  # @todo Implement production ready Secrets management.
+  #   Use /bin/env in non-prouction enviroments to load ENV variables from **untracked**
+  #   local files.
   # Secrets.overload
 
   # Install the optimised Inflector immediately
   Support.install(:object, :module, :inflector)
 
-end
+  # @param [Module] base
+  #
+  # @return [void]
+  def self.extended(base)
+    eager_load!
 
-require_relative './piktur/env.rb'
-require_relative './piktur/debugger.rb'
-require_relative './piktur/config.rb'
+    base.extend Interface
+
+    constants.each do |const|
+      if const == :Config
+        base.safe_const_set(:Config, ::Class.new(Config))
+      else
+        base.safe_const_set(const, const_get(const))
+      end
+    end
+  end
+
+end
