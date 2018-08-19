@@ -12,6 +12,7 @@ BITBUCKET = 'https://${BUNDLE_BITBUCKET__ORG}@bitbucket.com/piktur'
 SERVICES  = %w(
   piktur
   piktur_admin
+  piktur_assets
   piktur_api
   piktur_blog
   piktur_sites
