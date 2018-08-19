@@ -24,9 +24,12 @@ module Piktur
   autoload :DEBUGGER, 'piktur/debugger'
   autoload :Deprecation
   autoload :Errors
+  autoload :EventedFileUpdateChecker
+  autoload :Loader
   autoload :Logger
   autoload :Plugin
   autoload :Plugins
+  autoload :Reloader
   autoload :Registry
   autoload :Support
   autoload :Secrets
