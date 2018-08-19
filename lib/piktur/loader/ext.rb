@@ -13,13 +13,13 @@ module Piktur
     module Ext
 
       # @!attribute [rw] loader
-      #   @return [Piktur::Loader::Base] The specified or default ({Piktur::Config.loader.instance})
+      #   @return [Loader::Base] The specified or default ({Interface.loader})
       #     instance
       attr_writer :loader
 
       # @see (#loader=)
       def loader
-        @loader ||= ::Piktur::Config.loader[:instance]
+        @loader ||= ::NAMESPACE::Config.loader[:instance]
       end
 
       # @param see (Filters#files)
@@ -32,7 +32,7 @@ module Piktur
       # Load namespaces and/or type defintions and dependencies on demand.
       #
       # @param [String] namespaces A list of namespaces - the relative path from
-      #   {Piktur::Config.components_dir}
+      #   {Config.components_dir}
       # @param [Symbol] types A list of {Piktur.component_types}
       #
       # @option see (Loader::ActiveSupport#call)
@@ -45,14 +45,14 @@ module Piktur
 
       # If the reloader is enabled, forces a reload.
       #
-      # @see file:lib/piktur/setup/boot.rb
+      # @see https://bitbucket.org/piktur/piktur_core/src/master/lib/piktur/setup/boot.rb
       #
       # @param [Array<String>] args
       # @param see (#load)
       #
       # @return [void]
       def load!(options = EMPTY_OPTS)
-        load(**options, force: ::Piktur.loader.booted?)
+        load(**options, force: ::NAMESPACE.loader.booted?)
       end
 
     end

@@ -108,7 +108,7 @@ module Piktur
     # Canonical data object for a library extension
     class Library < Service
 
-      # @return [Piktur::Support::StringInquirer]
+      # @return [ActiveSupport::StringInquirer]
       def type
         @type ||= ::ActiveSupport::StringInquirer.new('library')
       end
@@ -128,7 +128,7 @@ module Piktur
       # @return [Boolean]
       delegate :http?, :https?, to: :server
 
-      # @return [Piktur::Support::StringInquirer]
+      # @return [ActiveSupport::StringInquirer]
       def type
         return @type if defined?(@type)
         *_, const = self.class.name.rpartition('::')

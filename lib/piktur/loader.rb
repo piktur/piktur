@@ -19,21 +19,21 @@ module Piktur
   #   end
   #
   # @example Add the loader interface to a module
-  #   Piktur.extend Piktur::Loader::Ext
-  #   Piktur.loader # => <Loader[ActiveSupport] booted=true entries=100>
-  #   Piktur.files(type: :models) # => ['model.rb', 'namespace/model.rb']
+  #   NAMESPACE.extend Piktur::Loader::Ext
+  #   NAMESPACE.loader # => <Loader[ActiveSupport] booted=true entries=100>
+  #   NAMESPACE.files(type: :models) # => ['model.rb', 'namespace/model.rb']
   #
   # @example Load a subset
-  #   Piktur.load(paths: 'users')
-  #   Piktur.load(namespaces: %w(users accounts))
-  #   Piktur.load(type: :models)
+  #   NAMESPACE.load(paths: 'users')
+  #   NAMESPACE.load(namespaces: %w(users accounts))
+  #   NAMESPACE.load(type: :models)
   #
-  # @example Load all namespaces listed in {Piktur.namespaces}
-  #   Piktur.load
+  # @example Load all namespaces listed in {Piktur::Config.namespaces}
+  #   NAMESPACE.load
   #
   # @example Sort files
-  #   Piktur.loader.sort(:models) # => ['a/model.rb', 'a/models/variant.rb', 'z/model.rb']
-  #   Piktur.loader.sort('a', 'x', '*.js') # => ['a/x.js', 'a/a.js', 'a/b.js']
+  #   NAMESPACE.loader.sort(:models) # => ['a/model.rb', 'a/models/variant.rb', 'z/model.rb']
+  #   NAMESPACE.loader.sort('a', 'x', '*.js') # => ['a/x.js', 'a/a.js', 'a/b.js']
   #
   # @example Apply the sorting algorithm to an arbitrary file list
   #   Piktur::Loader::Sorter.call(%w(path/z, path/a)) # => ['path/a', 'path/z']
@@ -55,7 +55,7 @@ module Piktur
   #   #   "catalogueItems": { ... }
   #   # }
   #
-  # @see Piktur::Engine
+  # @see https://bitbucket.org/piktur/piktur_core/src/master/lib/piktur/engine.rb
   # @see https://bitbucket.org/piktur/piktur/wiki/Structure.markdown#Components
   #
   # {include:Loader::ActiveSupport}
@@ -63,10 +63,9 @@ module Piktur
 
     extend ::ActiveSupport::Autoload
 
-    autoload :Ext,            'piktur/setup/loader/ext'
-    autoload :Pathname,       'piktur/setup/loader/pathname'
-    autoload :Strategies,     strategies = 'piktur/setup/loader/strategies'
-    autoload :ActiveSupport,  "#{strategies}/active_support"
+    autoload :Ext
+    autoload :Pathname
+    autoload :ActiveSupport,  "#{strategies = 'piktur/loader/strategies'}/active_support"
     autoload :Base,           "#{strategies}/base"
     autoload :Dry,            "#{strategies}/dry"
     autoload :Filter,         "#{strategies}/filter"
@@ -97,7 +96,7 @@ module Piktur
       #
       # @param [Symbol] strategy
       #
-      # @return [Piktur::Loader::Base] instance
+      # @return [Base] instance
       def build(strategy)
         raise StandardError, STRATEGY_UNDEFINED_MSG % strategy unless
           STRATEGIES.include?(strategy)
@@ -120,7 +119,7 @@ module Piktur
             options[filter] = to_load
             loader.send(__callee__, options)
           end
-        else # Load all {Piktur.namespaces}
+        else # Load all `NAMESPACE.namespaces`
           loader.send(__callee__, options)
         end
       end

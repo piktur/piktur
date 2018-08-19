@@ -36,9 +36,10 @@ module Piktur
   #   }
   #
   #   module Namespace
-  #     Piktur.install(self) # Install Piktur utilities
+  #     ::Piktur.install(self) # Install Piktur utilities
   #
   #     Services.define(
+  #       ::Dir.pwd,
   #       applications: %i(app),
   #       engines:      %i(engine),
   #       libraries:    %i(lib)

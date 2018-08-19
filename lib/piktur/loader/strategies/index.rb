@@ -20,7 +20,7 @@ module Piktur
         #
         # @return [String]
         def index!
-          ::Piktur.debug(binding, warn: "[PERFORMANCE] #{__FILE__}:#{__LINE__}")
+          ::NAMESPACE.debug(binding, warn: "[PERFORMANCE] #{__FILE__}:#{__LINE__}")
 
           _flatten(&fn[:set])
         end
@@ -47,7 +47,7 @@ module Piktur
         #
         # @return [void]
         def _scan(root)
-          ::Piktur.debug(binding, warn: "[PERFORMANCE] #{__FILE__}:#{__LINE__}")
+          ::NAMESPACE.debug(binding, warn: "[PERFORMANCE] #{__FILE__}:#{__LINE__}")
 
           return if root.nil?
 

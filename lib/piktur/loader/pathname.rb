@@ -25,8 +25,8 @@ module Piktur
     #              a    47.883k i/100ms
     #              b     8.964k i/100ms
     #   Calculating -------------------------------------
-    #              a    527.922k (� 3.2%) i/s -      2.681M in   5.084933s
-    #              b     90.885k (� 1.8%) i/s -    457.164k in   5.031864s
+    #              a    527.922k (± 3.2%) i/s -      2.681M in   5.084933s
+    #              b     90.885k (± 1.8%) i/s -    457.164k in   5.031864s
     #   Comparison:
     #              a:   527922.1 i/s
     #              b:    90884.9 i/s - 5.81x  slower
@@ -43,8 +43,8 @@ module Piktur
     #             rpartition    22.443k i/100ms
     #               right_of   104.072k i/100ms
     #   Calculating -------------------------------------
-    #             rpartition    239.195k (� 1.9%) i/s -      1.212M in   5.068584s
-    #               right_of      1.298M (� 1.6%) i/s -      6.557M in   5.051604s
+    #             rpartition    239.195k (± 1.9%) i/s -      1.212M in   5.068584s
+    #               right_of      1.298M (± 1.6%) i/s -      6.557M in   5.051604s
     #   Comparison:
     #               right_of:  1298258.7 i/s
     #             rpartition:   239194.5 i/s - 5.43x  slower

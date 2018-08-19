@@ -67,7 +67,7 @@ module Piktur
         def to_i; value; end
 
         # @example
-        #   ::Piktur::Types.Enum(Object, :colours, red: { value: 0 }, green: { value: 1 })
+        #   ::NAMESPACE::Types.Enum(Object, :colours, red: { value: 0 }, green: { value: 1 })
         #   Colours[:red] == Colours[:red] # => true
         #   Colours[:red] == 'red'         # => true
         #   Colours[:red] == :red          # => true

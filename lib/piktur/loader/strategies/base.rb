@@ -18,20 +18,20 @@ module Piktur
     # definitions can be **automatically** registered under the parent namespace or with a
     # `Dry::Container` instance.
     #
-    # @see {Concepts::DSL}
+    # @see https://bitbucket.org/piktur/piktur_core/src/master/lib/piktur/concepts/dsl.rb
     #
     # ## Config
     #
     # At present, only `ActiveSupport::Dependencies` is integated. To implement a different strategy
     # define your constant, include {Base} and assign the `:<loader_name>` to
-    # {Piktur::Config.loader.instance}. The defintion should be filed under
+    # {Config.loader} instance. The defintion should be filed under
     # `/lib/piktur/setup/loader/strategies/<loader_name>.rb`. An instance will be assigned to the
-    # {Piktur::Config} object. The instance should be `#call`able.
+    # {Config} object. The instance should be `#call`able.
     #
     # Any **autoloadable** directory can be used, though typically, the configured
-    # {Piktur::Config.components_directory} is used. The list of component {Filters#types} is also
-    # configurable, use {Piktur::Config.component_types}, the loader will references types in the
-    # form specified by {Piktur::Config.nouns}.
+    # {Config.components_directory} is used. The list of component {Filters#types} is also
+    # configurable, use {Config.component_types}, the loader will references types in the
+    # form specified by {Config.nouns}.
     #
     # {include:Load}
     #
@@ -108,7 +108,7 @@ module Piktur
         def call(*); raise ::NotImplementedError; end
 
         # @return [Dry::Configurable]
-        def config; ::Piktur.config[:loader]; end
+        def config; ::NAMESPACE.config[:loader]; end
 
         # Returns the segment of a file path corresponding to the constant defined within it.
         #
@@ -158,7 +158,7 @@ module Piktur
           # @return [void]
           def debug(paths)
             return unless config.debug
-            ::Piktur.logger.info "Loaded:\n#{paths.map { |p| "  - #{p}" }.join("\n")}"
+            ::NAMESPACE.logger.info "Loaded:\n#{paths.map { |p| "  - #{p}" }.join("\n")}"
           end
 
           # @raise [NoMethodError] if non existent component type

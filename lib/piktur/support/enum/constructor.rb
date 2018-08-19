@@ -36,7 +36,7 @@ module Piktur
       # @option options [String, Symbol] :predicates
       #   Include {Predicates} for enumerated attribute
       # @option options [Boolean] :register
-      #   Register the enum with the application {Piktur::Interface#container}
+      #   Register the enum with the application {Interface#container}
       #
       # @yieldparam [self] enum The {Enum} instance
       #
@@ -111,7 +111,7 @@ module Piktur
 
         # Block to extend the Enum instance.
         #
-        # @yieldparam [Piktur::Support::Enum]
+        # @yieldparam [Enum]
         #
         # @return [void]
         def finalize(&block)

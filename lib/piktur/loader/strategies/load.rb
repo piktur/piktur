@@ -37,13 +37,13 @@ module Piktur
           load(type, by_type(type, options), options)
         end
 
-        # Load all namespaces in {Piktur.config.namespaces}
+        # Load all namespaces in {Config.namespaces}
         #
         # @param see (#load)
         #
         # @return [Array<String>] The loaded paths
         def load_all!(options = EMPTY_OPTS)
-          ::Piktur.namespaces.flat_map { |namespace| load_path!(namespace, options) }
+          ::NAMESPACE.namespaces.flat_map { |namespace| load_path!(namespace, options) }
         end
 
         # @param [String, Symbol] id A type, namespace or path identifier
@@ -54,7 +54,7 @@ module Piktur
         # @option options [Boolean] :force (false)
         #
         # @return [Array<String>] The loaded paths
-        def load(id, paths, *)
+        def load(id, paths, *) # rubocop:disable MethodLength
           error = catch(:abort) do
             super(paths, &self.class.default_proc)
             debug(paths)
@@ -67,7 +67,10 @@ module Piktur
             return paths
           end
 
-          ::Piktur.debug(binding, error: "[#{error}] Could not load #{id} #{__FILE__}:#{__LINE__}")
+          ::NAMESPACE.debug(
+            binding,
+            error: "[#{error}] Could not load #{id} #{__FILE__}:#{__LINE__}"
+          )
         end
 
     end

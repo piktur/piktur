@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable AccessModifierIndentation, AccessModifierDeclarations
+# rubocop:disable AccessModifierIndentation
 
 module Piktur
 
@@ -74,18 +74,21 @@ module Piktur
       #
       # @return [void]
       def types=(arr)
-        @types = arr.map { |type| ::Inflector.send(::Piktur.config[:nouns], type).to_sym }
+        @types = arr.map { |type| ::Inflector.send(::NAMESPACE.config[:nouns], type).to_sym }
       end
 
       # Returns a list of existent directories matching {#target}
       #
+      # @see https://bitbucket.org/piktur/piktur/src/master/lib/piktur/engine/paths.rb
+      #   `Piktur::Engine.itself?`
+      #
       # @return [Array<Pathname>]
       def root_directories
-        @root_directories ||= ::Piktur.services
+        @root_directories ||= ::NAMESPACE.services
           .railties
           .map { |railtie| railtie.root / target }
           .select(&:exist?)
-          .uniq # @see file:lib/piktur/engine/paths.rb {Piktur::Engine.itself?}
+          .uniq
       end
 
       # @!endgroup
@@ -220,7 +223,7 @@ module Piktur
 
     end
 
-    # @see https://bitbucket.org/piktur/piktur_core/src/master/benchmark//pattern_matching.rb
+    # @see https://bitbucket.org/piktur/piktur_core/src/master/benchmark/pattern_matching.rb
     #   .dir_vs_pathname_glob
     class Filter
 

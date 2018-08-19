@@ -14,7 +14,7 @@ module Piktur
       #
       # @example
       #   class Model
-      #     ::Piktur::Types.Enum(
+      #     ::NAMESPACE::Types.Enum(
       #       self,
       #       :syntaxes,
       #       predicates: 'syntax',

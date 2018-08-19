@@ -55,6 +55,7 @@ module Piktur
 
     UnknownPluginError = Class.new(::StandardError)
 
+    # :nodoc
     module Ext
 
       # @example

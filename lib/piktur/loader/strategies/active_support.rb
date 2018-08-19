@@ -43,9 +43,8 @@ module Piktur
     # If you must reload constants under `/lib` add the relevant path(s) to `config.watchable_dirs`.
     #
     # ```ruby
-    #   # lib/piktur/to_reload.rb
-    #   module Piktur
-    #     # lib/piktur/core.rb
+    #   # lib/namespace/to_reload.rb
+    #   module Namespace
     #     extend ActiveSupport::Autoload
     #     autoload :ToReload
     #
@@ -55,13 +54,13 @@ module Piktur
     #   end
     #
     #   # app/models/with_requirements.rb
-    #   require_dependency 'piktur/to_reload.rb'
+    #   require_dependency 'namespace/to_reload.rb'
     #   class WithRequirements; end
     #
-    #   > time_at_initial_load = Piktur::ToReload::LOADED_AT
+    #   > time_at_initial_load = Namespace::ToReload::LOADED_AT
     #   # Edit app/models/with_requirements.rb
     #   > reload!
-    #   > time_at_initial_load < Piktur::ToReload::LOADED_AT # => true
+    #   > time_at_initial_load < Namespace::ToReload::LOADED_AT # => true
     # ```
     #
     # This technique will only work when used in conjuction with `require_dependency` and the
@@ -80,7 +79,7 @@ module Piktur
       self.default_proc = lambda do |file|
         require_dependency(file)
       rescue NameError, LoadError => error
-        ::Piktur.debug(binding, error: error)
+        ::NAMESPACE.debug(binding, error: error)
       end
 
       # @overload target=(path)
@@ -106,7 +105,7 @@ module Piktur
           load_all!(options)
         end
       rescue ::LoadError => error
-        ::Piktur.debug(binding, error: error)
+        ::NAMESPACE.debug(binding, error: error)
       end
       alias [] call
 

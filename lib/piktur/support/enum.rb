@@ -15,14 +15,16 @@ module Piktur
     #     # The enumerable attribute
     #     attr_accessor :enumerable
     #
-    #     # Provide the namespace and a name for the enumerable collection to the constructor
+    #     # Provide name, options and enumerable values to the constructor.
+    #     # Enumerated values may be declared within a block.
     #     Types.Enum self, :enumerable do
-    #       i18n_scope :with_enum
-    #       predicates :enumerable # Includes predicate methods for instances of the class
+    #       i18n_scope :other
+    #       predicates :enumerable # Add predicate instance methods to `namespace`.
+#                                  # Methods are named according to given attribute.
     #
     #       default :a           # Set the default value
     #       value   :b           # Define additional values
-    #       value   :c, meta: {} #
+    #       value   :c, meta: {} # Store metadata with the value
     #
     #       finalize do |enum|
     #         def enum.extended?; true; end

@@ -14,12 +14,12 @@ module Piktur
     #     end
     #   end
     #
-    #   loader = Piktur::Loader::Dry.new.instance_exec do
-    #     self.target = Piktur.components_dir
-    #     self.types  = Piktur::DB.config.component_dirs.values
+    #   loader = NAMESPACE::Loader::Dry.new.instance_exec do
+    #     self.target = NAMESPACE.components_dir
+    #     self.types  = NAMESPACE::DB.config.component_dirs.values
     #   end
     #
-    #   Piktur::DB.config.adapter.auto_registration(
+    #   NAMESPACE::DB.config.adapter.auto_registration(
     #     loader.target,
     #     namespace: 'Object',
     #     globs:     loader.patterns

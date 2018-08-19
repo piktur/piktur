@@ -14,12 +14,12 @@ module Piktur
     #   Support.install(:types)
     #
     # @example Value objects
-    #   Piktur::Types['address']                         # => Address
-    #   Piktur::Types['address'].(city: '', country: '') # => <Address city='' country=''>
-    #   Piktur::Types['undefined']                       # raise Dry::Container::Error
+    #   NAMESPACE::Types['address']                         # => Address
+    #   NAMESPACE::Types['address'].(city: '', country: '') # => <Address city='' country=''>
+    #   NAMESPACE::Types['undefined']                       # raise Dry::Container::Error
     #
     # @example Enums
-    #   Piktur::Types['enum.address.types][:billing]     # => <Enum::Value billing=1>
+    #   NAMESPACE::Types['enum.address.types][:billing]     # => <Enum::Value billing=1>
     module Types
 
       # :nodoc
@@ -65,7 +65,7 @@ module Piktur
 
         # Builds a {Piktur::Support::Enum} and registers the type caster with the {.container}
         #
-        # @param see (Enum::Constructor)
+        # @param see (Piktur::Support::Enum.new)
         #
         # @example
         #   Types['enum.users.types'][:admin] # => <Enum::Value admin=3>

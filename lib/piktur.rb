@@ -46,16 +46,16 @@ module Piktur
     # @return [void]
     def self.extended(base)
       # Avoid explicit calls to `Piktur`, instead assign `base` to root scope and Use
-      # this alias `NAMESPACE` to reference the dependent's namespace. 
+      # this alias `NAMESPACE` to reference the dependent's namespace.
       ::Object.const_set(:NAMESPACE, base)
     end
-    
+
     # Returns absolute path to root directory
     #
     # @return [Pathname]
     def root; Pathname(__dir__).parent; end
 
-    # @return [Piktur::Environment]
+    # @return [Environment]
     def env; self::Environment.instance; end
 
     # @return [Config]
@@ -108,6 +108,25 @@ module Piktur
     # @return [Array<Services::FileIndex::Pathname>]
     def file_index; services.file_index.all; end
 
+    # @example
+    #   components_dir(::Rails.root) # => <Pathname:/root/app/concepts>
+    #   components_dir               # => <Pathname:app/concepts>
+    #
+    # @see Config.components_dir
+    #
+    # @param [Pathname] root
+    #
+    # @return [Pathname] the relative path of the components directory
+    # @return [Pathname] if `root` the absolute path of the components directory from root
+    def components_dir(root = nil)
+      root ? config[:components_dir].expand_path(root) : config[:components_dir]
+    end
+
+    # @see Config.component_types
+    #
+    # @return [Array<Symbol>] A list of the component types implemented
+    def component_types; config[:component_types]; end
+
     include Support::Container::Delegates
 
     # @return [Dry::Container{String => Object}]
@@ -145,7 +164,7 @@ module Piktur
     # @option [Symbol] options :throw
     # @option [Exception] options :raise
     #
-    # @see Piktur::DEBUGGER
+    # @see DEBUGGER
     #
     # @return [void]
     def debug(obj = binding, diff = true, warning: nil, error: nil, **options)

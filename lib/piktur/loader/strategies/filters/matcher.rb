@@ -11,8 +11,8 @@ module Piktur
     #
     # @example
     #   Matcher['models', 'repositories']
-    #   Matcher[Piktur.component_types, glob: true]
-    #   Matcher[Piktur.component_types, glob: true, path: Dir.pwd]
+    #   Matcher[NAMESPACE.component_types, glob: true]
+    #   Matcher[NAMESPACE.component_types, glob: true, path: Dir.pwd]
     module Matcher
 
       module_function
