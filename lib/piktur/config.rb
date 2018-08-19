@@ -106,8 +106,8 @@ module Piktur
         def finalize!(
           mod,
           scope: ::NAMESPACE,
-          root:  ::NAMEPACE.root,
-          dir:   ::NAMEPACE.to_s.downcase,
+          root:  ::NAMESPACE.root,
+          dir:   ::NAMESPACE.to_s.downcase,
           **options
         )
           _load(mod, root: root, dir: dir)
