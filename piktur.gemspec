@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.version     = Piktur::VERSION
   s.authors     = ['Daniel Small']
   s.email       = ['piktur.io@gmail.com']
-  s.homepage    = 'https://bitbucket.org/piktur/piktur'
+  s.homepage    = 'https://github.com/piktur/piktur'
   s.summary     = 'Piktur a complete Portfolio Management System for Artists'
   s.description = 'Common utilities for Piktur apps'
   s.license     = ''
@@ -70,12 +70,6 @@ Gem::Specification.new do |s|
 
   # @!group Documentation
   s.add_development_dependency 'yard',                              '~> 0.9'
-  # @!endgroup
-
-  # @!group Development
-  # @note `add_development_dependency` does not make the library available to dependent libraries.
-  #   Instead wrap these libraries in a `group` block within `Gemfile`
-  s.add_development_dependency 'awesome_print',                     '~> 1.7'
   # @!endgroup
 
   # @!group Testing
