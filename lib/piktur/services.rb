@@ -36,7 +36,7 @@ module Piktur
   #   }
   #
   #   module Namespace
-  #     ::Piktur.install(self) # Install Piktur utilities
+  #     extend Piktur # Install Piktur utilities
   #
   #     Services.define(
   #       ::Dir.pwd,
