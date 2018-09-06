@@ -192,7 +192,7 @@ module Piktur
   # Secrets.overload
 
   # Install the optimised Inflector immediately
-  Support.install(:object, :module, :inflector)
+  Support.install(:object, :inflector) # :module
 
   # @param [Module] base
   #
