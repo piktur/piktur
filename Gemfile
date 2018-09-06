@@ -9,8 +9,7 @@ bb = 'https://bitbucket.org'
 #   instead served with `geminabox`.
 # @see https://bitbucket.org/snippets/piktur/dBKR5 require private BitBucket repo
 
-# source 'https://rubygems.org'
-source ENV['GEM_SOURCE']
+source ENV.fetch('GEM_SOURCE') { 'https://rubygems.org' }
 
 ruby ENV.fetch('RUBY_VERSION').sub('ruby-', '')
 
@@ -24,18 +23,13 @@ gem 'dotenv'
 # C extension to replace ActiveSupport::Inflector.underscore
 gem 'fast_underscore',          require: false
 
-gem 'piktur_security',          git:    "#{bb}/piktur/piktur_security.git",
-                                branch: 'rails5'
-
 # @!group Utilities
 gem 'activesupport',            require: false
 gem 'concurrent-ruby',          git:    "#{gh}/ruby-concurrency/concurrent-ruby.git",
                                 branch: 'master'
 gem 'dry-configurable',         require: false
 gem 'dry-monads',               require: false
-gem 'dry-struct',               git:    "#{gh}/noname00000123/dry-struct.git",
-                                branch: 'master',
-                                require: false
+gem 'dry-struct',               require: false
 gem 'dry-types',                require: false
 gem 'dry-transaction',          require: false
 gem 'rake',                     require: false
@@ -58,10 +52,9 @@ group :benchmark do
 end
 
 group :development do
-  gem 'awesome_print',          source:  ENV['GEM_SOURCE'], require: false
   gem 'solargraph'
   gem 'rubocop'
-  gem 'yard',                   source:  ENV['GEM_SOURCE'], require: false
+  gem 'yard',                   require: false
 end
 
 group :development, :test do
@@ -73,7 +66,7 @@ end
 
 group :test do
   gem 'fakefs',                 require: false
-  gem 'piktur_spec',            git:    "#{bb}/piktur/piktur_spec.git",
+  gem 'piktur_spec',            git:    "#{gh}/piktur/piktur_spec.git",
                                 branch: 'master'
   gem 'rspec'
   gem 'simplecov',              require: false
