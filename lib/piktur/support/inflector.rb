@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable AccessModifierDeclarations
-
-require 'fast_underscore'
+# require 'fast_underscore'
 require 'active_support/inflector'
 
 ActiveSupport::Inflector.inflections(:en) do |inflector|
@@ -37,23 +35,12 @@ module Piktur
     #   Object.extend Inflector
     module Inflector
 
-      CAMELIZED_MATCHER = /[A-Z\-:]/ # /[A-Z-]|::/
-      private_constant :CAMELIZED_MATCHER
-
       class << self
-
-        private def install(*)
-          ::Object.const_set(:Inflector, self)
-        end
 
         include ::ActiveSupport::Inflector
 
-        # @note FastUnderscore CAN NOT handle Symbol input.
-        # @param [String, Symbol] input
-        # @return [String]
-        def underscore(input)
-          return input unless input.match?(CAMELIZED_MATCHER)
-          ::FastUnderscore.underscore(input.to_s)
+        private def install(*)
+          ::Object.const_set(:Inflector, self)
         end
 
         # @see https://ruby-doc.org/core-2.5.0/Module.html#method-i-const_defined-3F
