@@ -2,7 +2,6 @@
 
 require 'pathname'
 %w(
-  dependencies
   dependencies/autoload
   core_ext/string/inquiry
   core_ext/hash/keys
@@ -48,6 +47,9 @@ module Piktur
       # Avoid explicit calls to `Piktur`, instead assign `base` to root scope and Use
       # this alias `NAMESPACE` to reference the dependent's namespace.
       ::Object.const_set(:NAMESPACE, base)
+
+      # Install the optimised Inflector immediately
+      Support.install(:object, :inflector, :module)
     end
 
     # Returns absolute path to root directory
@@ -191,24 +193,26 @@ module Piktur
   #   local files.
   # Secrets.overload
 
-  # Install the optimised Inflector immediately
-  Support.install(:object, :module, :inflector)
-
   # @param [Module] base
+  # @param [Array<Symbol, String>] args A list of constants to be aliased
   #
   # @return [void]
-  def self.extended(base)
+  def self.install(base, *args, containerize: false) # rubocop:disable MethodLength
     eager_load!
 
     base.extend Interface
 
-    constants.each do |const|
+    ::Set[:Support, :Config, *args].each do |const|
+      const = const.capitalize
       if const == :Config
         base.safe_const_set(:Config, ::Class.new(Config))
       else
         base.safe_const_set(const, const_get(const))
       end
     end
+
+    base.include Constants
+    base.extend Support::Container::Mixin if containerize
   end
 
 end
