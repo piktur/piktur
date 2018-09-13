@@ -69,7 +69,16 @@ module Piktur
         def constantize(const, scope = ::Object, classify: false, camelize: false, traverse: false)
           const = camelize(const) if camelize
           const = classify(const) if classify
-          constantize!(const, scope, traverse) if scope.const_defined?(const, traverse)
+
+          # If `::Rails.configuration.reload_classes_only_on_change` enabled `Module.const_defined?`
+          # will return `false`. Invoke `Module.const_missing` to load the constant.
+          if scope.const_defined?(const, traverse)
+            constantize!(const, scope, traverse)
+          else
+            scope.const_missing(const)
+          end
+        rescue ::NameError
+          nil
         end
         alias safe_constantize constantize
 
