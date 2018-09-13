@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'pry' if Piktur.env.development?
+require 'pry' unless Piktur.env.production?
 
 module Piktur # rubocop:disable Documentation
 
