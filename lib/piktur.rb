@@ -4,6 +4,7 @@ require 'pathname'
 %w(
   dependencies/autoload
   core_ext/string/inquiry
+  core_ext/object/blank
   core_ext/hash/keys
   core_ext/module/delegation
 ).each { |f| require "active_support/#{f}" }
@@ -39,18 +40,6 @@ module Piktur
 
   # :nodoc
   module Interface
-
-    # @param [Module] base
-    #
-    # @return [void]
-    def self.extended(base)
-      # Avoid explicit calls to `Piktur`, instead assign `base` to root scope and Use
-      # this alias `NAMESPACE` to reference the dependent's namespace.
-      ::Object.const_set(:NAMESPACE, base)
-
-      # Install the optimised Inflector immediately
-      Support.install(:object, :inflector, :module)
-    end
 
     # Returns absolute path to root directory
     #
@@ -186,7 +175,10 @@ module Piktur
   end
   private_constant :Interface
 
-  extend Interface if ::File.basename(::Dir.pwd).start_with?('piktur')
+  extend Interface
+
+  # Install the optimised Inflector immediately
+  Support.install(:object, :inflector, :module)
 
   # @todo Implement production ready Secrets management.
   #   Use /bin/env in non-prouction enviroments to load ENV variables from **untracked**
@@ -198,12 +190,24 @@ module Piktur
   #
   # @return [void]
   def self.install(base, *args, containerize: false) # rubocop:disable MethodLength
+    # Avoid explicit calls to `Piktur`, instead assign `base` to root scope and Use
+    # this alias `NAMESPACE` to reference the dependent's namespace.
+    ::Object.const_set(:NAMESPACE, base)
+
     eager_load!
 
     base.extend Interface
 
-    ::Set[:Support, :Config, *args].each do |const|
-      const = const.capitalize
+    ::Set[
+      :Support,
+      :Environment,
+      :Deprecation,
+      :DEBUGGER,
+      :Errors,
+      :Logger,
+      :Config,
+      *args.map(&:capitalize)
+    ].each do |const|
       if const == :Config
         base.safe_const_set(:Config, ::Class.new(Config))
       else
