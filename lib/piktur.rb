@@ -185,10 +185,10 @@ module Piktur
   end
   private_constant :Interface
 
-  extend Interface
-
   # Install the optimised Inflector immediately
   Support.install(:object, :inflector, :module)
+
+  extend Interface if File.basename(Dir.pwd).start_with?('piktur')
 
   # @todo Implement production ready Secrets management.
   #   Use /bin/env in non-prouction enviroments to load ENV variables from **untracked**
