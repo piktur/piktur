@@ -41,6 +41,16 @@ module Piktur
   # :nodoc
   module Interface
 
+    # Avoid explicit calls to `Piktur`, instead assign `base` to root scope and Use
+    # this alias `NAMESPACE` to reference the dependent's namespace.
+    #
+    # @param [Module]
+    #
+    # @return [void]
+    def self.extended(base)
+      ::Object.const_set(:NAMESPACE, base)
+    end
+
     # Returns absolute path to root directory
     #
     # @return [Pathname]
@@ -190,13 +200,9 @@ module Piktur
   #
   # @return [void]
   def self.install(base, *args, containerize: false) # rubocop:disable MethodLength
-    # Avoid explicit calls to `Piktur`, instead assign `base` to root scope and Use
-    # this alias `NAMESPACE` to reference the dependent's namespace.
-    ::Object.const_set(:NAMESPACE, base)
+    base.extend Interface
 
     eager_load!
-
-    base.extend Interface
 
     ::Set[
       :Support,

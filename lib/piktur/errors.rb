@@ -9,7 +9,7 @@ module Piktur
 
     # @param [String] str
     # @return [void]
-    def debug(str); parent.logger.debug(str) end
+    def debug(str); parent.logger.debug(str); end
 
     # @param [String] str
     # @return [void]
