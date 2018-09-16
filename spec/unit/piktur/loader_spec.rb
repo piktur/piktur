@@ -28,7 +28,7 @@ RSpec.describe Piktur::Loader::ActiveSupport do
     allow(Object).to receive(:require_dependency).and_return(true)
   end
 
-  let(:component_types) { Piktur.config[:component_types] }
+  let(:component_types) { Piktur.config.component_types }
   let(:namespace)  { 'users' }
   let(:type)       { :models }
   let(:namespaces) { %w(users catalogues/items test/in_progress) }
@@ -306,14 +306,6 @@ RSpec.describe Piktur::Loader::ActiveSupport do
       it 'should return a list of files within the given directory' do
         actual = subject.send(:by_path, path)
         expect(actual).to be_blank.or(all(end_with('.rb')))
-      end
-    end
-
-    describe '#method_missing' do
-      let(:type) { 'schemas' }
-
-      it 'should return a list of schema files' do
-        expect(subject.schemas).to be_blank.or(all(include('schema.rb')))
       end
     end
 
