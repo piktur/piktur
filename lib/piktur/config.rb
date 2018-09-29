@@ -10,7 +10,6 @@ module Piktur
   # {Finalize.call} will {Finalize.finalize!} the given configuration files.
   class Config
 
-    extend ::ActiveSupport::Autoload
     extend ::Dry::Configurable
 
     # @!attribute [rw] services
@@ -24,10 +23,13 @@ module Piktur
     #
     #   @see Piktur::Services
     #   @return [Services::Index]
-    setting(:services, reader: true) do |services|
+    setting :services, EMPTY_ARRAY, reader: true, &Types.Constructor(Services::Index) { |services|
       options = services.pop if services && services[-1].is_a?(::Hash)
-      Services::Index.new(services.map(&:to_s), options || EMPTY_HASH)
-    end
+      Services::Index.new(services.map(&:to_s), *options)
+    }
+      .meta(reader: true)
+      .default { |type| type[EMPTY_ARRAY] }
+      .method(:call)
 
     # Map noun forms to {Inflector} methods
     #
@@ -35,33 +37,48 @@ module Piktur
     FORMS = { singular: :singularize, plural: :pluralize }.freeze
 
     # @!attribute [rw] nouns
-    #   @return [Pathname] the form in which {.component_types} will be referenced
-    setting(:nouns, :plural) { |form| FORMS[form] || FORMS[:plural] }
+    #   @return [Symbol] the form in which {.component_types} will be referenced
+    setting :nouns, :plural, reader: true, &Types['symbol']
+      .constructor { |input| FORMS[input] || FORMS[:plural] }
+      .meta(reader: true)
+      .default(:plural)
+      .method(:call)
 
     # @!attribute [rw] components_dir
     #   @return [Pathname] the relative path
-    setting(:components_dir, 'app/concepts', reader: true) { |path| Pathname(path) }
+    setting :components_dir, 'app/concepts', reader: true, &Types.Constructor(Pathname)
+      .meta(reader: true)
+      .default { |type| type['app/concepts'] }
+      .method(:call)
 
     # @!attribute [rw] component_types
-    #   @return [Pathname] a list of component types
-    setting(:component_types, reader: true) do |types|
-      types.map! { |e| ::Inflector.send(config.nouns, e).to_sym }
-    end
+    #   @return [Array<Symbol>] a list of component types
+    setting :component_types, EMPTY_ARRAY, reader: true, &Types['array']
+      .constructor { |input| input.map { |e| ::Inflector.send(config.nouns, e).to_sym } }
+      .meta(reader: true)
+      .default { |type| type[EMPTY_ARRAY] }
+      .method(:call)
 
     # @!attribute [rw] loader
     #   @see Piktur::Loader::Config
     #   @return [Dry::Configurable]
-    setting(:loader, reader: true) do
+    setting :loader, reader: true do
       # @!attribute [rw] use_loader
       #   @return [Boolean]
       # setting(:use_loader, true, reader: true)
-      setting(:instance, :active_support, reader: true) do |strategy|
-        ::Piktur::Loader.build(strategy)
-      end
+      setting :instance, :active_support, reader: true, &Types.Constructor(Loader) { |strategy|
+        strategy.is_a?(::Symbol) ? Loader.build(strategy) : strategy
+      }
+        .meta(reader: true)
+        .default { |type| type[:active_support] }
+        .method(:call)
 
       # @!attribute [rw] debug
       #   @return [Boolean]
-      setting(:debug, ::ENV['DEBUG'], reader: true)
+      setting :debug, ::ENV['DEBUG'], reader: true, &Types['params.bool']
+        .meta(reader: true)
+        .default { ::ENV['DEBUG'].present? }
+        .method(:call)
     end
 
     # :nodoc
@@ -106,8 +123,8 @@ module Piktur
         def finalize!(
           mod,
           scope: ::NAMESPACE,
-          root:  ::NAMESPACE.root,
-          dir:   ::NAMESPACE.to_s.downcase,
+          root: ::NAMESPACE.root.join('config'),
+          dir: ::NAMESPACE.to_s.downcase,
           **options
         )
           _load(mod, root: root, dir: dir)
@@ -122,10 +139,10 @@ module Piktur
           #
           # @return [String]
           def _load(file, root:, dir:, **)
-            file = ::File.join(root, 'config', *dir, "#{file}.rb")
-            ::Kernel.load(file) if ::File.exist?(file)
-          rescue ::NameError, ::LoadError => error
-            ::Piktur.debug(binding, true, warning: error)
+            file = ::Dir[::File.join(root, *dir, "{#{file},config}.rb")][0]
+            ::Kernel.load(file) if file && ::File.exist?(file)
+          rescue ::NameError, ::LoadError => err
+            ::Piktur.debug(binding, true, raise: err)
           end
 
           # @option see (#finalize!)
