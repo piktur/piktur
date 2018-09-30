@@ -3,20 +3,15 @@
 
 # This command will automatically be run when you run "rails" with Rails gems
 # installed from the root of your application.
-ENGINE_ROOT ||= Dir.pwd
-APP_ROOT ||= File.join(ENGINE_ROOT, 'spec/dummy')
-APP_PATH ||= File.join(APP_ROOT, 'config/application.rb')
 
-ENV['BUNDLE_GEMFILE'] ||= File.join(ENGINE_ROOT, 'Gemfile')
-
-unless defined?(Spring)
-  begin
-    load File.expand_path('./env', __dir__)
-    load File.expand_path('./spring', __dir__) # unless defined?(Spring)
-  rescue LoadError => error
-    raise unless error.message.include?('spring')
-  end
+begin
+  load File.expand_path('./env', __dir__)
+  load File.expand_path('./spring', __dir__) unless defined?(Spring)
+rescue LoadError => err
+  raise unless err.message.include?('spring')
 end
 
-require_relative File.join(APP_ROOT, 'config/boot.rb')
+require_relative File.expand_path('config/boot.rb', APP_ROOT)
+
+# @see railties-5.1.0/lib/rails/engine/commands.rb
 require 'rails/commands'

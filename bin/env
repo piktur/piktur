@@ -1,26 +1,36 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-env = ENV.fetch('ENV') { 'development' }
+env = ENV.fetch('ENV') { ENV.fetch('RAILS_ENV') { ENV.fetch('RACK_ENV') { 'development' } } }
 
-raise StandardError, 'Production environment variables cannot be loaded from untracked files' if
-  env == 'production'
-
-paths = Dir["{../,}.env.{common,#{env}}"]
-
-begin
-  gem 'dotenv' # Add the gem to $LOAD_PATH, we may not have run Bundler yet
-  require 'dotenv'
-
-  Dotenv.overload(*paths)
-
-  ENGINE_ROOT ||= Dir.pwd
-  ENV['BUNDLE_GEMFILE'] ||= File.join(ENGINE_ROOT, 'Gemfile')
-  # Disable Spring for non Rails environment
-  ENV['DISABLE_SPRING'] = '1' if Dir.pwd == File.expand_path('..', __dir__)
-
-  require 'rubygems'
-  require 'bundler'
-rescue LoadError => error
-  warn error
+ENGINE_ROOT ||= Dir.pwd
+if (path = Dir[File.join(ENGINE_ROOT, 'lib/**/engine.rb')][0])
+  ENGINE_PATH ||= path
+  APP_ROOT ||= File.join(ENGINE_ROOT, 'spec/dummy')
+else
+  APP_ROOT ||= ENGINE_ROOT
 end
+APP_PATH ||= File.join(APP_ROOT, 'config/application.rb')
+
+if env == 'production'
+  warn 'Production environment variables cannot be loaded from untracked files'
+else
+  paths = Dir["{../,}.env.{common,#{env}}"]
+
+  begin
+    gem 'dotenv' # Add the gem to $LOAD_PATH, we may not have run Bundler yet
+    require 'dotenv'
+
+    Dotenv.overload(*paths)
+  rescue LoadError => err
+    warn err
+  end
+end
+
+ENV['BUNDLE_GEMFILE'] ||= File.join(ENGINE_ROOT, 'Gemfile')
+# Disable Spring for production or non Rails environments
+ENV['DISABLE_SPRING'] = '1' if env == 'production' ||
+    Dir.pwd == File.expand_path('..', __dir__)
+
+require 'rubygems'
+require 'bundler'

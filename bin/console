@@ -6,7 +6,6 @@ $LOAD_PATH.push File.expand_path('./lib', Dir.pwd)
 load File.expand_path('./env', __dir__)
 
 ENV['DEBUG'] ||= '1'
-ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../Gemfile', __dir__)
 require 'bundler/setup' if File.exist?(ENV['BUNDLE_GEMFILE'])
 
 Bundler.require(:default)
