@@ -115,7 +115,7 @@ Layout/EmptyLinesAroundModuleBody:
 
 Layout/AlignHash:
   EnforcedHashRocketStyle: key
-  EnforcedColonStyle: table
+  EnforcedColonStyle: key
   Exclude:
     - 'locales/**/*'
     - '**/locales/**/*'
@@ -347,5 +347,8 @@ Rails/Exit:
     - '../**/lib/**/cli.rb'
     - '../**/lib/**/*.rake'
 
+Rails/SkipsModelValidations:
+  Enabled: false
+
 Rails/SaveBang:
-  Enabled: true
+  Enabled: false
