@@ -81,6 +81,9 @@ module Piktur
     # @return [Environment]
     def env; self::Environment.instance; end
 
+    # @return [void]
+    def configure; self::Config.configure(&block); end
+
     # @return [Config]
     def config; self::Config.config; end
 

@@ -11,7 +11,7 @@ module Piktur
 
     # @!attribute [rw] services
     #   @example
-    #     Piktur::Config.configure do |config|
+    #     Piktur.configure do |config|
     #       config.services = %w(piktur_library piktur_engine piktur_application)
     #
     #       # With options

@@ -8,7 +8,7 @@ module Piktur
   #   `./<components_dir>/<namespace>/setup.rb` to define multiple constants.
   #
   # @example Configure the a loader for the application
-  #   Piktur::Config.configure do |config|
+  #   Piktur.configure do |config|
   #     config.nouns            = :plural
   #     config.components_dir   = 'app/concepts'
   #     config.component_types  = %w(models transactions)
