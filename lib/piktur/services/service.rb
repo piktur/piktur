@@ -57,6 +57,11 @@ module Piktur
         loaded.is_a?(::Module)
       end
 
+      # @return [Boolean]
+      def itself?
+        path == ::Pathname.pwd
+      end
+
       # @see Services.specs
       #
       # @return [Gem::Specification]

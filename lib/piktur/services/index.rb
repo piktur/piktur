@@ -20,10 +20,12 @@ module Piktur
       # @param [Hash] options
       #
       # @option options [Array<String>] :component_types (nil) A list of expected component types
-      def initialize(services, options = EMPTY_HASH)
-        # @note Rails::Engline::Configuration#railties_order determined accordingly
-        # (engines + applications).map(&:railtie).compact!
-        self.dependencies = services
+      def initialize(*)
+        Services.define
+
+        # @note Sequencing WILL BE based on order defined within Gemfile.
+        #   Ensure correct Rails::Engine::Configuration#railties_order
+        self.dependencies = Services.dependencies.map(&:name)
 
         %i(paths application railties servers eager_load_namespaces)
           .each { |m| send(m) } # memoize attributes
@@ -78,7 +80,7 @@ module Piktur
       #
       # @return [void]
       def dependencies=(services)
-        @dependencies = all.select { |e| services.member?(e.name) }
+        @dependencies = all.select { |service| services.member?(service.name) && !service.itself? }
       end
 
       # @!attribute [r] application

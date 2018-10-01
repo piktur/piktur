@@ -9,25 +9,6 @@ module Piktur
 
     extend ::Piktur::Configurable
 
-    # @!attribute [rw] services
-    #   @example
-    #     Piktur.configure do |config|
-    #       config.services = %w(piktur_library piktur_engine piktur_application)
-    #
-    #       # With options
-    #       config.services = %w(lib).push(component_types: [:models, :serializers])
-    #     end
-    #
-    #   @see Piktur::Services
-    #   @return [Services::Index]
-    setting :services, EMPTY_ARRAY, reader: true, &Types.Constructor(Services::Index) { |services|
-      options = services.pop if services && services[-1].is_a?(::Hash)
-      Services::Index.new(services.map(&:to_s), *options)
-    }
-      .meta(reader: true)
-      .default { |type| type[EMPTY_ARRAY] }
-      .method(:call)
-
     # Map noun forms to {Inflector} methods
     #
     # @return [Hash{Symbol=>Symbol}]

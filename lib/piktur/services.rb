@@ -13,6 +13,9 @@ module Piktur
   # @example Configure services
   #   /config/services.json
   #   {
+  #     "applications": [<gem_name>],
+  #     "libraries": [<gem_name>],
+  #     "engines": [<gem_name>],
   #     "services": {
   #       <environment>: {
   #         "host": String,
@@ -70,27 +73,31 @@ module Piktur
       # @option options [Array<Symbol>] :libraries
       #
       # @return [void]
-      def define(root, **options) # rubocop:disable MethodLength, AbcSize
-        require('oj') unless defined?(::Oj)
+      def define(root = ::Dir.pwd) # rubocop:disable MethodLength, AbcSize
+        require('oj')
 
         path = ::File.expand_path(::File.join('config', 'services.json'), root)
 
-        parent.safe_const_set(
-          :SERVICES,
-          ::Oj.load_file(path, symbol_keys: true)[:services].freeze
-        )
-        parent.send(:private_constant, :SERVICES)
+        ::Piktur.logger.warn("No such file or directory #{path}, #{__FILE__}:#{__LINE__}") unless
+          ::File.exist?(path)
 
-        options.each do |type, gems|
-          parent.safe_const_set(type.upcase, gems)
-          parent.send(:private_constant, type.upcase)
+        services = ::Oj.load_file(path, symbol_keys: true)
+
+        ::NAMESPACE.safe_const_set(:SERVICES, services.delete(:services).freeze)
+        ::NAMESPACE.send(:private_constant, :SERVICES)
+
+        services.each do |type, gems|
+          ::NAMESPACE.safe_const_set(type.upcase, gems.map(&:to_sym))
+          ::NAMESPACE.send(:private_constant, type.upcase)
         end
+
+        true
       end
 
       # @raise [NameError] if constant undefined
       #
       # @return [Hash]
-      def services; parent.const_get(:SERVICES); end
+      def services; ::NAMESPACE.const_get(:SERVICES); end
 
       # @return [Bundler::Runtime]
       def bundler_environment; ::Bundler.environment; end
@@ -102,7 +109,7 @@ module Piktur
       #
       # @return [Array<Bundler::Dependency>]
       def dependencies
-        bundler_dependencies.select { |e| e.name.start_with? 'piktur' }
+        bundler_dependencies.select { |e| e.name.start_with?('piktur') }
       end
 
       # Returns the `Gem::Specification` for each Piktur gem dependency
@@ -153,7 +160,7 @@ module Piktur
         #
         # @return [Array<Hash>]
         def _get
-          _services(parent.const_get(__callee__.upcase))
+          _services(::NAMESPACE.const_get(__callee__.upcase))
         end
         %i(applications engines libraries).each { |aliaz| alias_method(aliaz, :_get) }
 
