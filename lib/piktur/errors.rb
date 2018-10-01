@@ -34,4 +34,12 @@ module Piktur
 
   end
 
+  # @return [String]
+  CLONE_WARNING = <<~MSG
+    Use %{method} to make a copy of this class.
+  MSG
+
+  # @return [StandardError]
+  MethodDefinedError = ::Class.new(::StandardError)
+
 end
