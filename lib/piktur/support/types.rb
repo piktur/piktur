@@ -82,13 +82,15 @@ module Piktur
         #
         # @raise [Dry::Container::Error] if existing key
         #
-        # @return [Enum]
+        # @return [Dry::Types::Constructor]
         def Enum(*args, &block) # rubocop:disable MethodName
           enum = Support::Enum.new(*args, &block)
 
-          # Register the type caster
-          container.register(enum.key, enum.method(:[]).to_proc, call: false, memoize: false)
+          constructor = ::Dry::Types['integer'].constructor(&enum.method(:[]))
+          container.register(enum.key, constructor, call: false)
           enum
+        rescue ::Dry::Container::Error => err
+          ::NAMESPACE.debug(binding, error: err)
         end
 
         # Register a model constructor with {.container}
@@ -98,15 +100,16 @@ module Piktur
         #
         # @raise [Dry::Container::Error] if existing key
         #
-        # @return [Object] The given constructor
+        # @return [Dry::Types::Constructor] The given constructor
         # @return [nil] if The constructor does not respond to `#call(params)`
-        def Model(key, constructor) # rubocop:disable MethodName
-          return unless constructor.respond_to?(:call) && constructor.arity == 1
+        def Model(key, klass) # rubocop:disable MethodName
+          return unless klass.respond_to?(:call) && !(fn = klass.method(:call)).arity.zero?
 
-          container.register(key, constructor, call: false, memoize: false)
+          constructor = Constructor(klass, &fn)
+          container.register(key, constructor, call: false)
           constructor
-        rescue ::Dry::Container::Error => error
-          ::NAMESPACE.debug(binding, error: error)
+        rescue ::Dry::Container::Error => err
+          ::NAMESPACE.debug(binding, error: err)
         end
 
         # @see https://github.com/rom-rb/rom-rails/blob/master/lib/generators/rom/install/templates/types.rb
