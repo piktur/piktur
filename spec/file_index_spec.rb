@@ -7,17 +7,6 @@ require 'piktur/services/file_index'
 RSpec.describe Piktur::Services::FileIndex do
   include Piktur::Spec::Helpers::Files
 
-  # before do
-  #   # build_file_index(services)
-  #   @file_index ||= double(Piktur::Services::FileIndex)
-  #   allow(@file_index).to receive(:all).and_return([])
-  #   allow(@file_index).to receive(:to_a).and_return([])
-  #
-  #   # build_service('piktur_core', namespace: 'Piktur')
-  #   @services ||= double(Piktur::Services::Index)
-  #   allow(@services).to receive(:files).and_return(@file_index)
-  # end
-
   subject { build_file_index(build_service('piktur_core', namespace: 'Piktur')) }
 
   describe '#root_directories' do
