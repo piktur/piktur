@@ -111,6 +111,16 @@ module Piktur
         # @return [Dry::Configurable]
         def config; ::NAMESPACE.config.loader; end
 
+        # Reset loader history
+        #
+        # @return [void]
+        def reset!
+          @loaded = ::Set.new
+          @booted = false
+
+          true
+        end
+
         # Returns the segment of a file path corresponding to the constant defined within it.
         #
         # @note The path should begin with or be relative to {#target}
