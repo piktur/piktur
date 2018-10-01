@@ -69,11 +69,9 @@ module Piktur
           def base.[](key); ::Piktur::Types[key]; end
         end
 
-        # @!attribute [r] container
+        # @!attribute [rw] container
         #   @return [Dry::Container{String => Object}]
-        def container
-          @container ||= Container.new
-        end
+        def container; @container ||= Container.new; end
 
         # Builds a {Piktur::Support::Enum} and registers the type caster with the {.container}
         #
