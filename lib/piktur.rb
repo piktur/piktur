@@ -57,6 +57,17 @@ module Piktur
       ::Object.const_set(:NAMESPACE, base)
     end
 
+    # @return [void]
+    def setup!
+      return unless ENV['DISABLE_SPRING']
+      ::Bundler.require(:default, :test, :benchmark)
+    end
+
+    # @return [void]
+    def boot!(*)
+      true
+    end
+
     # Returns absolute path to root directory
     #
     # @return [Pathname]
