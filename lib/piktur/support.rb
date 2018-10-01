@@ -77,6 +77,3 @@ module Piktur
   end
 
 end
-
-require_relative './constants.rb'
-require_relative './support/container.rb'

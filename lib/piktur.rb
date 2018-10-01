@@ -43,7 +43,6 @@ module Piktur
   end
 
   require_relative './piktur/env.rb'
-  require_relative './piktur/config.rb'
 
   # :nodoc
   module Interface
@@ -58,6 +57,9 @@ module Piktur
     # @return [void]
     def self.extended(base)
       ::Object.const_set(:NAMESPACE, base)
+      Support.install(:types)
+
+      require_relative './piktur/config.rb'
     end
 
     # @return [void]
@@ -236,6 +238,7 @@ module Piktur
   private_constant :Interface
 
   Constants.install
+  Support.install(:inflector)
   require_relative './piktur/support/container.rb'
 
   extend Interface if File.basename(Dir.pwd).start_with?('piktur')
