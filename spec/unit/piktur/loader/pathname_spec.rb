@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'piktur/setup/loader/pathname'
+require 'piktur/loader/pathname'
 
 RSpec.describe Piktur::Loader::Pathname do
   let(:root) { Pathname('app/concepts') }
@@ -26,4 +26,3 @@ RSpec.describe Piktur::Loader::Pathname do
     end
   end
 end
-

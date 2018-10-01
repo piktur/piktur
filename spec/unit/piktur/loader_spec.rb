@@ -44,29 +44,35 @@ RSpec.describe Piktur::Loader::ActiveSupport do
   context 'when a namespace is a registered' do
     it 'should utilise the loader to list or load its components'
 
-    context 'when a type is requested' do
-      it 'should return a list of all files matching the type'
+    context 'and component type given' do
+      it 'should return a list of files matching component type'
     end
 
-    context 'when a path is requested' do
-      it 'should return all or a constrained subset of files at that path'
+    context 'and path given' do
+      it 'should return files within path'
 
       describe 'the list of files' do
-        it 'should always be current'
+        it 'should match current directory state'
         it 'can be sorted'
+      end
+
+      context 'if pattern given' do
+        it 'should filter files by pattern'
       end
     end
   end
 
   context 'when a watched file is modified, added or deleted' do
     before(:all) do
-      Test::InProgress = Module.new
+      Test.safe_const_set(:InProgress, Module.new)
 
       require_relative Pathname.pwd.join('../piktur_spec/config/application.rb')
       require 'piktur/setup/boot'
 
       @app = Piktur::Spec::Application.new
     end
+
+    after(:all) { Test.safe_remove_const(:InProgress) }
 
     let(:reloader) { @app.reloader }
 
@@ -142,10 +148,10 @@ RSpec.describe Piktur::Loader::ActiveSupport do
     context 'when pattern given' do
       it 'should load files matching the pattern' do
         mimic_load do |id, paths, **options|
-          expect(paths).to include('users/transactions/create.rb')
+          expect(paths).to include('users/transactions/subscribe.rb')
         end
 
-        subject.call(path: 'users', pattern: 'users/transactions/{create,delete}.rb')
+        subject.call(path: 'users', pattern: 'users/transactions/{subscribe}.rb')
       end
     end
 
@@ -236,6 +242,12 @@ RSpec.describe Piktur::Loader::ActiveSupport do
   end
 
   describe '#booted!' do
+    before do
+      Piktur::Config.configure do |config|
+        config.namespaces = ['users']
+      end
+    end
+
     it 'should be booted after the first call' do
       expect { subject.call }.to change { subject.booted? }
     end

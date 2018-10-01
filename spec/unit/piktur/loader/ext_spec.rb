@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'piktur/setup/loader/ext'
+require 'piktur/loader/ext'
 
 RSpec.require_support 'files_configuration'
 

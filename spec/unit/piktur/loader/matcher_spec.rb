@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'piktur/setup/loader/strategies/filters/matcher'
+require 'piktur/loader/strategies/filters/matcher'
 
 RSpec.describe Piktur::Loader::Matcher do
   separator = ::File::SEPARATOR
