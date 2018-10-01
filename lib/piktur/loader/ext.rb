@@ -19,7 +19,7 @@ module Piktur
 
       # @see (#loader=)
       def loader
-        @loader ||= ::NAMESPACE::Config.loader[:instance]
+        @loader || ::NAMESPACE.config.loader.instance
       end
 
       # @param see (Filters#files)

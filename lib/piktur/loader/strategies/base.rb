@@ -108,7 +108,7 @@ module Piktur
         def call(*); raise ::NotImplementedError; end
 
         # @return [Dry::Configurable]
-        def config; ::NAMESPACE.config[:loader]; end
+        def config; ::NAMESPACE.config.loader; end
 
         # Returns the segment of a file path corresponding to the constant defined within it.
         #

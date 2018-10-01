@@ -22,7 +22,7 @@ module Piktur
         return input unless input.is_a?(::Enumerable)
         input.join(NAMESPACE_SEPARATOR).tap { |str| str.tr!('/', '.') }
       end
-      module_function :Key # rubocop:disable AccessModifierDeclarations
+      module_function :Key
 
       # Adds:
       #   * Key coercion capabilities to `Dry::Container::Mixin#register`
@@ -88,8 +88,8 @@ module Piktur
         # @return [Object]
         def [](key)
           container.resolve(key)
-        rescue ::Dry::Container::Error => error
-          ::NAMESPACE.debug(binding, error: error)
+        rescue ::Dry::Container::Error => err
+          ::NAMESPACE.debug(binding, raise: err)
         end
         alias resolve []
 

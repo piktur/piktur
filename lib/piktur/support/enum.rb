@@ -20,7 +20,7 @@ module Piktur
     #     Types.Enum self, :enumerable do
     #       i18n_scope :other
     #       predicates :enumerable # Add predicate instance methods to `namespace`.
-#                                  # Methods are named according to given attribute.
+    #                              # Methods are named according to given attribute.
     #
     #       default :a           # Set the default value
     #       value   :b           # Define additional values

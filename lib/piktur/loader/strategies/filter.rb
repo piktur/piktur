@@ -74,7 +74,7 @@ module Piktur
       #
       # @return [void]
       def types=(arr)
-        @types = arr.map { |type| ::Inflector.send(::NAMESPACE.config[:nouns], type).to_sym }
+        @types = arr.map { |type| ::Inflector.send(::NAMESPACE.config.nouns, type).to_sym }
       end
 
       # Returns a list of existent directories matching {#target}

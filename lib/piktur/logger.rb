@@ -23,7 +23,7 @@ module Piktur
               f
             end,
             formatter: ::ActiveSupport::Logger::SimpleFormatter.new,
-            level:     parent.env.test? ? :error : :debug
+            level: parent.env.test? ? :error : :debug
           )
         )
       end

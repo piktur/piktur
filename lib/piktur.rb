@@ -164,13 +164,13 @@ module Piktur
     # @return [Pathname] the relative path of the components directory
     # @return [Pathname] if `root` the absolute path of the components directory from root
     def components_dir(root = nil)
-      root ? config[:components_dir].expand_path(root) : config[:components_dir]
+      root ? config.components_dir.expand_path(root) : config.components_dir
     end
 
     # @see Config.component_types
     #
     # @return [Array<Symbol>] A list of the component types implemented
-    def component_types; config[:component_types]; end
+    def component_types; config.component_types; end
 
     include Support::Container::Delegates
 
@@ -189,15 +189,15 @@ module Piktur
     # @example Raise Exception after degugger session closed.
     #   begin
     #     do(something)
-    #   rescue CriticalError => error
-    #     ::NAMESPACE.debug(binding, true, error: error)
+    #   rescue CriticalError => err
+    #     ::NAMESPACE.debug(binding, true, error: err)
     #   end
     #
     # @example Log warning before debugger session opened.
     #   begin
     #     do(something)
-    #   rescue TrivialError => error
-    #     ::NAMESPACE.debug(binding, true, warning: error)
+    #   rescue TrivialError => err
+    #     ::NAMESPACE.debug(binding, true, warning: err)
     #   end
     #
     # @param [Object] obj The Object to debug, typically a `Binding`.
@@ -212,7 +212,7 @@ module Piktur
     # @see DEBUGGER
     #
     # @return [void]
-    def debug(obj = binding, diff = true, warning: nil, error: nil, **options)
+    def debug(obj = binding, diff = true, warning: nil, error: nil, **options) # rubocop:disable MethodLength
       const_get(:DEBUGGER)[obj, diff] unless env.production?
 
       if options[:raise]
@@ -224,6 +224,8 @@ module Piktur
       elsif warning
         self::Errors.warn(warning)
       end
+
+      nil
     end
 
   end
