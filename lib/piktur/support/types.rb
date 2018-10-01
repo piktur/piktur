@@ -10,6 +10,9 @@ module Piktur
 
     # Namespace including `Dry::Types` and a {.container} to register application specific types.
     #
+    # @note For compatibility with Dry::Struct, custom types SHOULD implemenent the
+    #   Dry::Types interface
+    #
     # @example Usage
     #   Support.install(:types)
     #
@@ -19,7 +22,7 @@ module Piktur
     #   NAMESPACE::Types['undefined']                       # raise Dry::Container::Error
     #
     # @example Enums
-    #   NAMESPACE::Types['enum.address.types][:billing]     # => <Enum::Value billing=1>
+    #   NAMESPACE::Types['enum.addresses.types][:billing] # => <Enum::Value billing=1>
     module Types
 
       # :nodoc
