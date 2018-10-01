@@ -14,7 +14,7 @@ module Piktur
     module Sorter
 
       # @return [String]
-      DEFAULT_VARIANT = defined?(Concepts) ? Concepts::Naming::DEFAULT_VARIANT : 'default'
+      DEFAULT_VARIANT = defined?(Concepts) ? Concepts::Naming::DEFAULT_VARIANT : 'base'
       # @return [Regexp]
       PRIMARY_MATCHER   = /\w+\.rb$/
       # @return [Regexp]
