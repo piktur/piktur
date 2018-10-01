@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
-require 'dry-configurable'
-
 module Piktur
 
   # Provides thread safe configuration.
   #
   # Store configuration for namespaces under `/config/piktur/*.rb`.
-  # {Finalize.call} will {Finalize.finalize!} the given configuration files.
   class Config
 
     extend ::Piktur::Configurable
@@ -79,95 +76,6 @@ module Piktur
         .meta(reader: true)
         .default { ::ENV['DEBUG'].present? }
         .method(:call)
-    end
-
-    # :nodoc
-    module Ext
-
-      def [](name); config[name]; end
-
-      def finalize!(freeze: ::NAMESPACE.env.production?)
-        super() if freeze
-      end
-
-    end
-
-    # Load namespaced configuration files under `config/<namespace>/**/*.rb`
-    #
-    # @example
-    #   Finalize['site', 'store', 'blog', other: { scope: Object }]
-    #   Finalize['site', freeze: ::NAMESPACE.env.production?]
-    module Finalize
-
-      class << self
-
-        # @param [String] args A list of namespaces under `NAMESPACE`
-        # @param [Hash] options Namespaced configuration and loading options
-        #
-        # @option options [Boolean] :freeze (false) in non-production environments
-        #
-        # @return [void]
-        def call(*args, freeze: ::NAMESPACE.env.production?, **options)
-          args.each { |mod| finalize!(mod, freeze: freeze) }
-          options.each_pair { |mod, options| finalize!(mod, freeze: freeze, **options) } # rubocop:disable ShadowingOuterLocalVariable
-        end
-        alias [] call
-
-        # @param [String] mod The namespace
-        #
-        # @option options [Module] :scope (`NAMESPACE`) The root namespace
-        # @option options [Module] :root (`NAMESPACE.root`) The service root
-        # @option options [Module] :dir (`NAMESPACE.to_s.downcase`) The relative path to the configuration
-        #
-        # @return [void]
-        def finalize!(
-          mod,
-          scope: ::NAMESPACE,
-          root: ::NAMESPACE.root.join('config'),
-          dir: ::NAMESPACE.to_s.downcase,
-          **options
-        )
-          _load(mod, root: root, dir: dir)
-          _finalize(mod, scope: scope, **options)
-        end
-
-        private
-
-          # Evaluate file within anonymous module; variables will not be propagated globally.
-          #
-          # @raise [LoadError] if file not found
-          #
-          # @return [String]
-          def _load(file, root:, dir:, **)
-            file = ::Dir[::File.join(root, *dir, "{#{file},config}.rb")][0]
-            ::Kernel.load(file) if file && ::File.exist?(file)
-          rescue ::NameError, ::LoadError => err
-            ::Piktur.debug(binding, true, raise: err)
-          end
-
-          # @option see (#finalize!)
-          #
-          # @raise [NameError]
-          #
-          # @return [void]
-          def _finalize(
-            mod,
-            scope: ::NAMESPACE,
-            **options
-          )
-            mod = ::Inflector.camelize(mod)
-            if scope.const_defined?(mod)
-              scope.const_get(mod, false)
-            elsif ::NAMESPACE.env.test? && ::Object.safe_const_get(:Test)&.const_defined?(mod)
-              ::Test.const_get(mod, false)
-            end.const_get(:Config, false).tap do |obj|
-              obj.extend(Ext)
-              obj.finalize!(options)
-            end
-          end
-
-      end
-
     end
 
   end
