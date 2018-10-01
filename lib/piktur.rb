@@ -235,6 +235,7 @@ module Piktur
   end
   private_constant :Interface
 
+  Constants.install
   require_relative './piktur/support/container.rb'
 
   extend Interface if File.basename(Dir.pwd).start_with?('piktur')
