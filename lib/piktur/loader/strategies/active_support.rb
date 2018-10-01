@@ -66,7 +66,7 @@ module Piktur
     # This technique will only work when used in conjuction with `require_dependency` and the
     # constants are added to `ActiveSupport::Dependencies.explicitly_unloadable_constants`.
     #
-    # @see file:config/engine/paths.rb
+    # @see https://bitbucket.org/piktur/piktur_core/src/master/lib/piktur/engine/paths.rb
     # @see http://ileitch.github.io/2012/03/24/rails-32-code-reloading-from-lib.html
     # @see http://guides.rubyonrails.org/autoloading_and_reloading_constants.html
     # @see http://blog.plataformatec.com.br/2012/08/eager-loading-for-greater-good/
@@ -78,8 +78,8 @@ module Piktur
 
       self.default_proc = lambda do |file|
         require_dependency(file)
-      rescue NameError, LoadError => error
-        ::NAMESPACE.debug(binding, error: error)
+      rescue ::NameError, ::LoadError => err
+        ::NAMESPACE.debug(binding, error: err)
       end
 
       # @overload target=(path)
@@ -104,8 +104,8 @@ module Piktur
         else
           load_all!(options)
         end
-      rescue ::LoadError => error
-        ::NAMESPACE.debug(binding, error: error)
+      rescue ::LoadError => err
+        ::NAMESPACE.debug(binding, error: err)
       end
       alias [] call
 

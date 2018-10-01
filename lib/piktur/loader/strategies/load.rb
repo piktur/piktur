@@ -62,7 +62,7 @@ module Piktur
             # Add the id to history
             loaded << id.to_s
 
-            booted! unless booted?
+            booted? || booted!
 
             return paths
           end

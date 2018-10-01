@@ -102,6 +102,7 @@ module Piktur
 
         def initialize
           @loaded = ::Set.new
+          @booted = false
         end
 
         # :nodoc
@@ -129,7 +130,7 @@ module Piktur
 
         # @return [String]
         def inspect
-          "<Loader target=\"#{target}\" booted=#{booted? || false} count=#{cache.size}>"
+          "<Loader target=\"#{target}\" booted=#{booted?} count=#{cache.size}>"
         end
 
         # @return [void]

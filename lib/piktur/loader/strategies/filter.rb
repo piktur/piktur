@@ -201,7 +201,8 @@ module Piktur
         end
 
         # @example
-        #   ::Dir[*pattern_combination(:models, :schemas)] # => ['a/model.rb', 'a/schema.rb']
+        #   ::Dir[*pattern_combination(:models, :repositories)]
+        #   # => ['a/model.rb', 'a/repositories.rb']
         #
         # @return [Array<String>] {#patterns}
         def pattern_combination(*types)
