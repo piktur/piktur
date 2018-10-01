@@ -13,6 +13,7 @@ module Piktur
       extend ::ActiveSupport::Autoload
 
       autoload :Delegates, 'piktur/support/container'
+      autoload :Mixin, 'piktur/support/container'
 
       # @return [String]
       NAMESPACE_SEPARATOR = '.'
@@ -63,21 +64,21 @@ module Piktur
         # @!method register(key, contents = nil, options = {}, &block)
         #   @see https://github.com/dry-rb/dry-container/blob/master/lib/dry/container/mixin.rb
         #   @return [void]
-        delegate :register, to: :container
+        delegate :register, to: :container, allow_nil: true
 
         # @!method namespace(name, &block)
         #   @see Dry::Container::Mixin#namespace
         #   @return [void]
-        delegate :namespace, to: :container
+        delegate :namespace, to: :container, allow_nil: true
 
         # @!attribute [r] namespace_separator
         #   @return [String]
-        delegate :namespace_separator, to: :container
+        delegate :namespace_separator, to: :container, allow_nil: true
 
         # @!method to_key(input)
         #   @param see (container#to_key)
         #   @return [String]
-        delegate :to_key, to: :container
+        delegate :to_key, to: :container, allow_nil: true
 
         # Returns the {.container} item registered under given `key`
         #

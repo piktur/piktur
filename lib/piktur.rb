@@ -48,6 +48,8 @@ module Piktur
   # :nodoc
   module Interface
 
+    include Support::Container::Delegates
+
     # Avoid explicit calls to `Piktur`, instead assign `base` to root scope and Use
     # this alias `NAMESPACE` to reference the dependent's namespace.
     #
@@ -172,10 +174,12 @@ module Piktur
     # @return [Array<Symbol>] A list of the component types implemented
     def component_types; config.component_types; end
 
-    include Support::Container::Delegates
-
     # @return [Dry::Container{String => Object}]
     def container; @container ||= self::Container.new; end
+
+    # @return [Dry::Container{String => Object}]
+    def types; Types.container end
+    def types=(container); Types.container = container; end
 
     # @return [Plugins::Registry]
     def plugins; @plugins ||= self::Plugins::Registry.new; end
@@ -231,8 +235,7 @@ module Piktur
   end
   private_constant :Interface
 
-  # Install the optimised Inflector immediately
-  Support.install(:object, :inflector, :module)
+  require_relative './piktur/support/container.rb'
 
   extend Interface if File.basename(Dir.pwd).start_with?('piktur')
 
