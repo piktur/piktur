@@ -41,9 +41,9 @@ module Piktur
   # @example Retrieve a list of files -- the files will not be loaded
   #   models = files(type: :models) # => ['model_a.rb', 'model_b.rb']
   #     .map { |path| root, target, path = rpartition(path, target) }
-  #     # And with this list, build a JSON representation of the application schema
   #     .map { |path| const = Inflector.classify(path); Inflector.constantize(const) }
   #
+  #   # And with this list, build a JSON representation of the application {Piktur::Schema}
   #   Piktur::Schema.call(models).to_json
   #   # => {
   #   #   "user": {
