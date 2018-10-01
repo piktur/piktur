@@ -40,7 +40,7 @@ module Piktur
         return @all if defined?(@all)
         n = -1
         @all = %w(libraries engines applications).each.with_object([]) do |e, a|
-          klass    = Services.const_get(Support::Inflector.classify(e), false)
+          klass = Services.const_get(Support::Inflector.classify(e), false)
           services = Services.send(e).map { |s, opts| klass.new(s, position: n += 1, **opts) }
           self.class.send(:define_method, e) { services }
           a.concat(services)
@@ -87,7 +87,6 @@ module Piktur
         return @application if defined?(@application)
 
         @application = loaded.find { |e| e.application? && e.railtie }
-        # || self['piktur_spec'].loaded? && self['piktur_spec'].namespace
       end
 
       # @!attribute [r] paths
@@ -97,7 +96,7 @@ module Piktur
       end
 
       # @!attribute [r] railties
-      #   @return [Array<Class>] A list of all loaded `Rails::Railtie`s
+      #   @return [Array<Rails::Railtie>] A list of all loaded `Rails::Railtie`s
       def railties
         @railties ||= loaded { |arr| arr.select(&:engine?).map(&:railtie) }.to_set
       end
@@ -142,7 +141,7 @@ module Piktur
       #   @see Rails::Railtie::Configuration.eager_load_namespaces
       #   @return [Set<Module, Class>]
       def eager_load_namespaces
-        @eager_load_namespaces ||= Set[loaded { |arr| arr.flat_map(&:eager_load) }]
+        @eager_load_namespaces ||= Set[*loaded { |arr| arr.flat_map(&:eager_load) }]
       end
 
       # @see https://bitbucket.org/piktur/piktur_core/src/master/lib/piktur/setup/boot.rb
