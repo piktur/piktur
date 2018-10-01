@@ -41,11 +41,12 @@ module Piktur
       .default(:plural)
       .method(:call)
 
+    default = 'app/concepts'
     # @!attribute [rw] components_dir
     #   @return [Pathname] the relative path
     setting :components_dir, 'app/concepts', reader: true, &Types.Constructor(Pathname)
       .meta(reader: true)
-      .default { |type| type['app/concepts'] }
+      .default { |type| type[default] }
       .method(:call)
 
     # @!attribute [rw] component_types
@@ -60,21 +61,23 @@ module Piktur
     #   @see Piktur::Loader::Config
     #   @return [Dry::Configurable]
     setting :loader, reader: true do
+      default = :active_support
       # @!attribute [rw] use_loader
       #   @return [Boolean]
       # setting(:use_loader, true, reader: true)
-      setting :instance, :active_support, reader: true, &Types.Constructor(Loader) { |strategy|
+      setting :instance, default, reader: true, &Types.Constructor(Loader) { |strategy|
         strategy.is_a?(::Symbol) ? Loader.build(strategy) : strategy
       }
         .meta(reader: true)
-        .default { |type| type[:active_support] }
+        .default { |type| type[default] }
         .method(:call)
 
+      default = ::ENV['DEBUG'].present?
       # @!attribute [rw] debug
       #   @return [Boolean]
-      setting :debug, ::ENV['DEBUG'], reader: true, &Types['params.bool']
+      setting :debug, default, reader: true, &Types['params.bool']
         .meta(reader: true)
-        .default { ::ENV['DEBUG'].present? }
+        .default(default)
         .method(:call)
     end
 
