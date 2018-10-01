@@ -150,5 +150,5 @@ RSpec.describe Piktur::Support::Introspection do
     end
   end
 
-  after(:all) { %i(L1 A1 B1).each { |const| Object.send(:remove_const, const) } }
+  after(:all) { %i(L1 A1 B1 C1 D1).each { |const| Object.send(:remove_const, const) } }
 end
