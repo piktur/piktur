@@ -59,7 +59,7 @@ module Piktur
 
     def staging?; self == STAGING; end
 
-    def testing?; self == TESTING; end
+    def test?; self == TESTING; end
 
     private
 
