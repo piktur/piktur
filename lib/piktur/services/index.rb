@@ -165,18 +165,25 @@ module Piktur
         @eager_load_namespaces ||= Set[*loaded { |arr| arr.flat_map(&:eager_load) }]
       end
 
+      # @param [Array<Module>] exclude
+      #
       # @see https://bitbucket.org/piktur/piktur_core/src/master/lib/piktur/setup/boot.rb
       #
       # @return [true] unless :abort is thrown
-      def run_callbacks # rubocop:disable AbcSize
+      def run_callbacks(*exclude)
         error = catch(:abort) do
           dependencies.each do |service|
-            next unless service.namespace.respond_to?(__callee__, true)
-            service.namespace.send(__callee__)
+            next if exclude.include?(namespace = service.namespace)
+            next unless namespace.respond_to?(__callee__, true)
+
+            namespace.send(__callee__)
           end
 
-          application.namespace.send(__callee__) if application &&
-              application.namespace.respond_to?(__callee__, true)
+          # Developers SHOULD run callbacks at their discretion. The call SHOULD
+          # `run_callbacks` for the application's dependencies.
+          #
+          # application.namespace.send(__callee__) if application &&
+          #     application.namespace.respond_to?(__callee__, true)
 
           return true
         end
