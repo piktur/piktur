@@ -21,6 +21,7 @@ module Piktur
   autoload :Cache, 'piktur/support/cache'
   autoload :Constants
   autoload :Container
+  autoload :Configurable
   autoload :DEBUGGER, 'piktur/debugger'
   autoload :Deprecation
   autoload :Errors

@@ -10,7 +10,7 @@ module Piktur
   # {Finalize.call} will {Finalize.finalize!} the given configuration files.
   class Config
 
-    extend ::Dry::Configurable
+    extend ::Piktur::Configurable
 
     # @!attribute [rw] services
     #   @example
