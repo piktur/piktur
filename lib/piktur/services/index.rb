@@ -16,6 +16,18 @@ module Piktur
       #   @return [Services::FileIndex]
       attr_reader :file_index
 
+      # @!attribute [r] applications
+      #   @return [Array<Application>]
+      attr_reader :applications
+
+      # @!attribute [r] engines
+      #   @return [Array<Engine>]
+      attr_reader :engines
+
+      # @!attribute [r] libraries
+      #   @return [Array<Library>]
+      attr_reader :libraries
+
       # @param [String] services Gem name per service dependency
       # @param [Hash] options
       #
@@ -38,15 +50,22 @@ module Piktur
       end
 
       # @return [Array<Services::Service>]
-      def all
+      def all # rubocop:disable MethodLength
         return @all if defined?(@all)
+
         n = -1
-        @all = %w(libraries engines applications).each.with_object([]) do |e, a|
-          klass = Services.const_get(Support::Inflector.classify(e), false)
-          services = Services.send(e).map { |s, opts| klass.new(s, position: n += 1, **opts) }
-          self.class.send(:define_method, e) { services }
-          a.concat(services)
-        end.freeze
+
+        @all = %w(libraries engines applications).each.with_object([]) do |type, arr|
+          klass = Support::Inflector.constantize(type, Services, classify: true, traverse: false)
+          services = Services.send(type).map do |service, options|
+            klass.new(service, position: n += 1, **options)
+          end
+
+          instance_variable_set("@#{type}".to_sym, services)
+          arr.concat(services)
+        end
+
+        @all.freeze
       end
       alias to_a all
 
