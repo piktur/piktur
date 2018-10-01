@@ -31,15 +31,15 @@ module Piktur
       # Apply this plugin to the provided class
       #
       # @param [Class] klass The component definition
-      # @param [Hash] options
+      # @param [Array<Object>] args
       #
       # @return [void]
-      def apply_to(klass, options = EMPTY_HASH)
+      def apply_to(klass, *args)
         if mod.respond_to?(:apply)
-          mod.apply(klass, options)
+          mod.apply(klass, *args)
         elsif mod.respond_to?(:new)
           # Wrap dynamic methods in anonymous module closure; include
-          klass.send(:include, mod.new(options))
+          klass.send(:include, mod.new(*args))
         else
           # Include static module
           klass.send(:include, mod)
