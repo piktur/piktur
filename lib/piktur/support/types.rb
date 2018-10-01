@@ -31,6 +31,12 @@ module Piktur
         include ::Dry::Container::Mixin
         include Support::Container::Mixin
 
+        def self.new(*)
+          super.tap do |container|
+            container.merge(::Dry::Types.container)
+          end
+        end
+
         # @return [void]
         def finalize!
           freeze if ::NAMESPACE.env.production?
