@@ -53,7 +53,7 @@ module Piktur
     autoload :Base
     autoload :Registry
 
-    UnknownPluginError = Class.new(::StandardError)
+    UnknownPluginError = ::Class.new(::StandardError)
 
     # :nodoc
     module Ext
@@ -68,8 +68,8 @@ module Piktur
       # @option options [Symbol]
       #
       # @return [void]
-      def use(plugin, options = EMPTY_HASH)
-        plugins.fetch(plugin).apply_to(self, options)
+      def use(plugin, *args)
+        ::Piktur.plugins.fetch(plugin).apply_to(self, *args)
       end
 
     end
