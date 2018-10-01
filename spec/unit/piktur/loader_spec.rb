@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.require_support 'files_configuration'
 
 RSpec.describe Piktur::Loader::ActiveSupport do
-  include_context 'files configuration'
+  include_context 'loader'
 
   def mimic_load(&block)
     allow(subject).to receive(:load).with(any_args, &block)

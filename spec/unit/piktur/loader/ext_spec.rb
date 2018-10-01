@@ -6,7 +6,7 @@ require 'piktur/loader/ext'
 RSpec.require_support 'files_configuration'
 
 RSpec.describe Piktur::Loader::Ext do
-  include_context 'files configuration'
+  include_context 'loader'
 
   subject { double('Module').extend(described_class) }
 
