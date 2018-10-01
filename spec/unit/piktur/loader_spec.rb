@@ -243,7 +243,7 @@ RSpec.describe Piktur::Loader::ActiveSupport do
 
   describe '#booted!' do
     before do
-      Piktur::Config.configure do |config|
+      Piktur.configure do |config|
         config.namespaces = ['users']
       end
     end
