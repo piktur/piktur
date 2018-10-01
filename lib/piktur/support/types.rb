@@ -52,6 +52,9 @@ module Piktur
       Int = Integer unless const_defined?(:Int)
       Strict::Int = Strict::Integer unless Strict.const_defined?(:Int)
       Coercible::Int = Coercible::Integer unless Coercible.const_defined?(:Int)
+      Coercible::Symbol = Dry::Types['symbol']
+
+      Dry::Types.register('coercible.symbol', Coercible::Symbol)
 
       class << self
 
