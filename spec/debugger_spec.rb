@@ -2,12 +2,17 @@
 
 require 'spec_helper'
 
-RSpec.require_support 'env'
+RSpec.require_support 'env', app: 'piktur'
 
 RSpec.describe Piktur do
-  let(:object)  { binding }
-  let(:diff)    { 1 }
+  let(:object) do
+    __binding__ = Object.new
+    def __binding__.pry; end
+    __binding__
+  end
+  let(:diff) { 1 }
   let(:options) { {} }
+  let(:debugger) { File.expand_path('../lib/piktur/debugger.rb', __dir__) }
 
   it('should respond to .debug') { should respond_to(:debug) }
 
@@ -68,9 +73,10 @@ RSpec.describe Piktur do
       include_context 'env', 'production'
 
       before do
-        allow(Piktur::DEBUGGER).to receive(:call).and_return(nil)
+        allow(Piktur.const_get(:DEBUGGER)).to receive(:call).and_return(nil)
 
-        load File.expand_path('./lib/piktur/debugger.rb', Dir.pwd)
+        Piktur.safe_remove_const(:DEBUGGER)
+        load debugger
       end
 
       include_examples 'disabled'
@@ -100,7 +106,8 @@ RSpec.describe Piktur do
       before(:all) { ENV['DEBUG'] = '1' }
 
       before do
-        load File.expand_path('./lib/piktur/debugger.rb', Dir.pwd)
+        Piktur.safe_remove_const(:DEBUGGER)
+        load debugger
 
         allow(object).to receive(:pry).and_return(nil) # Mock pry session
       end
