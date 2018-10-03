@@ -12,7 +12,7 @@ module Piktur
     module_function
 
     # call('spec/models', 'spec/concepts' '**/*', force: false, noop: true, verbose: true)
-    def call
+    def call # rubocop:disable MethodLength
       command = ::ARGV.shift.to_sym
       args    = nil
       options = ::ARGV[-1].start_with?('-') ? ::ARGV.pop : ::String.new('-')
@@ -65,7 +65,7 @@ module Piktur
     end
     private_class_method :files
 
-    def destination(from_root, to_root, paths)
+    def destination(from_root, to_root, paths) # rubocop:disable MethodLength
       paths.map do |path|
         *, rel = path.partition(from_root + ::File::SEPARATOR)
         if ::File.directory?(path)

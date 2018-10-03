@@ -53,7 +53,7 @@ module Piktur
     # @param [Hash] configurable A hash of configurable extension(s)
     #
     # @return [void]
-    def self.install(*ext, **configurable) # rubocop:disable AbcSize, MethodLength
+    def self.install(*ext, **configurable) # rubocop:disable MethodLength
       fn = lambda { |name, **options|
         EXTENSIONS[name].each do |const|
           mod = const_get(const, false)

@@ -39,7 +39,7 @@ module Piktur
       # @param [Symbol] day
       #
       # @return [ActiveSupport::TimeWithZone]
-      def next_day(time, day) # rubocop:disable AbcSize
+      def next_day(time, day)
         time = ::Time.zone.parse(time) if time.is_a?(String)
         from = ::Date::DAYS_INTO_WEEK[day_name] * SECONDS
         to   = ::Date::DAYS_INTO_WEEK[day.to_sym] * SECONDS

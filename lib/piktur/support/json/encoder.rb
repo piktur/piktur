@@ -39,16 +39,11 @@ module Piktur
         # @return [Object]
         def jsonify(value, options = nil)
           case value
-          when String
-            EscapedString.new(value)
-          when Numeric, NilClass, TrueClass, FalseClass
-            value.as_json(options)
-          when Hash
-            Hash[value.map { |k, v| [jsonify(k, options), jsonify(v, options)] }]
-          when Array
-            value.map { |v| jsonify(v, options) }
-          else
-            jsonify value.as_json(options)
+          when String then EscapedString.new(value)
+          when Numeric, NilClass, TrueClass, FalseClass then value.as_json(options)
+          when Hash then Hash[value.map { |k, v| [jsonify(k, options), jsonify(v, options)] }]
+          when Array then value.map { |v| jsonify(v, options) }
+          else jsonify value.as_json(options)
           end
         end
 

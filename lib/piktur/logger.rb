@@ -18,7 +18,8 @@ module Piktur
             else
               f = ::File.open(path, 'a')
               f.binmode
-              # To improve performance in production disable auto flush, writing only when buffer full.
+              # To improve performance in production disable auto flush.
+              # Write only when buffer full.
               f.sync = !parent.env.production?
               f
             end,
