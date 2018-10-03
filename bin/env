@@ -5,7 +5,7 @@ env = ENV.fetch('ENV') { ENV.fetch('RAILS_ENV') { ENV.fetch('RACK_ENV') { 'devel
 
 # Detect tests running
 $PROGRAM_NAME =~ /(?:bin\/)?(rails|rake)|(rspec)/
-($1 && $ARGV.inspect.include?('spec') || $2) && (ENV['SPEC'] = '1')
+($1 && $ARGV.inspect.include?('spec') || $2) && (ENV['TEST_RUNNER'] = '1')
 
 ENGINE_ROOT ||= Dir.pwd
 if (path = Dir[File.join(ENGINE_ROOT, 'lib/**/engine.rb')][0])

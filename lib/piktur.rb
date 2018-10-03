@@ -118,7 +118,7 @@ module Piktur
     # @see file:bin/env
     #
     # @return [Boolean]
-    def rspec?; ::ENV['SPEC'].present?; end
+    def rspec?; ::ENV['TEST_RUNNER'].present?; end
 
     # Predicate checks Rails application singleton is an instance of the dummy application.
     #
