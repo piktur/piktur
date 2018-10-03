@@ -113,6 +113,13 @@ module Piktur
       defined?(::Rake) && ::Rake.application.present?
     end
 
+    # The predicate may be used to limit loading when booting the test environment.
+    #
+    # @see file:bin/env
+    #
+    # @return [Boolean]
+    def rspec?; ::ENV['SPEC'].present?; end
+
     # Predicate checks Rails application singleton is an instance of the dummy application.
     #
     # @return [Boolean]
