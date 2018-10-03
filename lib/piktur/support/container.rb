@@ -39,7 +39,7 @@ module Piktur
         # @!method Key(input)
         #   @param see (Container.Key)
         #   @return [String]
-        define_method(:to_key, &Container.method(:Key).to_proc)
+        define_method(:to_key, &Container.method(:Key))
 
         # @see Dry::Container::Mixin#register
         def register(key, contents = nil, options = {}, &block)
