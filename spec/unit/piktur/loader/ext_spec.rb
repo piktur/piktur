@@ -3,7 +3,7 @@
 require 'spec_helper'
 require 'piktur/loader/ext'
 
-RSpec.require_support 'files_configuration'
+RSpec.require_support 'loader', app: 'piktur_core'
 
 RSpec.describe Piktur::Loader::Ext do
   include_context 'loader'
