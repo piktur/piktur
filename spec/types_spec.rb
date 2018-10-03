@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'piktur/spec/helpers/container'
 
 RSpec.require_support 'container', app: 'piktur'
 
@@ -16,7 +15,7 @@ module Piktur
 
       describe '.Model(key, constructor)' do
         before(:all) do
-          ::Test.safe_const_set(:Model, ::Class.new {
+          ::Test.safe_const_reset(:Model, ::Class.new {
             attr_reader :attributes
             def self.call(params); new(params); end
             def initialize(input); @attribues = input; end
