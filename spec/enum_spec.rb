@@ -2,19 +2,13 @@
 
 require 'spec_helper'
 
-require_relative APP_ROOT.join('lib/piktur/support/enum.rb')
+require_relative File.expand_path('../lib/piktur/support/enum.rb', __dir__)
 
 module Piktur::Support
-  # context 'when block given to finalize' do
-  #   it 'should add the methods to the enum instance' do
-  #     expect(Piktur['enum.test.users.types']).to be_extended
-  #   end
-  # end
-
   RSpec.describe Enum do
-    let(:options)   { ::Hash[i18n_scope: nil] }
-    let(:name)      { :colours }
-    let(:namespace) { ::Test.safe_const_reset(:Palette, ::Module.new) }
+    let(:options) { ::Hash[i18n_scope: nil] }
+    let(:name) { :colours }
+    let(:namespace) { stub_const('Test::Palette', ::Module.new) }
     let(:block) do
       lambda do
         default :black
@@ -22,18 +16,15 @@ module Piktur::Support
         value   :purple
         value   :red
 
-        # predicates
-        # scopes
-
         finalize do |enum|
           def enum.extended?; true; end
         end
       end
     end
 
-    subject(:enum) { Enum.new(namespace, name, options, &block) }
+    subject(:enum) { Enum.new(name, namespace: namespace, **options, &block) }
 
-    describe '.new(namespace, name, options, &block)' do
+    describe '.new(name, options, &block)' do
       it 'should map enumerable values' do
         expect(enum[:black]).to   eq(0)
         expect(enum[:black]).to   eq(enum.default)
@@ -44,28 +35,32 @@ module Piktur::Support
         expect(enum).to be_extended
       end
 
-      context 'with an attribute name' do
+      context 'with duplicate key' do
+        let(:block) do
+          lambda do
+            value :black
+            value :black
+          end
+        end
+
+        it 'should remove the duplicate' do
+          expect(subject.size).to eq(1)
+        end
+      end
+
+      context 'when block given to finalize' do
+        it 'should add the methods to the enum instance' do
+          expect(enum).to be_extended
+        end
+      end
+
+      context 'when predicates called with an attribute name' do
         it 'should build predicate methods for the attribute'
       end
 
-      context 'with scoped attribute' do
+      context 'with scopes called with an attribute name' do
         it 'should build scopes for the attribute'
       end
-
-      context 'when value(s) not numeric' do
-        it 'should raise NonNumericValueError'
-      end
-
-      context 'with duplicate key' do
-        it 'should raise ArgumentError'
-      end
-
-      context 'with duplicate value' do
-        it 'should raise ArgumentError'
-      end
-    end
-
-    describe '#initialize(collection, i18n_scope:, *enumerable, &block)' do
     end
 
     describe '#find' do
