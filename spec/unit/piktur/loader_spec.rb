@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.require_support 'files_configuration'
+RSpec.require_support 'loader', app: 'piktur_core'
 
 RSpec.describe Piktur::Loader::ActiveSupport do
   include_context 'loader'
