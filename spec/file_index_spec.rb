@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'piktur/spec/helpers/files'
-require 'piktur/services/file_index'
 
 RSpec.describe Piktur::Services::FileIndex do
-  include Piktur::Spec::Helpers::Files
+  include Piktur::Spec::Helpers::Loader
 
   subject { build_file_index(build_service('piktur_core', namespace: 'Piktur')) }
 
