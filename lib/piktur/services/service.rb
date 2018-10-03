@@ -42,24 +42,22 @@ module Piktur
       def initialize(name, position:, path: nil, namespace:, **opts)
         @name      = name.to_s
         @position  = position
-        @namespace = namespace
+        @namespace = Support::Inflector.constantize(namespace, ::Object) || namespace
         @opts      = opts
         self.path  = path
       end
 
-      # @return [Module, Class]
-      def loaded
-        @loaded ||= constantize
-      end
+      # @!attribute [r] loaded
+      #   @return [Module, Class]
+      alias loaded namespace
+
+      # @!attribute [r] eager_load
+      #   @return [Module, Class]
+      alias eager_load namespace
 
       # @return [Boolean]
       def loaded?
         loaded.is_a?(::Module)
-      end
-
-      # @return [Boolean]
-      def itself?
-        path == ::Pathname.pwd
       end
 
       # @see Services.specs
@@ -87,17 +85,9 @@ module Piktur
         @path = Pathname(path).instance_eval { (file? ? parent : self).realpath }
       end
 
-      # Load constant and replace {#namespace} if defined
-      #
-      # @return [Module] if defined
-      def constantize
-        return unless namespace.is_a?(String) && ::Object.const_defined?(namespace)
-        @namespace = ::Object.const_get(namespace)
-      end
-
-      # @return [Module]
-      def eager_load
-        namespace
+      # @return [Boolean]
+      def itself?
+        path == ::Pathname.pwd
       end
 
       # @return [String]
@@ -136,21 +126,18 @@ module Piktur
       # @return [ActiveSupport::StringInquirer]
       def type
         return @type if defined?(@type)
-        *_, const = self.class.name.rpartition('::')
+        *, const = self.class.name.rpartition('::')
         @type = ::ActiveSupport::StringInquirer.new(const.downcase)
       end
 
       # @return [Rails::Engine]
       def loaded
-        @loaded ||= (railtie || false)
+        railtie || false
       end
 
       # @return [Class]
       def railtie(const = :Engine)
-        return @railtie if defined?(@railtie)
-        @namespace = Support::Inflector.constantize(namespace) || namespace
-        return unless @namespace.is_a?(Module)
-        @railtie = Support::Inflector.constantize(const, @namespace)
+        namespace && Support::Inflector.constantize(const, namespace)
       end
 
       # @return [Services::Server]

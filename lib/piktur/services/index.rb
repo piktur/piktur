@@ -35,7 +35,7 @@ module Piktur
       def initialize(*)
         Services.define
 
-        # @note Sequencing WILL BE based on order defined within Gemfile.
+        # @note Sequencing WILL BE determined by order as listed within Gemfile.
         #   Ensure correct Rails::Engine::Configuration#railties_order
         self.dependencies = Services.dependencies.map(&:name)
 
@@ -105,9 +105,7 @@ module Piktur
       # @!attribute [r] application
       #   @return [Service] A {Service} object for the loaded application
       def application
-        return @application if defined?(@application)
-
-        @application = loaded.find { |e| e.application? && e.railtie }
+        @application ||= loaded.find { |e| e.application? && e.railtie }
       end
 
       # @!attribute [r] paths
