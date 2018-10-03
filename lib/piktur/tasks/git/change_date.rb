@@ -12,7 +12,7 @@ require 'time'
 CMD = 'git log --pretty=format:"%H %ct"'
 ADJUST = 60 * 60 * 24 * ENV.fetch('ADJUST').to_i
 
-::Open3.popen3(CMD) do |stdin, stdout, stderr, wait_thread|
+Open3.popen3(CMD) do |stdin, stdout, _stderr, wait_thread|
   stdin.close
 
   while (e = stdout.gets)

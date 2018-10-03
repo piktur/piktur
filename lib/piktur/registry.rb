@@ -49,6 +49,7 @@ module Piktur
     # @return [void]
     def each
       return to_enum unless block_given?
+
       elements.each { |element| yield(element) }
     end
 

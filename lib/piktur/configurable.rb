@@ -23,6 +23,7 @@ module Piktur
     # @api public
     def finalize!
       return unless ::NAMESPACE.env.production?
+
       config.finalize!
       freeze
     end

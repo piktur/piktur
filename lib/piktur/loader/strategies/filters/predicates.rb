@@ -15,6 +15,7 @@ module Piktur
       # @return [true] if path name eq {Filters#target} name
       def target?(path, target = self.target)
         return false if path.nil?
+
         Path.basename_match?(target, path) # target.basename == path.basename
       end
 
@@ -46,6 +47,7 @@ module Piktur
       # @return [true] if path is a directory and matches {Filters#matcher_combination}
       def type_directory?(path)
         return false if path.nil?
+
         path.directory? && Path.match?(path, matcher_combination)
       end
 

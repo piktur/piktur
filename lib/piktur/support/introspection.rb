@@ -54,6 +54,7 @@ module Piktur
       # @return [String]
       def parent_name
         return EMPTY_STRING if parent == ::Object
+
         parent.to_s
       end
 

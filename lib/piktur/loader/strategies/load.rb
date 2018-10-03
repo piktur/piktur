@@ -20,6 +20,7 @@ module Piktur
         # @return [nil] if {#loaded?} and force false
         def load_path!(namespace, force: false, **options)
           return if loaded?(namespace) && !force
+
           load(namespace, by_path(namespace, options), options)
         end
         alias load_namespace! load_path!
@@ -34,6 +35,7 @@ module Piktur
         # @return [nil] if {#loaded?} and force false
         def load_type!(type, force: false, **options)
           return if loaded?(type) && !force
+
           load(type, by_type(type, options), options)
         end
 

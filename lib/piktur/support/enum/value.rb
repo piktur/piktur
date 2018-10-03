@@ -96,6 +96,7 @@ module Piktur
         # @return [Boolean]
         def ===(other)
           return self == other if other.is_a?(Value)
+
           (value == other) || (key == other)
         end
 
@@ -108,6 +109,7 @@ module Piktur
         # @return [Boolean]
         def match?(other)
           return false unless other.respond_to?(:match?)
+
           other.match?(matcher)
         end
         alias =~ match?

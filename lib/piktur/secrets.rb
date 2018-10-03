@@ -41,6 +41,7 @@ module Piktur
       args.collect do |fname|
         file = parent.root.parent.join(fname)
         raise Errno::ENOENT, file unless file.exist?
+
         file
       end
       args.compact!
@@ -72,6 +73,7 @@ module Piktur
     # @return [true] unless CI
     def self.overload
       return if ENV['CIRCLECI'] || ENV['CI']
+
       require 'dotenv'
       ::Dotenv.overload(*flist(default))
       true

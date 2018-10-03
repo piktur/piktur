@@ -100,6 +100,7 @@ module Piktur
       def files(path: nil, type: nil, **options)
         return by_type(type, options) if type
         return by_path(path, options) if path
+
         EMPTY_ARRAY
       end
 

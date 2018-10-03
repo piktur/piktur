@@ -21,6 +21,7 @@ module Piktur
       # @return [String] The normalized key input
       def Key(input) # rubocop:disable MethodName
         return input unless input.is_a?(::Enumerable)
+
         input.join(NAMESPACE_SEPARATOR).tap { |str| str.tr!('/', '.') }
       end
       module_function :Key

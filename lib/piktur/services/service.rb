@@ -126,6 +126,7 @@ module Piktur
       # @return [ActiveSupport::StringInquirer]
       def type
         return @type if defined?(@type)
+
         *, const = self.class.name.rpartition('::')
         @type = ::ActiveSupport::StringInquirer.new(const.downcase)
       end

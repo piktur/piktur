@@ -330,6 +330,7 @@ Rails/Date:
   EnforcedStyle: flexible
 
 Rails/DynamicFindBy:
+  Enabled: false
   Whitelist:
     - find_by_sql
     - find_by_class # FactoryGirl helper

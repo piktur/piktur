@@ -16,9 +16,9 @@ OptionParser.new do |opts|
 end.parse!
 
 Dir.chdir(from) do
-  list = Dir['**/*.{rb,js}'].
-    reject { |e| e.start_with?('node_modules', 'coverage') }.
-    select { |e| e.match?(regex) }
+  list = Dir['**/*.{rb,js}']
+    .reject { |e| e.start_with?('node_modules', 'coverage') }
+    .select { |e| e.match?(regex) }
 
   File.open('list', 'w+') do |f|
     list.each { |e| f.write e << "\n" }

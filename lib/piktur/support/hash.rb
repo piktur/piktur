@@ -113,6 +113,7 @@ module Piktur
       # @return [Hash]
       def flat_hash(h, path = [], a = {}) # rubocop:disable UncommunicativeMethodParamName
         return a.update(path => h) unless h.is_a?(::Hash) && h.present?
+
         # [path, k].compact.join('.')
         h.each { |k, v| flat_hash(v, (path + [k]), a) }
         a

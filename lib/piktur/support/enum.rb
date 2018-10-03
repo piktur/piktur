@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable FormatString, DynamicFindBy
-
 module Piktur
 
   module Support
@@ -151,6 +149,7 @@ module Piktur
       # @return [nil] if default value not set
       def default
         return @default if defined?(@default) # @default may be nil
+
         @default = mapping.find(&:default?)
       end
 
@@ -230,7 +229,7 @@ module Piktur
 
         # @return [true] if {#key} include the method name
         def respond_to_missing?(method_name, include_private = false)
-          keys.include?(method_name) || super # rubocop:disable InefficientHashSearch
+          keys.include?(method_name) || super
         end
 
         # Forwards the method call to {#mapping}
@@ -274,7 +273,7 @@ module Piktur
         #
         # @raise [ArgumentError] if value missing
         def not_found!(value)
-          raise ::ArgumentError, NOT_FOUND_MSG % { value: value, enum: name }
+          raise ::ArgumentError, format(NOT_FOUND_MSG, value: value, enum: name)
         end
 
     end

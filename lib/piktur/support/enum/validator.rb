@@ -31,7 +31,7 @@ module Piktur
         # @param [Numeric] value
         #
         # @raise [ArgumentError] if value missing
-        def validate!(key, value)
+        def validate!(_key, _value)
           # [REDUNDANT] It's not possible to define a duplicate key within a Hash
           # raise ::ArgumentError, DUPLICATE_KEY_MSG % { key: key } if
           #   duplicate_key?(key)

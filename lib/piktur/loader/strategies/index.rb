@@ -70,6 +70,7 @@ module Piktur
 
           root.each_child do |path|
             next if path.file?
+
             yield(root, path) if block_given?
             _scan_directories(path)
           end

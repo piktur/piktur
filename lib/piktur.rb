@@ -65,6 +65,7 @@ module Piktur
     # @return [void]
     def setup!
       return unless ENV['DISABLE_SPRING']
+
       ::Bundler.require(:default, :test, :benchmark)
     end
 

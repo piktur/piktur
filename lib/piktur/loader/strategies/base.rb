@@ -134,6 +134,7 @@ module Piktur
         def to_constant_path(path, root = nil, namespace: false, suffix: /\.rb$/)
           right_of(path, target(root), relative: true).tap do |str|
             return str.rpartition(::File::SEPARATOR)[0] if namespace
+
             str.sub!(suffix, EMPTY_STRING)
           end
         end
@@ -169,6 +170,7 @@ module Piktur
           # @return [void]
           def debug(paths)
             return unless config.debug
+
             ::NAMESPACE.logger.info "Loaded:\n#{paths.map { |p| "  - #{p}" }.join("\n")}"
           end
 
@@ -177,6 +179,7 @@ module Piktur
           # @return [void]
           def method_missing(method_name, *args)
             return super unless respond_to_missing?(method_name)
+
             by_type(method_name)
           end
 

@@ -45,7 +45,7 @@ module Piktur
       end
     end
 
-    def options(input, git: true)
+    def options(_input, git: true)
       options = NOOP if ENV['DEBUG']
       str = ::String.new('-')
       str << 'f' if options[:force]
@@ -56,12 +56,12 @@ module Piktur
     private_class_method :options
 
     def directories(glob)
-      glob.select { |path| ::File.directory?(path)  }
+      glob.select { |path| ::File.directory?(path) }
     end
     private_class_method :directories
 
     def files(glob)
-      glob.select { |path| !::File.directory?(path)  }
+      glob.reject { |path| ::File.directory?(path) }
     end
     private_class_method :files
 
