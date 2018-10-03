@@ -52,6 +52,20 @@ module Piktur
           config.namespace_separator
         end
 
+        # @note memoized container items use the same mutex instance!
+        #
+        # @return [Dry::Container] a mutable copy of the container
+        def clone(freeze: false)
+          super(freeze: freeze).tap do |obj|
+            obj.instance_variables.each do |ivar|
+              obj.instance_variable_set(
+                ivar,
+                obj.instance_variable_get(ivar).clone(freeze: freeze)
+              )
+            end
+          end
+        end
+
       end
 
       # :nodoc
