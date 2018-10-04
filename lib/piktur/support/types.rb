@@ -28,11 +28,14 @@ module Piktur
     #   NAMESPACE::Types['enum.users.types'][:admin] # => <Enum::Value admin=1>
     module Types
 
+      extend ::ActiveSupport::Autoload
+
       # @return [String]
       CUSTOM_TYPES_PATH = ::File.expand_path(
         "./lib/#{Support::Inflector.underscore(::NAMESPACE.to_s)}/types.rb",
         ::Dir.pwd
       )
+      private_constant :CUSTOM_TYPES_PATH
 
       # :nodoc
       class Container
@@ -43,14 +46,16 @@ module Piktur
         def self.new(*)
           super.tap do |container|
             container.merge(::Dry::Types.container)
-
-            if ::File.exist?(CUSTOM_TYPES_PATH)
-              ::Kernel.load(CUSTOM_TYPES_PATH)
-
-              block = Types.instance_variable_get(:@registrar)
-              container.instance_eval(&block) if block
-            end
+            load_custom_types(container)
           end
+        end
+
+        private_class_method def self.load_custom_types(container)
+          return unless ::File.exist?(CUSTOM_TYPES_PATH)
+          ::Kernel.load(CUSTOM_TYPES_PATH)
+
+          block = Types.instance_variable_get(:@registrar)
+          container.instance_eval(&block) if block
         end
 
         # @return [void]
@@ -88,6 +93,17 @@ module Piktur
         # @!attribute [rw] container
         #   @return [Dry::Container{String => Object}]
         def container; @container ||= Container.new; end
+
+        # List types to register after container initialization.
+        #
+        # @example
+        #   module Types
+        #     Type = Construct
+        #   end
+        # @return [void]
+        def to_register(&block)
+          @registrar = block
+        end
 
         # Builds a {Piktur::Support::Enum} and registers the type caster with the {.container}
         #
@@ -132,13 +148,6 @@ module Piktur
         # @return [Dry::Types::Sum]
         def ID(*) # rubocop:disable MethodName
           Coercible::Integer.optional.meta(primary_key: true)
-        end
-
-        # List types to register after container initialization.
-        #
-        # @return [void]
-        def to_register(&block)
-          @registrar = block
         end
 
         private
