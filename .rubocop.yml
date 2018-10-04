@@ -178,6 +178,9 @@ Naming/PredicateName:
 Style/Semicolon:
   AllowAsExpressionSeparator: true
 
+Style/BlockDelimiters:
+  Enabled: false
+
 Style/SingleLineBlockParams:
   Enabled: true
   Methods:
