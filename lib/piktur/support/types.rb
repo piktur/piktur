@@ -22,7 +22,7 @@ module Piktur
     #   NAMESPACE::Types['undefined']                       # raise Dry::Container::Error
     #
     # @example Enums
-    #   NAMESPACE::Types['enum.addresses.types][:billing] # => <Enum::Value billing=1>
+    #   NAMESPACE::Types['enum.users.types'][:admin] # => <Enum::Value admin=1>
     module Types
 
       # :nodoc
