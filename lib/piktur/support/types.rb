@@ -28,8 +28,6 @@ module Piktur
     #   NAMESPACE::Types['enum.users.types'][:admin] # => <Enum::Value admin=1>
     module Types
 
-      extend ::ActiveSupport::Autoload
-
       # @return [String]
       CUSTOM_TYPES_PATH = ::File.expand_path(
         "./lib/#{Support::Inflector.underscore(::NAMESPACE.to_s)}/types.rb",
