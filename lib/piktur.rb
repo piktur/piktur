@@ -36,10 +36,13 @@ module Piktur
   autoload :Secrets
   autoload :Services
 
-  # Reset singleton instance after fork. You should restart Spring before switching environments.
+  # @note You should really restart Spring before switching environments.
   defined?(::Spring) && ::Spring.after_fork do
+    # Reset singleton Environment instance.
     safe_remove_const(:Environment)
     ::Kernel.load(::File.expand_path('./piktur/env.rb', __dir__))
+
+    NAMESPACE.remove_instance_variable(:@logger)
   end
 
   require_relative './piktur/env.rb'
