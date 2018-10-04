@@ -13,6 +13,9 @@ module Piktur
     # @note For compatibility with Dry::Struct, custom types SHOULD implemenent the
     #   Dry::Types interface
     #
+    # @note Custom types defined within`lib/<namespace>/types.rb` will be loaded and if listed
+    #   within {.to_register} block, registered with the {Container} when it is initialized.
+    #
     # @example Usage
     #   Support.install(:types)
     #
@@ -25,6 +28,12 @@ module Piktur
     #   NAMESPACE::Types['enum.users.types'][:admin] # => <Enum::Value admin=1>
     module Types
 
+      # @return [String]
+      CUSTOM_TYPES_PATH = ::File.expand_path(
+        "./lib/#{Support::Inflector.underscore(::NAMESPACE.to_s)}/types.rb",
+        ::Dir.pwd
+      )
+
       # :nodoc
       class Container
 
@@ -34,6 +43,13 @@ module Piktur
         def self.new(*)
           super.tap do |container|
             container.merge(::Dry::Types.container)
+
+            if ::File.exist?(CUSTOM_TYPES_PATH)
+              ::Kernel.load(CUSTOM_TYPES_PATH)
+
+              block = Types.instance_variable_get(:@registrar)
+              container.instance_eval(&block) if block
+            end
           end
         end
 
@@ -116,6 +132,13 @@ module Piktur
         # @return [Dry::Types::Sum]
         def ID(*) # rubocop:disable MethodName
           Coercible::Integer.optional.meta(primary_key: true)
+        end
+
+        # List types to register after container initialization.
+        #
+        # @return [void]
+        def to_register(&block)
+          @registrar = block
         end
 
         private

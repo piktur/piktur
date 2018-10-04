@@ -190,7 +190,8 @@ module Piktur
     # @return [Dry::Container{String => Object}]
     def container; @container ||= self::Container.new; end
 
-    # @return [Dry::Container{String => Object}]
+    # @!attribute [rw] types
+    #   @return [Dry::Container{String => Object}]
     def types; Types.container end
     def types=(container); Types.container = container; end
 
