@@ -4,6 +4,7 @@
 env = ENV.fetch('ENV') { ENV.fetch('RAILS_ENV') { ENV.fetch('RACK_ENV') { 'development' } } }
 
 # Detect tests running
+# OR use `$_rspec_core_load_started_at`
 $PROGRAM_NAME =~ /(?:bin\/)?(rails|rake)|(rspec)/
 ($1 && $ARGV.inspect.include?('spec') || $2) && (ENV['TEST_RUNNER'] = '1')
 
