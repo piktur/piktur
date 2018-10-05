@@ -32,10 +32,11 @@ Gem::Specification.new do |s|
     base: __dir__
   ]
   s.test_files    = Dir['spec/**/*.rb', base: __dir__]
-  # @note Rubygems permits executable ruby scripts only, bash scripts ie.
-  #   `s.executables.push('piktur_admin.sh')` not accepted
   s.require_paths = %w(lib)
   s.bindir        = 'bin'
+  # @note Rubygems permits executable ruby scripts only, bash scripts ie.
+  #   `s.executables.push('piktur_admin.sh')` not accepted
+  s.executables.concat(Dir['pik-*', base: File.expand_path(s.bindir, __dir__)])
 
   # @!group Security
   # @note `dotenv` preferred over `figaro`, for `foreman` compatibility
