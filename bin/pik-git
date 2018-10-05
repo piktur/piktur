@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-$LOAD_PATH.unshift File.expand_path('../piktur/lib', Dir.pwd)
+$LOAD_PATH.unshift File.expand_path('../piktur/lib', __dir__)
 
 require_relative '../lib/piktur/tasks/git.rb'
 
