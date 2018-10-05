@@ -99,11 +99,8 @@ module Piktur
         #   index! unless booted?
         return load_type!(type, options) if type
 
-        if path
-          load_path!(path, options)
-        else
-          load_all!(options)
-        end
+        loaded = path ? load_path!(path, options) : load_all!(options)
+        debug(loaded)
       rescue ::LoadError => err
         ::NAMESPACE.debug(binding, error: err)
       end

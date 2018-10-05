@@ -59,7 +59,6 @@ module Piktur
         def load(id, paths, *) # rubocop:disable MethodLength
           error = catch(:abort) do
             super(paths, &self.class.default_proc)
-            debug(paths)
 
             # Add the id to history
             loaded << id.to_s
