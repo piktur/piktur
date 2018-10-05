@@ -265,7 +265,7 @@ module Piktur
 
           enumerable.each.with_index do |(key, options), i|
             options[:value] = i
-            value = declare!(key, i18n_scope: @i18n_scope, **options)
+            value = declare!(key, i18n_scope: @i18n_scope, enum: self, **options)
             @mapping[key] = value
           end
 

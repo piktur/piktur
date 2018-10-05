@@ -34,13 +34,14 @@ module Piktur
         #   @return [Hash, nil]
         attr_reader :meta
 
-        def initialize(key:, value:, i18n_scope:, default: false, meta: nil)
+        def initialize(key:, value:, i18n_scope:, enum:, default: false, meta: nil)
           @key        = key.to_sym
           @value      = value
           @default    = default
           @matcher    = /\A#{key}\Z/
           @i18n_scope = i18n_scope
           @meta       = meta&.freeze
+          @enumerable = enum.key
           freeze
         end
 
@@ -116,7 +117,7 @@ module Piktur
 
         # @return [String]
         def inspect
-          "<Enum::Value #{key}=#{value} default=#{@default}>"
+          "<Enum::Value[#{@enumerable}] #{key}=#{value} default=#{@default}>"
         end
 
       end
