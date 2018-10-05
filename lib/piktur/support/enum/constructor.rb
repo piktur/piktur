@@ -24,7 +24,7 @@ module Piktur
         @name = name.to_sym
         self.i18n_scope = i18n_scope
 
-        map(values)
+        build(values)
 
         default; key; to_s # memoize
       end

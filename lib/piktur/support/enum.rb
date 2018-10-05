@@ -181,6 +181,11 @@ module Piktur
       # @return [Enumerator]
       def select(&block); mapping.select(&block); end
 
+      # @yieldparam [Value] value
+      #
+      # @return [Enumerator]
+      def map(&block); mapping.map(&block); end
+
       # @param [Array<Integer, Symbol>] args
       #
       # @return [Array<Value>]
@@ -255,7 +260,7 @@ module Piktur
         # @param [Hash] enumerable
         #
         # @return [void]
-        def map(enumerable)
+        def build(enumerable)
           @mapping = ::Struct.new(*enumerable.keys).allocate
 
           enumerable.each.with_index do |(key, options), i|
