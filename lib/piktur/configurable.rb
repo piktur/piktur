@@ -10,6 +10,7 @@ module Piktur
 
     def self.extended(base)
       base.extend ::Dry::Configurable
+      base.safe_const_set(:Types, ::NAMESPACE::Types)
     end
 
     def [](name); config[name]; end
