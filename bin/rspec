@@ -5,7 +5,7 @@ ENV['ENV'] = ENV['RAILS_ENV'] = ENV['RACK_ENV'] = 'test'
 
 begin
   load File.expand_path('./env', __dir__)
-  load File.expand_path('./spring', __dir__)
+  load File.expand_path('./spring', __dir__) unless defined?(Spring)
 rescue LoadError => err
   raise unless err.message.include?('spring')
 end
