@@ -101,6 +101,7 @@ module Piktur
 
         loaded = path ? load_path!(path, options) : load_all!(options)
         debug(loaded)
+        loaded
       rescue ::LoadError => err
         ::NAMESPACE.debug(binding, error: err)
       end
