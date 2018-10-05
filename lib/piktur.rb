@@ -42,10 +42,11 @@ module Piktur
     safe_remove_const(:Environment)
     ::Kernel.load(::File.expand_path('./piktur/env.rb', __dir__))
 
-    NAMESPACE.remove_instance_variable(:@logger)
+    ::NAMESPACE.remove_instance_variable(:@logger)
   end
 
   require_relative './piktur/env.rb'
+  require_relative './piktur/debugger.rb'
 
   # :nodoc
   module Interface

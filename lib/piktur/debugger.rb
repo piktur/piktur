@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
-require 'pry' unless NAMESPACE.env.production?
+begin
+  require 'pry'
+rescue LoadError => err
+  nil # Gem not available
+end
 
 module Piktur # rubocop:disable Documentation
 
   DEBUGGER = ->(object, diff) { object.pry if ENV['DEBUG'] && diff.present? }
-  # ->(*) { nil } NOOP if Piktur.env.production?
+  # ->(*) { Piktur.logger.error } if Piktur.env.production?
   private_constant :DEBUGGER
 
 end
