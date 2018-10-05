@@ -123,7 +123,10 @@ module Piktur
       # @raise [NameError] if key missing
       #
       # @return [Value]
-      def find!(value); mapping[value]; end
+      def find!(value)
+        return value if value.is_a?(Value)
+        mapping[value]
+      end
       alias [] find!
 
       def find_by_key(key); values.each { |obj| break(obj) if obj == key }; end
