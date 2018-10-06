@@ -32,8 +32,8 @@ module Piktur
       # @param [Hash] options
       #
       # @option options [Array<String>] :component_types (nil) A list of expected component types
-      def initialize(*)
-        Services.define
+      def initialize(options = EMPTY_HASH)
+        Services.define(options)
 
         # @note Sequencing WILL BE determined by order as listed within Gemfile.
         #   Ensure correct Rails::Engine::Configuration#railties_order

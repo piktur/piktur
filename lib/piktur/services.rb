@@ -61,6 +61,12 @@ module Piktur
     autoload :Servers
     autoload :Service
 
+    # @return [URI]
+    BITBUCKET_API = URI('https://api.bitbucket.org/2.0/')
+
+    # @return [String] The relative path at which services metadata SHOULD BE located
+    SERVICES_FILE = 'config/services.json'
+
     class << self
 
       # Parse service gem metadata and assign to constants
@@ -68,20 +74,18 @@ module Piktur
       # @param [String, Pathname] root The application root path
       # @param [Hash{type=>Array<Symbol>}] options
       #
-      # @option options [Array<Symbol>] :applications
-      # @option options [Array<Symbol>] :engines
-      # @option options [Array<Symbol>] :libraries
+      # @option options [String] :repository The repository containing services metadata
       #
       # @return [void]
-      def define(root = ::Dir.pwd) # rubocop:disable MethodLength, AbcSize
+      def define(repository: nil) # rubocop:disable MethodLength, AbcSize
         require('oj')
 
-        path = ::File.expand_path(::File.join('config', 'services.json'), root)
-
-        ::Piktur.logger.warn("No such file or directory #{path}, #{__FILE__}:#{__LINE__}") unless
-          ::File.exist?(path)
-
-        services = ::Oj.load_file(path, symbol_keys: true)
+        services = if ::File.exist?(path = ::File.expand_path(SERVICES_FILE, ::Dir.pwd))
+          ::Oj.load_file(path, symbol_keys: true)
+        else
+          repository && _fetch(repository) ||
+            raise(StandardError, "Services metadata not found at #{path}")
+        end
 
         ::NAMESPACE.safe_const_set(:SERVICES, services.delete(:services).freeze)
         ::NAMESPACE.send(:private_constant, :SERVICES)
@@ -163,6 +167,21 @@ module Piktur
           _services(::NAMESPACE.const_get(__callee__.upcase))
         end
         %i(applications engines libraries).each { |aliaz| alias_method(aliaz, :_get) }
+
+        # Attempt to fetch services metadata from remote git repository.
+        #
+        # @param [String] repository
+        #
+        # @return [Hash] if request successful
+        def _fetch(repository)
+          require 'piktur/tasks/git.rb'
+
+          branch = Git.current_branch_name_for(repository)
+          services = BITBUCKET_API + "repositories/piktur/#{repository}/src/#{branch}/#{SERVICES_FILE}"
+          response = `curl -u $BITBUCKET_USER:$BITBUCKET_DEVELOPER_PASSWORD #{services}`
+
+          ::Oj.load(response, symbol_keys: true) unless response.empty?
+        end
 
     end
 

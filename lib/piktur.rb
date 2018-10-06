@@ -93,7 +93,7 @@ module Piktur
     def config; self::Config.config; end
 
     # @return [Services::Index]
-    def services; @services ||= Services::Index.new; end
+    def services(options = EMPTY_HASH); @services ||= Services::Index.new(options); end
 
     # Returns Service object for current application
     #
