@@ -8,7 +8,8 @@ rescue LoadError => err
   raise unless err.message.include?('spring')
 end
 
-require_relative File.join(APP_ROOT, 'config/boot.rb')
+BOOT_PATH = File.join(APP_ROOT, 'config/boot.rb')
+require_relative BOOT_PATH if File.exist?(BOOT_PATH)
 require 'rake'
 
 Rake.application.run

@@ -20,13 +20,11 @@ APP_PATH ||= File.join(APP_ROOT, 'config/application.rb')
 if env == 'production'
   warn 'Production environment variables cannot be loaded from untracked files'
 else
-  paths = Dir["{../,}.env.{common,#{env}}"]
-
   begin
     gem 'dotenv' # Add the gem to $LOAD_PATH, we may not have run Bundler yet
     require 'dotenv'
 
-    Dotenv.overload(*paths)
+    Dotenv.overload(*Dir["{../,}.env.{common,#{env}}"])
   rescue LoadError => err
     warn err
   end
