@@ -174,10 +174,9 @@ module Piktur
         #
         # @return [Hash] if request successful
         def _fetch(repository)
-          require 'piktur/tasks/git.rb'
-
-          branch = Git.current_branch_name_for(repository)
-          services = BITBUCKET_API + "repositories/piktur/#{repository}/src/#{branch}/#{SERVICES_FILE}"
+          branch = `#{File.expand_path('../../bin/git-branch', __dir__)} #{repository}`.chomp
+          services = BITBUCKET_API +
+            "repositories/piktur/#{repository}/src/#{branch}/#{SERVICES_FILE}"
           response = `curl -u $BITBUCKET_USER:$BITBUCKET_DEVELOPER_PASSWORD #{services}`
 
           ::Oj.load(response, symbol_keys: true) unless response.empty?
