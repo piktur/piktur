@@ -65,6 +65,10 @@ module Piktur
         end
       end
 
+      # @!attribute [r] version
+      #   @return [Gem::Version]
+      def version; gemspec.version; end
+
       # Returns the directory from which the service was loaded.
       #
       # @param [String] path The path specified in `piktur/config/services.json`, if any.
