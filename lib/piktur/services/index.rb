@@ -130,6 +130,7 @@ module Piktur
       def names
         map(&:name)
       end
+      alias gems names
 
       # @overload loaded(predicate: :method?)
       #   Select loaded Services where `predicate` true
