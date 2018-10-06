@@ -14,7 +14,7 @@ module Piktur
       # @!attribute [r] production
       # @!attribute [r] staging
       # @!attribute [r] development
-      # @return [Array<String>]
+      # @return [Array<URI>]
       attr_reader :production, :staging, :development
 
       def initialize(services)
@@ -69,16 +69,15 @@ module Piktur
 
       # :nocov
       #
-      # @param [Hash] components the URI components
+      # @param [Hash] options The URI elements
       #
       # @raise [KeyError]
       #
       # @return [URI]
-      def self.uri(components)
-        subdomain = components[:subdomain]
-        components[:host] = [*subdomain, components.fetch(:host)].join('.')
-
-        URI.build(components).tap { |uri| uri.subdomain = subdomain }.freeze
+      def self.uri(host:, subdomain: nil, **options)
+        URI.build(host: [*subdomain, host].join('.'), **options)
+          .tap { |uri| uri.subdomain = subdomain }
+          .freeze
       end
 
       # @return [Hash]
@@ -96,13 +95,14 @@ module Piktur
 
       class << self
 
-        # @return [Defaults]
+        # @return [URI]
         def defaults; const_get(__callee__.upcase, false); end
 
         # @!attribute [r] production
         # @!attribute [r] staging
         # @!attribute [r] development
         # @!attribute [r] test
+        # @return [URI]
         %i(production staging development test).each { |env| alias_method env, :defaults }
         private :defaults
 
@@ -116,6 +116,7 @@ module Piktur
       end
 
       # @param [Services::Application] service
+      #
       # @raise [URI::InvalidURIError]
       def initialize(service)
         @service = service.opts.delete(:uri)
@@ -124,17 +125,17 @@ module Piktur
       end
 
       # @param [String, Symbol] env
+      #
       # @return [URI::Generic]
       def uri(env = ::NAMESPACE.env)
-        components = @service.fetch(env = env.to_sym) { return self.class.send(env) }
-        self.class.uri(components)
+        options = @service.fetch(env = env.to_sym) { return self.class.send(env) }
+        self.class.uri(options.dup)
       end
 
       # @param [String, Symbol] env
+      #
       # @return [String] the URI::Generic attribute
-      def get(env = ::NAMESPACE.env)
-        uri(env).send(__callee__)
-      end
+      def get(env = ::NAMESPACE.env); uri(env).send(__callee__); end
       %i(scheme host subdomain port userinfo path http? https?)
         .each { |aliaz| alias_method aliaz, :get }
       private :get
