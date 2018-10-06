@@ -1,8 +1,0 @@
-machine:
-  ruby:
-    version:
-      2.3.0-p0
-  services:
-    - redis
-  # @see .env.common .env.test
-  environment:
