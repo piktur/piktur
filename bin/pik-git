@@ -3,8 +3,8 @@
 
 $LOAD_PATH.unshift File.expand_path('../piktur/lib', __dir__)
 
-require_relative '../lib/piktur/tasks/git.rb'
+require_relative Fie.expand_path('git', __dir__)
 
 Signal.trap('INT') { puts; exit(1) }
 
-Piktur::Git.()
+Git.call

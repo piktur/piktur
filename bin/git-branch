@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Print the current branch for given repository
+cd $PIKTUR_HOME/$1
+git rev-parse --abbrev-ref HEAD
