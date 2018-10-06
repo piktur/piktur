@@ -1,6 +1,16 @@
 # frozen_string_literal: true
 
+begin
+  gem 'dotenv' # Add the gem to $LOAD_PATH, we may not have run Bundler yet
+  require 'dotenv'
+rescue LoadError => err
+  warn err
+end
+
 module Piktur
+
+  # Remove existing Singleton instance
+  remove_const(:Environment) if const_defined?(:Environment)
 
   # ActiveSupport::StringInquirer utilises method_missing and is fairly slow. Given {#env} is used
   # rather heavily throughout the code base, a ~200% performance increase over `Rails.env` is
@@ -41,7 +51,6 @@ module Piktur
     STAGING     = 'staging'
     TESTING     = 'test'
 
-    # rubocop:disable BlockDelimiters
     def initialize(*)
       super ::ENV.fetch('RAILS_ENV') {
         ::ENV.fetch('RACK_ENV') {
@@ -60,6 +69,22 @@ module Piktur
     def staging?; self == STAGING; end
 
     def test?; self == TESTING; end
+
+    def files(env = self); ::Dir["{../,}.env.{common,#{env}}"]; end
+
+    def file(env = self); ::File.expand_path(['.env', *env].join('.'), ENV['PIKTUR_HOME']); end
+
+    def overload; ::Dotenv.overload(*files); end
+
+    def parser(env = nil); ::Dotenv::Environment.new(file(env), false); end
+
+    def concat(files, separator = "\n")
+      files
+        .map { |env| parser(*env) }
+        .reduce(:merge)
+        .map { |pair| pair.join('=') }
+        .join(separator)
+    end
 
     private
 

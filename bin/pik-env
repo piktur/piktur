@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-env = ENV.fetch('ENV') { ENV.fetch('RAILS_ENV') { ENV.fetch('RACK_ENV') { 'development' } } }
-
-# Detect tests running
 # OR use `$_rspec_core_load_started_at`
 $PROGRAM_NAME =~ /(?:bin\/)?(rails|rake)|(rspec)/
 ($1 && $ARGV.inspect.include?('spec') || $2) && (ENV['TEST_RUNNER'] = '1')
@@ -17,17 +14,13 @@ else
 end
 APP_PATH ||= File.join(APP_ROOT, 'config/application.rb')
 
+load File.expand_path('../lib/piktur/env.rb', __dir__)
+env = Piktur::Environment.instance
+
 if env == 'production'
   warn 'Production environment variables cannot be loaded from untracked files'
 else
-  begin
-    gem 'dotenv' # Add the gem to $LOAD_PATH, we may not have run Bundler yet
-    require 'dotenv'
-
-    Dotenv.overload(*Dir["{../,}.env.{common,#{env}}"])
-  rescue LoadError => err
-    warn err
-  end
+  env.overload
 end
 
 ENV['BUNDLE_GEMFILE'] ||= File.join(ENGINE_ROOT, 'Gemfile')
