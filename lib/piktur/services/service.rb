@@ -7,32 +7,28 @@ module Piktur
     # Canonical data object for Gem
     class Service
 
-      # @!attribute [r]
+      # @!attribute [r] name
       #   @return [String]
       attr_reader :name
 
-      # @!attribute [r]
+      # @!attribute [r] namespace
       #   @return [String]
       #   @return [Module] if loaded
       attr_reader :namespace
 
-      # @!attribute [r]
+      # @!attribute [r] position
       #   @return [Integer]
       attr_reader :position
 
-      # @!attribute [r]
+      # @!attribute [r] opts
       #   @return [Hash]
       attr_reader :opts
 
-      # @!attribute [r]
+      # @!attribute [r] path
       #   If gem loaded, the actual path to the loaded gem
       #   @return [Pathname]
       attr_reader :path
       alias root path
-
-      # @!attribute [r]
-      #   Return the actual path to loaded gem
-      #   @return [Pathname]
 
       delegate :application?, :engine?, :library?, to: :type
 
