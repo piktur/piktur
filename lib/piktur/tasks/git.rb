@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'fileutils'
-require_relative 'support/inflector'
+require 'piktur/support/inflector'
 
 module Piktur
 
@@ -43,6 +43,19 @@ module Piktur
       files.zip(destination(from_root, to_root, files)).each do |(from, to)|
         `git mv -k #{from} #{to} #{options}`
       end
+    end
+
+    # @return [String]
+    def current_branch_name_for(gem)
+      path = ::File.expand_path(gem, ::ENV['PIKTUR_HOME'])
+      ::Dir.chdir(path) { return current_branch_name }
+    rescue ::Errno::ENOENT => err
+      ::Piktur.logger.warn("#{err.class}: Gem not found at #{path}")
+    end
+
+    # @return [String]
+    def current_branch_name
+      `git rev-parse --abbrev-ref HEAD`.chomp
     end
 
     def options(_input, git: true)
