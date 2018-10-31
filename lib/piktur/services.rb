@@ -80,11 +80,18 @@ module Piktur
       def define(repository: nil) # rubocop:disable MethodLength, AbcSize
         require('oj')
 
-        services = if ::File.exist?(path = ::File.expand_path(SERVICES_FILE, ::Dir.pwd))
+        path = ::File.expand_path(SERVICES_FILE, ::Dir.pwd)
+        services = if ::File.exist?(path)
           ::Oj.load_file(path, symbol_keys: true)
-        else
-          repository && _fetch(repository) ||
-            raise(StandardError, "Services metadata not found at #{path}")
+        elsif repository
+          path = ::File.expand_path(SERVICES_FILE, ::Gem.loaded_specs[repository].gem_dir)
+
+          if ::File.exist?(path)
+            ::Oj.load_file(path, symbol_keys: true)
+          else
+            _fetch(repository) ||
+              raise(::StandardError, "Services metadata not found at #{path}")
+          end
         end
 
         ::NAMESPACE.safe_const_set(:SERVICES, services.delete(:services).freeze)
