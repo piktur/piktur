@@ -9,3 +9,4 @@ coverage/**/*
 vendor/bundle/**/*
 vendor/cache/**/*
 .rubocop_todo.yml
+commit-emoji.txt
