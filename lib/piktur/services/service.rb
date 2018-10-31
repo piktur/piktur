@@ -38,9 +38,12 @@ module Piktur
       def initialize(name, position:, path: nil, namespace:, **opts)
         @name      = name.to_s
         @position  = position
-        @namespace = Support::Inflector.constantize(namespace, ::Object) || namespace
         @opts      = opts
         self.path  = path
+        @namespace = Support::Inflector.constantize(namespace, ::Object) || namespace
+      rescue ::LoadError => err
+        ::Piktur.logger.warn(err.message)
+        @namespace = nil
       end
 
       # @!attribute [r] loaded
