@@ -35,6 +35,8 @@ module Piktur
       #
       # @option options [String, Symbol] :predicates
       #   Include {Predicates} for enumerated attribute
+      # @option options [String, Symbol] :attributes
+      #   Include {Attributes} for enumerated attribute
       # @option options [Boolean] :register
       #   Register the enum with the application {Interface#container}
       #
@@ -43,99 +45,55 @@ module Piktur
       # @raise [RuntimeError]
       #
       # @return [self]
-      def finalize(namespace, predicates: nil, register: false, **)
+      def finalize(namespace, predicates: nil, attributes: nil, register: false, **)
         raise(::RuntimeError, ENUM_FROZEN_MSG % inspect) if frozen?
 
         yield(self) if block_given?
 
-        ::NAMESPACE.register(key, self) if register
+        self.register if register
 
         namespace.include(self.predicates(predicates)) if predicates
 
+        namespace.include(self.attributes(attributes)) if attributes
+
+        values.each(&:freeze)
         freeze
       end
 
-      DSL = ::Struct.new(:values, :options) do
-        def self.call(namespace, options, &block)
-          options[:i18n_scope] ||= namespace
+      def register
+        return if Enum.container.nil?
 
-          dsl = new({}, options).tap do |dsl| # rubocop:disable ShadowingOuterLocalVariable
-            dsl.i18n_scope(namespace)
-            dsl.instance_exec(&block)
-          end
-
-          args = [dsl.options.delete(:block)]
-          args.unshift({ values: dsl.values }.update(dsl.options))
-        end
-
-        # Register the attribute to build predicates module for.
-        #
-        # @param [Symbol, String] attribute
-        #
-        # @return [void]
-        def predicates(attribute)
-          options[:predicates] = attribute
-        end
-
-        # Register the attribute to build scopes module for.
-        #
-        # @param [Symbol, String] attribute
-        #
-        # @return [void]
-        def scopes(attribute)
-          options[:scopes] = attribute
-        end
-
-        # @param [Symbol, String, Module] Use a scope other than the parent module name.
-        #
-        # @return [void]
-        def i18n_scope(value)
-          return if value == ::Object
-
-          options[:i18n_scope] = case value
-          when ::Module
-            if value.respond_to?(:Name) then value.Name.i18n_key
-            else Support::Inflector.underscore(value.to_s).to_sym
-            end
-          when ::String then value.to_sym
-          when ::Symbol then value
-          end
-        end
-
-        # Record intention to register Enum with the application container
-        #
-        # @return [void]
-        def register
-          options[:register] = true
-        end
-
-        # Block to extend the Enum instance.
-        #
-        # @yieldparam [Enum]
-        #
-        # @return [void]
-        def finalize(&block)
-          options[:block] = block
-        end
-
-        # @param [Symbol] key
-        # @param [Hash] options
-        #
-        # @return [void]
-        def default(key, **options)
-          options[:default] = true
-          values[key] = options
-        end
-
-        # @param [Symbol] key
-        # @param [Hash] options
-        #
-        # @return [void]
-        def value(key, **options)
-          values[key] = options
-        end
+        Enum.container.register(key, self)
       end
-      private_constant :DSL
+
+      # Build {Value} for each in `enumerable` collection.
+      #
+      # @param [Hash] enumerable
+      #
+      # @return [void]
+      private def build(enumerable)
+        @mapping = ::Struct.new(*enumerable.keys).allocate
+
+        enumerable.each.with_index do |(key, options), i|
+          options[:value] = i
+          value = declare!(key, i18n_scope: @i18n_scope, enum: self, **options)
+          @mapping[key] = value
+        end
+
+        @keys   = @mapping.members.freeze
+        @values = @mapping.values.freeze
+        @mapping.freeze
+      end
+
+      # * Store {Value} under `key`
+      # * Define scoped `I18n` helper
+      # * Define method for `key`
+      #
+      # @return [void]
+      private def declare!(key, value: nil, **options)
+        # validate!((key = key.to_sym), value)
+        Value.new(key: key, value: value, **options)
+      end
 
     end
 

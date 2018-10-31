@@ -38,11 +38,10 @@ module Piktur
           @key        = key.to_sym
           @value      = value
           @default    = default
-          @matcher    = /\A#{key}\Z/
+          @matcher    = /\A#{key}\Z/i # Ignore case
           @i18n_scope = i18n_scope
           @meta       = meta&.freeze
           @enumerable = enum.key
-          freeze
         end
 
         # @return [Integer]
@@ -55,7 +54,7 @@ module Piktur
 
         # @return [String] the camelized constant name
         def camelize
-          Support::Inflector.camelize(to_s)
+          Enum.config.inflector.camelize(to_s)
         end
 
         # @return [String]
@@ -79,7 +78,7 @@ module Piktur
         # @return [Boolean]
         def eql?(other)
           return super if other.is_a?(Value)
-          return false if defined?(Undefined) && other == Undefined
+          return false if other == Undefined
 
           (value == other) || (key == other) || match?(other)
         end

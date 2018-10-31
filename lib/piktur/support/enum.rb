@@ -15,7 +15,7 @@ module Piktur
     #
     #     # Provide name, options and enumerable values to the constructor.
     #     # Enumerated values may be declared within a block.
-    #     Types.Enum self, :enumerable do
+    #     Enum.new :enumerable, namespace: self do
     #       i18n_scope :other
     #       predicates :enumerable # Add predicate instance methods to `namespace`.
     #                              # Methods are named according to given attribute.
@@ -54,15 +54,15 @@ module Piktur
 
       extend ::ActiveSupport::Autoload
 
-      require 'piktur/support/enum/constructor'
+      require_relative './enum/constructor'
+      require_relative './enum/dsl'
 
-      autoload :Predicates
-      autoload :Type
+      autoload :Attributes, 'piktur/support/enum/mixins/attributes'
+      autoload :Config
+      autoload :Plugins
+      autoload :Predicates, 'piktur/support/enum/mixins/predicates'
       autoload :Validator
       autoload :Value
-
-      # @return [Symbol]
-      I18N_NAMESPACE = :enum
 
       # @return [String]
       ENUM_FROZEN_MSG = %(can't modify frozen %s)
@@ -72,8 +72,22 @@ module Piktur
       NOT_FOUND_MSG = %(Value "%{value}" not in %{enum}.)
       private_constant :NOT_FOUND_MSG
 
-      # include Validator
-      include Type
+      # @return [Dry::Configurable]
+      def self.config; Config.config; end
+
+      # @return [void]
+      def self.configure(&block); Config.configure(&block); end
+
+      # @return [Object]
+      def self.inflector; config.inflector; end
+
+      # @return [Object]
+      def self.container; config.container; end
+
+      # @return [Symbol, String]
+      def self.i18n_namespace; config.i18n_namespace; end
+
+      extend Plugins
 
       # @!attribute [r] name
       #   @return [Symbol]
@@ -99,7 +113,7 @@ module Piktur
       #
       # @return [Array<Symbol>]
       def i18n_scope=(namespace)
-        @i18n_scope = [I18N_NAMESPACE, *namespace, name].freeze
+        @i18n_scope = [Enum.i18n_namespace, *namespace, name].freeze
       end
 
       # @param [Symbol, String, Integer] input
@@ -116,22 +130,28 @@ module Piktur
       #
       # @param [String, Symbol, Integer] value
       #
-      # @return [Value]
-      def find(value); find_by_value(value) || find_by_key(value); end
+      # @return [Value, nil]
+      def find(value)
+        find!(value)
+      rescue  ::IndexError, # if value out of range
+              ::NameError   # if key missing
+        nil
+      end
+      alias [] find
 
       # @raise [IndexError] if value out of range
       # @raise [NameError] if key missing
       #
-      # @return [Value]
+      # @return [Value, nil]
       def find!(value)
         return value if value.is_a?(Value)
+
         mapping[value]
       end
-      alias [] find!
 
-      def find_by_key(key); values.each { |obj| break(obj) if obj == key }; end
+      def find_by_key(input); values.find { |value| value.key == input }; end
 
-      def find_by_value(value); values.each { |obj| break(obj) if obj == value }; end
+      def find_by_value(input); values.find { |value| value.value == input }; end
 
       # @!method []
       # @!method find!
@@ -141,9 +161,9 @@ module Piktur
       # @raise [ArgumentError]
       # @return [Enum::Value]
 
-      def find_by_key!(key); find_by_key(key) || not_found!(value); end
+      def find_by_key!(input); find_by_key(input) || not_found!(input); end
 
-      def find_by_value!(value); find_by_value(value) || not_found!(value); end
+      def find_by_value!(input); find_by_value(input) || not_found!(input); end
 
       # @return [Boolean]
       def include?(value); find(value).present?; end
@@ -189,10 +209,14 @@ module Piktur
       # @return [Enumerator]
       def map(&block); mapping.map(&block); end
 
-      # @param [Array<Integer, Symbol>] args
+      # @param [Array<Integer>] args
       #
       # @return [Array<Value>]
-      def values_at(*args); mapping.values_at(*args); end
+      def values_at(*args)
+        mapping.values_at(*args)
+      rescue ::IndexError
+        EMPTY_ARRAY
+      end
 
       # @return [Enumerator]
       def to_enum; mapping.enum_for; end
@@ -218,19 +242,19 @@ module Piktur
       def to_hash; h = {}; each { |v| h[v.key] = v.value }; h; end
       alias to_h to_hash
 
-      # @!group Builders
-
       # @param [String, Symbol] attribute
       #
       # @return [Module]
       def predicates(attribute); Predicates[attribute, self]; end
 
-      # @!endgroup
+      # @param [String, Symbol] attribute
+      #
+      # @return [Module]
+      def attributes(attribute); Attributes[attribute, self]; end
 
       # @return [String]
       def inspect
-        str = ::String.new
-        "<Enum[#{key}] #{each_pair { |k, v| str << " #{k}=#{v.to_i}" }; str}>"
+        "<Enum[#{key}] #{map { |val| "#{val.key}=#{val.to_i}" }.join(' ')}>"
       end
 
       private
@@ -246,35 +270,6 @@ module Piktur
         # @return [void]
         def method_missing(method_name, *args)
           respond_to_missing?(method_name) && mapping.send(method_name) || super
-        end
-
-        # * Store {Value} under `key`
-        # * Define scoped `I18n` helper
-        # * Define method for `key`
-        #
-        # @return [void]
-        def declare!(key, value: nil, **options)
-          # validate!((key = key.to_sym), value)
-          Value.new(key: key, value: value, **options)
-        end
-
-        # Build {Value} for each in `enumerable` collection.
-        #
-        # @param [Hash] enumerable
-        #
-        # @return [void]
-        def build(enumerable)
-          @mapping = ::Struct.new(*enumerable.keys).allocate
-
-          enumerable.each.with_index do |(key, options), i|
-            options[:value] = i
-            value = declare!(key, i18n_scope: @i18n_scope, enum: self, **options)
-            @mapping[key] = value
-          end
-
-          @keys   = @mapping.members.freeze
-          @values = @mapping.values.freeze
-          @mapping.freeze
         end
 
         # @param [Numeric] value

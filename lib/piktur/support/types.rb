@@ -103,26 +103,6 @@ module Piktur
           @registrar = block
         end
 
-        # Builds a {Piktur::Support::Enum} and registers the type caster with the {.container}
-        #
-        # @param see (Piktur::Support::Enum.new)
-        #
-        # @example
-        #   Types['enum.users.types'][:admin] # => <Enum::Value admin=3>
-        #
-        # @raise [Dry::Container::Error] if existing key
-        #
-        # @return [Dry::Types::Constructor]
-        def Enum(*args, &block) # rubocop:disable MethodName
-          enum = Support::Enum.new(*args, &block)
-
-          constructor = ::Dry::Types['integer'].constructor(&enum.method(:[]))
-          container.register(enum.key, constructor, call: false)
-          enum
-        rescue ::Dry::Container::Error => err
-          ::NAMESPACE.debug(binding, error: err)
-        end
-
         # Register a model constructor with {.container}
         #
         # @param [String, Symbol] key The key to register
