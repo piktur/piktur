@@ -110,8 +110,8 @@ module Piktur
       #
       # @see Sorter
       #
-      # @param [Symbol] namespace One of {Piktur::Config.namespaces}
-      # @param [Symbol] index The name of the namespace index file
+      # @param [Symbol] namespace A namespace within {#target}
+      # @param [Symbol] index The namespace index
       # @param [Symbol] pattern The match pattern
       #
       # @return [Array<String>]
@@ -239,13 +239,13 @@ module Piktur
         @loader = loader
       end
 
-      # @param [Pathname] path
+      # @param [String, Pathname] input
       #
       # @return [Array<(Pathname, Pathname)>] The root and path if `path` exists
       # @return [nil] if `path` not found
-      def find(path)
+      def find(input)
         root_directories.find do |root| # Only one should exist
-          path = root.join(path)
+          path = root.join(input)
           break([root, path]) if path.exist?
         end
       end

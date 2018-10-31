@@ -29,12 +29,6 @@ module Piktur
         Loader.files(loader, options)
       end
 
-      # Load namespaces and/or type defintions and dependencies on demand.
-      #
-      # @param [String] namespaces A list of namespaces - the relative path from
-      #   {Config.components_dir}
-      # @param [Symbol] types A list of {Piktur.component_types}
-      #
       # @option see (Loader::ActiveSupport#call)
       # @option options [Boolean] :components (false) Index only
       #

@@ -85,10 +85,12 @@ module Piktur
       # @overload target=(path)
       #   Must be one of `ActiveSupport.autoload_paths`
 
+      # Loads files matching `path` and/or `type` on demand.
+      #
       # @param [Hash] options
       #
-      # @option options [String] :path (nil)
-      # @option options [Symbol] :type (nil)
+      # @option options [String] :path (nil) The relative path from {Loader.target}
+      # @option options [Symbol] :type (nil) The component type to load
       #
       # @raise [LoadError]
       #

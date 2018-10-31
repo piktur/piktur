@@ -141,7 +141,7 @@ module Piktur
 
         # @return [String]
         def inspect
-          "<Loader target=\"#{target}\" booted=#{booted?} count=#{cache.size}>"
+          "#<Loader target=\"#{target}\" booted=#{booted?} count=#{cache.size}>"
         end
 
         # @return [void]
@@ -169,9 +169,9 @@ module Piktur
           #
           # @return [void]
           def debug(paths)
-            return unless config.debug
+            return unless config.debug && paths.is_a?(::Array)
 
-            ::NAMESPACE.logger.info "Loaded:\n#{paths.map { |p| "  - #{p}" }.join("\n")}"
+            ::NAMESPACE.logger.info "Loaded:\n#{paths.compact.map { |p| "  - #{p}" }.join("\n")}"
           end
 
           # @raise [NoMethodError] if non existent component type

@@ -1,182 +1,145 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'ostruct'
+require 'fileutils'
 
-RSpec.require_support 'loader', app: 'piktur_core'
+RSpec.require_support 'loader', app: 'piktur'
 
 RSpec.describe Piktur::Loader::ActiveSupport do
   include_context 'loader'
 
-  def mimic_load(&block)
-    allow(subject).to receive(:load).with(any_args, &block)
+  let(:config) do
+    OpenStruct.new(
+      namespaces: namespaces,
+      component_types: [component].map { |component| Inflector.pluralize(component).to_sym },
+      loader: nil,
+      nouns: :pluralize
+    )
+  end
+  let(:root) { Pathname(SPEC_ROOT).join('fixtures') }
+  let(:target) { Pathname('app/concepts') }
+  let(:component_types) { NAMESPACE.config.component_types }
+  let(:namespace) { 'users' }
+  let(:type) { Inflector.pluralize(component).to_sym }
+  let(:namespaces) { [namespace, 'others'] }
+  let(:unloadable) { ActiveSupport::Dependencies.explicitly_unloadable_constants }
+  let(:extension) { '.rb' }
+  let(:file_name) { component + extension }
+  let(:component) { 'component' }
+  let(:file_list) do
+    {
+      '.' => namespaces.map { |namespace| "#{namespace}#{extension}" },
+      namespace => [file_name],
+      "#{namespace}/#{component_types.sample}" => [file_name],
+      'others/namespace' => [file_name]
+    }
   end
 
   subject do
     described_class.new.tap do |loader|
-      loader.types  = component_types
-      loader.target = target
+      loader.types = component_types
+      loader.target = Pathname(target)
     end
   end
 
   before do
+    services = OpenStruct.new(railties: [OpenStruct.new(root: root)])
+
+    namespace = Piktur.dup
+    namespace.extend Piktur::Loader::Ext
+    def namespace.component_types; config.component_types; end
+    def namespace.namespaces; config.namespaces; end
+
+    stub_const('NAMESPACE', namespace)
+
+    allow(NAMESPACE).to receive(:config).and_return(config)
+    allow(NAMESPACE).to receive(:services).and_return(services)
+    allow(NAMESPACE).to receive(:debug).with(any_args).and_return(true)
+    allow(Object).to receive(:require_dependency).and_return(true)
+    allow(subject.class).to receive(:cache).and_return(Concurrent::Map.new)
+
+    config.loader = OpenStruct.new(
+      instance: subject,
+      debug: false
+    )
+
+    file_list.each do |dir, files|
+      FileUtils.mkdir_p(dir = root.join(target, dir))
+
+      files.each do |file|
+        path = dir.join(file)
+        File.exist?(path) || FileUtils.touch(path)
+      end
+    end
+
+    Dir.chdir(root)
+
     subject.instance_exec do
       @booted = false
       @loaded = Set.new
     end
-
-    mimic_load.and_call_original
-    allow(Object).to receive(:require_dependency).and_return(true)
   end
 
-  let(:component_types) { Piktur.config.component_types }
-  let(:namespace)  { 'users' }
-  let(:type)       { :models }
-  let(:namespaces) { %w(users catalogues/items test/in_progress) }
-  let(:unloadable) { ActiveSupport::Dependencies.explicitly_unloadable_constants }
-
-  # * In NON-PRODUCTION ENVIRONMENTS load aspects of the code base in isolation
-  # * In PRODUCTION eager load, yet have the ability to retrieve a list of files matching some
-  #   condition
-  # Given the above, the loader:
-  # * IS NOT required to scan to maximum depth and/or preload
-  # * IS NOT required to cache the *result* of a search, only the function that would allow the
-  #   operation to be repeated the operation
-  context 'when a namespace is a registered' do
-    it 'should utilise the loader to list or load its components'
-
-    context 'and component type given' do
-      it 'should return a list of files matching component type'
-    end
-
-    context 'and path given' do
-      it 'should return files within path'
-
-      describe 'the list of files' do
-        it 'should match current directory state'
-        it 'can be sorted'
-      end
-
-      context 'if pattern given' do
-        it 'should filter files by pattern'
-      end
-    end
-  end
-
-  context 'when a watched file is modified, added or deleted' do
-    before(:all) do
-      Test.safe_const_set(:InProgress, Module.new)
-
-      require_relative Pathname.pwd.join('../piktur_spec/config/application.rb')
-      require 'piktur/setup/boot'
-
-      @app = Piktur::Spec::Application.new
-    end
-
-    after(:all) { Test.safe_remove_const(:InProgress) }
-
-    let(:reloader) { @app.reloader }
-
-    before do
-      allow(Piktur).to receive(:namespaces).and_return(namespaces)
-      allow(Piktur.loader).to receive(:loaded).and_return(namespaces)
-      allow(Piktur).to receive(:before_class_unload).and_call_original
-
-      allow(reloader).to receive(:before_class_unload) do
-        Piktur.before_class_unload
-      end
-
-      allow(reloader).to receive(:reload!) do
-        reloader.before_class_unload
-        ActiveSupport::Dependencies.clear
-      end
-    end
-
-    context 'and the application is reloaded' do
-      describe 'loaded constant(s)' do
-        it(<<~TODO) do
-          should be unloaded
-
-          {Piktur::Reloader} SHOULD be redundant given
-            * `Rails.application.reloader` clears auto loaded constants on `.reload!`
-            * #target is an autoloadable directory
-          So the file should be re-evaluated after `reload!`.
-
-          If the above hypothesis valid, then remove Loader::Load#reload!
-        TODO
-          expect { reloader.reload! }.to \
-            change { unloadable }.and \
-              change { Test.constants }
-
-          expect(Test.const_defined?(:InProgress)).to be(false)
-        end
-      end
-    end
-  end
+  after(:all) { Dir.chdir(File.expand_path('..', SPEC_ROOT)) }
 
   describe '#call' do
     context 'when no :path or type specified' do
       before do
-        allow(Piktur).to receive(:namespaces).and_return([namespace, 'profiles'])
         subject.call
       end
 
-      it 'should load all namespaces listed in Piktur.namespaces' do
-        expect(subject.loaded).to contain_exactly('users', 'profiles')
+      it 'should load all namespaces listed in NAMESPACE.namespaces' do
+        expect(subject.loaded).to contain_exactly(*namespaces)
       end
     end
 
     context 'when :path given' do
+      let(:result) { subject.call(path: namespace) }
+
       it 'should load the given :path and depedencies' do
-        mimic_load do |id, paths, **options|
-          expect(paths).to all(start_with(namespace))
-        end
-
-        subject.call(path: 'users')
+        expect(result).to all(start_with(namespace))
       end
     end
 
-    context 'when type given' do
+    context 'when :type given' do
+      let(:result) { subject.call(type: component.to_sym) }
+
       it 'should load only the files matching the given type' do
-        mimic_load do |id, paths, **options|
-          expect(paths).to all(include('model'))
-        end
-
-        subject.call(type: :models)
+        expect(result).to all(include(component))
       end
     end
 
-    context 'when pattern given' do
+    context 'when :pattern given' do
+      let(:base) { File.join(namespace, component_types.sample.to_s) }
+      let(:pattern) { File.join(base, "{#{component}}.rb") }
+      let(:result) { subject.call(path: namespace, pattern: pattern) }
+
       it 'should load files matching the pattern' do
-        mimic_load do |id, paths, **options|
-          expect(paths).to include('users/transactions/subscribe.rb')
-        end
-
-        subject.call(path: 'users', pattern: 'users/transactions/{subscribe}.rb')
+        expect(result).to include(File.join(base, file_name))
       end
     end
 
-    context 'when scope given' do
-      it 'should load files in directory scope matching type' do
-        mimic_load do |id, paths, **options|
-          expect(paths).to all(match(/users\/transactions.?/))
-        end
+    context 'when :scope given' do
+      let(:result) { subject.call(type: component, scope: namespace) }
 
-        subject.call(type: :transactions, scope: 'users')
+      it 'should load files in directory scope matching type' do
+        expect(result).to all(match(/#{namespace}\/#{component}.?/))
       end
     end
 
     context 'when :force false' do
       before do
-        subject.instance_exec do
+        subject.instance_exec(namespace) do |namespace|
           @booted = true
-          @loaded << 'users'
+          @loaded << namespace
         end
       end
 
       context 'and path already loaded' do
         it 'should not load the path(s)' do
           expect(subject).not_to receive(:load)
-          subject.call(path: 'users', force: false)
+          subject.call(path: namespace, force: false)
         end
       end
     end
@@ -185,32 +148,8 @@ RSpec.describe Piktur::Loader::ActiveSupport do
       context 'and booted?' do
         it 'should load the path(s)' do
           expect(subject).to receive(:load).and_return(an_instance_of(Array))
-          subject.call(path: 'users', force: true)
-        end
-      end
-    end
-  end
 
-  describe '#index!' do
-    it 'is inneficient and unnecessary'
-  end
-
-  describe '#reload!(files)' do
-    context 'in development' do
-      context 'when the application is reloaded' do
-        let(:root)             { Pathname.pwd }
-        let(:target)           { Pathname('app/concepts') }
-        let(:components_dir)   { root / target }
-
-        let(:modified) { [components_dir.join('users')] }
-        let(:added)    { [components_dir.join('added')] }
-        let(:changed)  { [modified, added, []] }
-
-        it 'loads new paths' do
-          allow(subject).to receive(:by_path).and_return(added)
-
-          expect { subject.send(:reload!, changed) }.to \
-            change { subject.loaded }.to(include('added'))
+          subject.call(path: namespace, force: true)
         end
       end
     end
@@ -218,36 +157,31 @@ RSpec.describe Piktur::Loader::ActiveSupport do
 
   describe '#to_constant_path(path, namespace:, suffix:)' do
     it 'should return the segment of a file path corresponding to the constant it defines' do
-      %w(app/concepts/users/relation.rb users/relation.rb).each do |path|
+      ["#{target}/#{namespace}/#{file_name}", "#{namespace}/#{file_name}"].each do |path|
         actual = subject.to_constant_path(String.new(path))
-        expect(actual).to eq 'users/relation'
+
+        expect(actual).to eq File.join(namespace, component)
       end
     end
 
     context 'when namespace given' do
       it 'should return namespace' do
-        actual = subject.to_constant_path(String.new('users/model.rb'), namespace: true)
+        actual = subject.to_constant_path(String.new(File.join(namespace, file_name)), namespace: true)
 
-        expect(actual).to eq 'users'
+        expect(actual).to eq namespace
       end
     end
 
     context 'when suffix given' do
       it 'should remove the suffix' do
-        actual = subject.to_constant_path(String.new('users/model.rb'), suffix: /\.rb$/)
+        actual = subject.to_constant_path(String.new(File.join(namespace, file_name)), suffix: /\.rb$/)
 
-        expect(actual).to eq 'users/model'
+        expect(actual).to eq File.join(namespace, component)
       end
     end
   end
 
   describe '#booted!' do
-    before do
-      Piktur.configure do |config|
-        config.namespaces = ['users']
-      end
-    end
-
     it 'should be booted after the first call' do
       expect { subject.call }.to change { subject.booted? }
     end
@@ -257,29 +191,8 @@ RSpec.describe Piktur::Loader::ActiveSupport do
     it { expect(subject.config).to respond_to(:debug) }
   end
 
-  describe '#debug' do
-    context 'when Piktur::loader.debug true' do
-      before do
-        allow(subject.config).to receive(:debug).and_return(true)
-      end
-
-      it 'should log the loaded files' do
-        expect(Piktur.logger).to receive(:info).with(anything)
-        subject.call(path: 'genders')
-      end
-    end
-  end
-
   describe '#root_directories' do
     it { expect(subject.send(:root_directories)).to all(exist) }
-  end
-
-  describe '#models' do
-    let(:type) { 'models' }
-
-    it 'should return a list of model files' do
-      expect(subject.models).to be_blank.or(all(include('model.rb')))
-    end
   end
 
   describe '#matchers' do
@@ -292,7 +205,7 @@ RSpec.describe Piktur::Loader::ActiveSupport do
 
   describe '#pattern_combination(*types)' do
     it 'should return patterns for given types' do
-      expect(subject.send(:pattern_combination, :models)).to \
+      expect(subject.send(:pattern_combination, component_types.sample)).to \
         all(be_a(String))
     end
   end
@@ -300,15 +213,15 @@ RSpec.describe Piktur::Loader::ActiveSupport do
   if ENV['DEBUG']
     describe '#by_type(type)' do
       it 'should return all files matching type' do
-        models   = subject.send(:by_type, :models)
-        policies = subject.send(:by_type, :policies)
-        expect(models).to all(include('model').and(end_with('.rb')))
-        expect(policies).to all(include('polic').and(end_with('.rb')))
+        type = subject.send(:by_type, component.to_sym)
+
+        expect(type).to all(include(component).and(end_with(extension)))
       end
 
       context 'when given type invalid' do
         it 'should return an empty Array' do
           result = subject.send(:by_type, :non)
+
           expect(result).to be_empty
         end
       end
@@ -317,7 +230,8 @@ RSpec.describe Piktur::Loader::ActiveSupport do
     describe '#by_path(path)' do
       it 'should return a list of files within the given directory' do
         actual = subject.send(:by_path, path)
-        expect(actual).to be_blank.or(all(end_with('.rb')))
+
+        expect(actual).to be_blank.or(all(end_with(extension)))
       end
     end
 

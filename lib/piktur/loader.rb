@@ -111,7 +111,7 @@ module Piktur
       # @return [Array<String>] A list of autoloadable paths
       def call(loader, options = EMPTY_OPTS) # rubocop:disable MethodLength
         options, filter, to_load = prepare_options(options)
-
+        
         if to_load
           if to_load.is_a?(::Enumerable)
             to_load.flat_map { |e| options[filter] = e; loader.send(__callee__, options) }

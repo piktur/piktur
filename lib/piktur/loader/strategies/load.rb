@@ -72,6 +72,8 @@ module Piktur
             binding,
             error: "[#{error}] Could not load #{id} #{__FILE__}:#{__LINE__}"
           )
+
+          EMPTY_ARRAY
         end
 
     end
