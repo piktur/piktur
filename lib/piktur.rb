@@ -63,7 +63,7 @@ module Piktur
       ::Object.const_set(:NAMESPACE, base)
       Support.install(:types)
 
-      require_relative './piktur/config.rb'
+      require_relative ::File.expand_path('./piktur/config.rb', __dir__)
     end
 
     # @return [void]
