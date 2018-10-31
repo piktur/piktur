@@ -37,12 +37,14 @@ module Piktur
       #
       # @param [String, Time] time string
       # @param [Symbol] day
+      # @option options [Boolean] future Advance full week if already later than given `time`
       #
       # @return [ActiveSupport::TimeWithZone]
-      def next_day(time, day)
-        time = ::Time.zone.parse(time) if time.is_a?(String)
+      def next_day(time, day, future: true)
+        time.is_a?(String) && time = ::Time.zone.parse(time)
         from = ::Date::DAYS_INTO_WEEK[day_name] * SECONDS
-        to   = ::Date::DAYS_INTO_WEEK[day.to_sym] * SECONDS
+        days = ::Date::DAYS_INTO_WEEK[day.to_sym]
+        to   = (future && days.zero? ? 7 : days) * SECONDS
 
         ::Time.zone.today.beginning_of_day
           .advance(seconds: (to - from) + time.seconds_since_midnight)
