@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-APP_ROOT = Pathname.pwd
+APP_ROOT ||= Dir.pwd
 
 require 'piktur/spec/spec_helper'
 
