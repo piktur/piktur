@@ -83,7 +83,7 @@ module Piktur
 
       # @return [Object]
       def self.container
-        config.container.is_a?(:Proc) ? config.container.call : config.container
+        config.container.is_a?(Proc) ? config.container.call : config.container
       end
 
       # @return [Symbol, String]
