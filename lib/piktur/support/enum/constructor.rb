@@ -80,7 +80,7 @@ module Piktur
           @mapping[key] = value
         end
 
-        @keys   = @mapping.members.freeze
+        @keys = @mapping.members.freeze
         @values = @mapping.values.freeze
         @mapping.freeze
       end

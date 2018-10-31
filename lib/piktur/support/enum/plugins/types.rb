@@ -15,7 +15,9 @@ module Piktur::Support # rubocop:disable ClassAndModuleChildren
         end
 
         # @return [Object] The types container
-        def self.container; Enum.config.types; end
+        def self.container
+          Enum.config.types.is_a?(:Proc) ? Enum.config.types.call : Enum.config.types
+        end
 
         # :nodoc
         module Constructor

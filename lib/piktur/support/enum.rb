@@ -82,7 +82,9 @@ module Piktur
       def self.inflector; config.inflector; end
 
       # @return [Object]
-      def self.container; config.container; end
+      def self.container
+        config.container.is_a?(:Proc) ? config.container.call : config.container
+      end
 
       # @return [Symbol, String]
       def self.i18n_namespace; config.i18n_namespace; end
