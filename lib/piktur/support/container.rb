@@ -14,22 +14,31 @@ module Piktur
 
       autoload :Delegates, 'piktur/support/container'
       autoload :Mixin, 'piktur/support/container'
-
-      # @return [String]
-      NAMESPACE_SEPARATOR = '.'
-
-      # @return [String] The normalized key input
-      def Key(input) # rubocop:disable MethodName
-        return input unless input.is_a?(::Enumerable)
-
-        input.join(NAMESPACE_SEPARATOR).tap { |str| str.tr!('/', '.') }
-      end
-      module_function :Key
+      autoload :Key, 'piktur/support/container'
 
       # Adds:
       #   * Key coercion capabilities to `Dry::Container::Mixin#register`
       #   * Reader for namespace_separator
       #
+      module Key
+
+        # @return [String]
+        def namespace_separator; config.namespace_separator; end
+
+        # @return [String] The normalized key input
+        def to_key(input)
+          case input
+          when ::Enumerable
+            input.join(namespace_separator).tap { |str| str.tr!('/', namespace_separator) }
+          when ::String
+            input.tr('/', namespace_separator)
+          else
+            input
+          end
+        end
+
+      end
+
       # @example
       #   class Container
       #     include Dry::Container::Mixin
@@ -37,20 +46,11 @@ module Piktur
       #   end
       module Mixin
 
-        # @!method Key(input)
-        #   @param see (Container.Key)
-        #   @return [String]
-        define_method(:to_key, &Container.method(:Key))
+        include Key
 
         # @see Dry::Container::Mixin#register
         def register(key, contents = nil, options = {}, &block)
           super(to_key(key), contents, options, &block)
-        end
-
-        # @!attribute [r] namespace_separator
-        #   @return [String]
-        def namespace_separator
-          config.namespace_separator
         end
 
         # @note memoized container items use the same mutex instance!
