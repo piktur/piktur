@@ -171,18 +171,12 @@ module Piktur
       # @return [true] unless :abort is thrown
       def run_callbacks(*exclude)
         error = catch(:abort) do
-          dependencies.each do |service|
+          loaded.each do |service|
             next if exclude.include?(namespace = service.namespace)
             next unless namespace.respond_to?(__callee__, true)
 
             namespace.send(__callee__)
           end
-
-          # Developers SHOULD run callbacks at their discretion. The call SHOULD
-          # `run_callbacks` for the application's dependencies.
-          #
-          # application.namespace.send(__callee__) if application &&
-          #     application.namespace.respond_to?(__callee__, true)
 
           return true
         end
