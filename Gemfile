@@ -59,6 +59,8 @@ end
 
 group :development, :test do
   gem 'faker',                  require: false
+  gem 'piktur_spec',            git:     "#{bb}/piktur/piktur_spec.git",
+                                branch:  'master'
   gem 'pry'
   gem 'pry-rescue'
   gem 'pry-stack_explorer'
@@ -66,8 +68,6 @@ end
 
 group :test do
   gem 'fakefs',                 require: false
-  gem 'piktur_spec',            git:    "#{gh}/piktur/piktur_spec.git",
-                                branch: 'master'
   gem 'rspec'
   gem 'simplecov',              require: false
 end
