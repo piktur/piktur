@@ -42,7 +42,7 @@ module Piktur
         def code; value; end
 
         # @return [Array<Exception>]
-        def exceptions; meta[:exceptions]; end
+        def exceptions; meta[__method__]; end
 
       end
 
