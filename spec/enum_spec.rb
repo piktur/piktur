@@ -4,8 +4,29 @@ require 'spec_helper'
 
 require_relative File.expand_path('../lib/piktur/support/enum.rb', __dir__)
 
+RSpec.require_support 'container', app: 'piktur'
+
 module Piktur::Support
   RSpec.describe Enum do
+    include_context 'container'
+
+    before(:all) do
+      Enum.configure do |config|
+        config.inflector = Inflector
+        config.i18n_namespace = :enum
+      end
+
+      Enum.use :types
+    end
+
+    after(:all) { Piktur::Support.safe_remove_const(:Enum) }
+
+    before do
+      allow(Enum.config).to receive(:container).and_return(container)
+      allow(Enum.config).to receive(:types).and_return(container)
+    end
+
+    let(:container) { test_container.new }
     let(:options) { ::Hash[i18n_scope: nil] }
     let(:name) { :colours }
     let(:namespace) { stub_const('Test::Palette', ::Module.new) }
@@ -82,6 +103,14 @@ module Piktur::Support
         it { expect(enum[sample]).to be(sample) }
       end
 
+      it 'is case insensitive' do
+        expect(enum[sample.to_sym.swapcase]).to be(sample)
+      end
+
+      it 'is type insensitive' do
+        expect(enum[sample.to_s]).to be(sample)
+      end
+
       context 'when input is not in enumerable' do
         let(:invalid) { :non }
 
@@ -123,8 +152,16 @@ module Piktur::Support
         expect { enum.find!(:non) }.to raise_error(NameError)
       end
 
+      it 'is case sensitive' do
+        expect { enum.find!(sample.to_sym.swapcase) }.to raise_error(NameError)
+      end
+
+      it 'is not type sensitive' do
+        expect { enum.find!(sample.to_s) }.not_to raise_error(NameError)
+      end
+
       it 'should raise error if input not in enumerable' do
-        expect { enum.find!(enum.size + 1) }.to raise_error(IndexError)
+        expect { enum.find!(enum.size) }.to raise_error(IndexError)
       end
     end
 
@@ -327,6 +364,12 @@ module Piktur::Support
         end
       end
 
+      describe '#to_sym' do
+        it 'should return a Symbol' do
+          expect(value.to_sym).to be_a(Symbol)
+        end
+      end
+
       describe '#default?' do
         it 'should return Boolean' do
           expect(value.default?).to be(true).or be(false)
@@ -365,7 +408,7 @@ module Piktur::Support
         it { expect(value.match?(value.to_s)).to be(true) }
 
         it 'should ignore case' do
-          expect(value.match?(value.to_s.upcase)).to be(true)
+          expect(value.match?(value.to_s.swapcase)).to be(true)
         end
       end
     end

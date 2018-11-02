@@ -92,7 +92,7 @@ module Piktur
       # @return [void]
       private def declare!(key, value: nil, **options)
         # validate!((key = key.to_sym), value)
-        Value.new(key: key, value: value, **options)
+        self.class::Value.new(key: key, value: value, **options)
       end
 
     end

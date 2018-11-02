@@ -130,25 +130,24 @@ module Piktur
       # @!method find_by_key
       # @!method find_by_value
       #
-      # @param [String, Symbol, Integer] value
+      # @param [String, Symbol, Integer, Value] input
       #
       # @return [Value, nil]
-      def find(value)
-        find!(value)
-      rescue  ::IndexError, # if value out of range
-              ::NameError   # if key missing
-        nil
+      def find(input)
+        return input if input.is_a?(Value)
+
+        values.find { |value| value == input }
       end
       alias [] find
 
       # @raise [IndexError] if value out of range
       # @raise [NameError] if key missing
       #
-      # @return [Value, nil]
-      def find!(value)
-        return value if value.is_a?(Value)
+      # @return [Value] if `input` in `mapping.members` or `mapping.values`
+      def find!(input)
+        return input if input.is_a?(Value)
 
-        mapping[value]
+        mapping[input]
       end
 
       def find_by_key(input); values.find { |value| value.key == input }; end
@@ -239,6 +238,9 @@ module Piktur
 
       # @return [String]
       def to_s; name.to_s; end
+
+      # @return [String]
+      def key; @key ||= self.class.container.to_key(i18n_scope).freeze; end
 
       # @return [Hash]
       def to_hash; h = {}; each { |v| h[v.key] = v.value }; h; end

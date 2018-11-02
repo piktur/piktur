@@ -48,9 +48,6 @@ module Piktur::Support # rubocop:disable ClassAndModuleChildren
           # @return [Proc] The `Dry::Types` constructor
           def type; Types.container[key]; end
 
-          # @return [String]
-          def key; @key ||= Types.container.to_key(i18n_scope).freeze; end
-
         end
 
       end
