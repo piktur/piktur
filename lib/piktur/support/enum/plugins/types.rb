@@ -2,7 +2,7 @@
 
 module Piktur::Support # rubocop:disable ClassAndModuleChildren
 
-  class Enum
+  module Enum
 
     module Plugins
 
@@ -32,8 +32,8 @@ module Piktur::Support # rubocop:disable ClassAndModuleChildren
           # @raise [Dry::Container::Error] if existing key
           #
           # @return [Dry::Types::Constructor]
-          def Enum(*args, &block) # rubocop:disable MethodName
-            enum = Enum.new(*args, &block)
+          def Enum(*args, **options, &block) # rubocop:disable MethodName
+            enum = Enum.new(*args, constructor: :set, **options, &block)
 
             constructor = container['integer'].constructor(&enum.method(:[]))
             container.register(enum.key, constructor, call: false)

@@ -1,32 +1,53 @@
 # frozen_string_literal: true
 
-module Piktur
+module Piktur::Support # rubocop:disable ClassAndModuleChildren
 
-  module Support
+  # :nodoc
+  module Enum
 
-    class Enum # rubocop:disable Documentation
+    module Constructor
 
-      # @param [Symbol] name The collection name
-      # @param [Hash] options
+      # @param [Class] base
       #
-      # @option options [Module] :namespace (Object) the parent module
-      # @option options [Symbol] :predicates (nil) the enumerated attribute name
-      # @option options [Symbol] :i18n_scope (nil)
-      #
-      # @return [Enum] an immutable Enum instance
-      def self.new(name, namespace: ::Object, **options, &block)
-        options, finisher = DSL.call(namespace, options, &block)
+      # @return [void]
+      def self.included(base)
+        base.extend ClassMethods
+      end
 
-        super(name, options).finalize(namespace, options, &finisher)
+      module ClassMethods
+
+        # @param [Symbol] name The collection name
+        # @param [Hash] options
+        #
+        # @option options [Module] :namespace (Object) the parent module
+        # @option options [Symbol] :predicates (nil) the enumerated attribute name
+        # @option options [Symbol] :i18n_scope (nil)
+        #
+        # @return [Enum] an immutable Enum instance
+        def new(name, namespace: ::Object, **options, &block)
+          options, finisher = DSL.call(namespace, options, &block)
+
+          super(name, options).finalize(namespace, options, &finisher)
+        end
+
       end
 
       def initialize(name, values:, i18n_scope:, **)
         @name = name.to_sym
         self.i18n_scope = i18n_scope
 
-        build(values)
+        result = catch(:invalid) do
+          build(values)
 
-        default; key; to_s # memoize
+          # memoize
+          default
+          key
+          to_s
+
+          return
+        end
+
+        ::NAMESPACE.debug(binding, raise: ::StandardError.new(result))
       end
 
       # If given, yields self to block and adds `predicates` to the `namespace` if requested.
@@ -76,7 +97,7 @@ module Piktur
 
         enumerable.each.with_index do |(key, options), i|
           options[:value] = i
-          value = declare!(key, i18n_scope: @i18n_scope, enum: self, **options)
+          value = add(key, i18n_scope: @i18n_scope, enum: self, **options)
           @mapping[key] = value
         end
 
@@ -85,14 +106,10 @@ module Piktur
         @mapping.freeze
       end
 
-      # * Store {Value} under `key`
-      # * Define scoped `I18n` helper
-      # * Define method for `key`
-      #
+
       # @return [void]
-      private def declare!(key, value: nil, **options)
-        # validate!((key = key.to_sym), value)
-        self.class::Value.new(key: key, value: value, **options)
+      private def add(key, value: nil, **options)
+        Value.new(key: key, value: value, **options)
       end
 
     end

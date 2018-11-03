@@ -2,7 +2,7 @@
 
 module Piktur::Support # rubocop:disable ClassAndModuleChildren
 
-  class Enum
+  module Enum
 
     # :nodoc
     DSL = Struct.new(:values, :options) do
@@ -93,6 +93,23 @@ module Piktur::Support # rubocop:disable ClassAndModuleChildren
       def value(key, **options)
         values[key] = options
       end
+
+      # @example
+      #   Types.Enum :codes do
+      #     default :zero, 0, meta: {}
+      #     code :one, 10, meta: {}
+      #     code :two, 20, meta: {}
+      #   end
+      def method_missing(method, *args) # rubocop:disable MissingRespondToMissing
+        options = args.extract_options!
+        key, value, = args
+
+        return super if value.nil?
+
+        options[:value] = value
+        value(key, options)
+      end
+
     end
 
   end

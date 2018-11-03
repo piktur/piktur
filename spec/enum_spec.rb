@@ -475,4 +475,45 @@ module Piktur::Support
       end
     end
   end
+
+  RSpec.describe Enum::Validate do
+    let(:key) { :key }
+    let(:value) { 1 }
+    let(:mapping) { { :key => Value.new(:key, 1) } }
+
+    let(:input) { [key, value, mapping] }
+    let(:result) { subject.call(*input) }
+
+    before do
+      stub_const('Value', Struct.new(:key, :value) {
+        def ==(other); key == other || value == other; end
+      })
+    end
+
+    describe 'valid' do
+      let(:key) { :other }
+      let(:value) { 2 }
+
+      it { expect { result }.not_to throw_symbol(:invalid) }
+    end
+
+    describe 'duplicate key' do
+      let(:value) { 2 }
+
+      it { expect { result }.to throw_symbol(:invalid) }
+    end
+
+    describe 'duplicate value' do
+      let(:key) { :other }
+
+      it { expect { result }.to throw_symbol(:invalid) }
+    end
+
+    describe 'non numeric value' do
+      let(:key) { :other }
+      let(:value) { '2' }
+
+      it { expect { result }.to throw_symbol(:invalid) }
+    end
+  end
 end

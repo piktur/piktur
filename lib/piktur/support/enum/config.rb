@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Piktur::Support::Enum # rubocop:disable ClassAndModuleChildren
+module Piktur::Support::Enum # rubocop:disable ClassAndModuleChildren
 
   # :nodoc
   class Config

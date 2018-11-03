@@ -1,59 +1,69 @@
 # frozen_string_literal: true
 
-module Piktur
+module Piktur::Support # rubocop:disable ClassAndModuleChildren
 
-  module Support
+  module Enum
 
-    class Enum
+    class Validator
 
-      # @deprecated
-      module Validator
+      DUPLICATE_KEY_MSG = <<~MSG
+        Key %{key} already defined.
+      MSG
 
-        NonNumericValuerError = ::Class.new(::StandardError)
+      DUPLICATE_VALUE_MSG = <<~MSG
+        Value %{value} already defined. Provide a unique value for "%{key}".
+      MSG
 
-        DUPLICATE_KEY_MSG = <<~MSG
-          Key %{key} already defined.
-        MSG
+      NAME_COLLISION_MSG = <<~MSG
+        Name Collision: method "%{m}" is already defined. %{file}:%{line}
+      MSG
 
-        DUPLICATE_VALUE_MSG = <<~MSG
-          Value %{value} already defined. Provide a unique value for "%{key}".
-        MSG
+      NON_NUMERIC_VALUE_MSG = <<~MSG
+        Value %{value} MUST BE numeric.
+      MSG
 
-        NAME_COLLISION_MSG = <<~MSG
-          Name Collision: method "%{m}" is already defined. %{file}:%{line}
-        MSG
-
-        NON_NUMERIC_VALUE_MSG = <<~MSG
-          Value %{value} MUST BE numeric.
-        MSG
-
-        # @param [Symbol] key
-        # @param [Numeric] value
-        #
-        # @raise [ArgumentError] if value missing
-        def validate!(_key, _value)
-          # [REDUNDANT] It's not possible to define a duplicate key within a Hash
-          # raise ::ArgumentError, DUPLICATE_KEY_MSG % { key: key } if
-          #   duplicate_key?(key)
-
-          # [REDUNDANT] Use the index of the Struct instance
-          # raise ::ArgumentError, DUPLICATE_VALUE_MSG % { key: key, value: value } if
-          #   duplicate_value?(value)
-
-          # [REDUNDANT] The index is numeric
-          # raise NonNumericValuerError, NON_NUMERIC_VALUE_MSG % { value: value } unless
-          #   value.is_a?(Numeric)
-
-          true
+      # @param [Symbol] key
+      # @param [Numeric] value
+      # @param [Hash] mapping
+      #
+      # @return [true] if valid
+      def call(key, value, mapping)
+        result = catch :invalid do
+          return [
+            unique_key?(key, mapping),
+            unique_value?(key, value, mapping),
+            type?(value)
+          ].all?
         end
 
-        # @return [Boolean]
-        def duplicate_key?(value); mapping.members.include?(value); end
-
-        # @return [Boolean]
-        def duplicate_value?(value); mapping.find { |_, obj| value == obj.value }; end
-
+        throw :invalid, result
       end
+
+      private
+
+        def unique_key?(key, mapping)
+          if mapping.key?(key)
+            throw :invalid, format(DUPLICATE_KEY_MSG, key: key)
+          else
+            true
+          end
+        end
+
+        def unique_value?(key, value, mapping)
+          if mapping.find { |_, obj| obj.value == value }
+            throw :invalid, format(DUPLICATE_VALUE_MSG, key: key, value: value)
+          else
+            true
+          end
+        end
+
+        def type?(value)
+          if value.is_a?(::Numeric)
+            true
+          else
+            throw :invalid, format(NON_NUMERIC_VALUE_MSG, value: value)
+          end
+        end
 
     end
 

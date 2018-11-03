@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable ClassAndModuleChildren
-
-class Piktur::Support::Enum
+module Piktur::Support::Enum # rubocop:disable ClassAndModuleChildren
 
   # :nodoc
   module Plugins
