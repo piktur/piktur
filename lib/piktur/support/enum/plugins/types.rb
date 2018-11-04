@@ -9,8 +9,8 @@ module Piktur::Support # rubocop:disable ClassAndModuleChildren
       # :nodoc
       module Types
 
-        def self.included(base)
-          base.include InstanceMethods
+        def self.included(*)
+          [Set, Map].each { |klass| klass.include InstanceMethods }
           container.extend Constructor
         end
 
