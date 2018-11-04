@@ -7,13 +7,16 @@ module Piktur::Support # rubocop:disable ClassAndModuleChildren
     # Wraps underlying `Hash` mapping Symbol => Numeric
     class Map < Set
 
-      # @param [String, Symbol, Integer, Value] input
+      # @param [Symbol, Numeric, Value] input
       #
-      # @return [Value, nil]
-      def find(input)
-        super || default
+      # @raise [ArgumentError]
+      #
+      # @return [Enum::Value]
+      def find!(input)
+        return input if input.is_a?(Value)
+
+        mapping.fetch(input) { find_by_value!(input) }
       end
-      alias [] find
 
       # @yieldparam [Value] value
       #
