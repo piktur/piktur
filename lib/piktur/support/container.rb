@@ -55,7 +55,7 @@ module Piktur
 
         # @note memoized container items use the same mutex instance!
         #
-        # @return [Dry::Container] a mutable copy of the container
+        # @return [Dry::Container{String => Object}] a mutable copy of the container
         def clone(freeze: false)
           super(freeze: freeze).tap do |obj|
             obj.instance_variables.each do |ivar|
