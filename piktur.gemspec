@@ -47,6 +47,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'fast_underscore',                   '~> 0.3'
   s.add_dependency 'activesupport',                     "= #{ENV.fetch('RAILS_VERSION')}"
   s.add_dependency 'dry-configurable',                  '~> 0.7'
+  s.add_dependency 'dry-auto_inject',                   '~> 0.4'
   s.add_dependency 'dry-types',                         '~> 0.13'
   s.add_dependency 'rake',                              '~> 12.0'
   # @!endgroup

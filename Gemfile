@@ -27,6 +27,7 @@ gem 'fast_underscore',          require: false
 gem 'activesupport',            require: false
 gem 'concurrent-ruby',          git:    "#{gh}/ruby-concurrency/concurrent-ruby.git",
                                 branch: 'master'
+gem 'dry-auto_inject',          require: false
 gem 'dry-configurable',         require: false
 gem 'dry-monads',               require: false
 gem 'dry-struct',               require: false
