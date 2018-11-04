@@ -22,7 +22,7 @@ module Piktur::Support # rubocop:disable ClassAndModuleChildren
         # :nodoc
         module Constructor
 
-          # Builds an {Enum} and registers the constructor with the {.container}
+          # Builds an {Enum} and registers the constructor with the {.types}
           #
           # @param see (Enum.new)
           #
@@ -35,8 +35,11 @@ module Piktur::Support # rubocop:disable ClassAndModuleChildren
           def Enum(*args, **options, &block) # rubocop:disable MethodName
             enum = Enum.new(*args, constructor: :set, **options, &block)
 
-            constructor = container['integer'].constructor(&enum.method(:[]))
-            container.register(enum.key, constructor, call: false)
+            @_type ||= (Types.container['symbol'] | Types.container['integer'])
+
+            constructor = @_type.constructor(&enum.method(:[]))
+            Types.container.register(enum.key, constructor, call: false)
+
             enum
           end
 
