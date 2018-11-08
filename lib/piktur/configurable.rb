@@ -13,7 +13,9 @@ module Piktur
       base.safe_const_set(:Types, ::NAMESPACE::Types)
     end
 
-    def [](name); config[name]; end
+    # @todo FIX conflict when class extended by Dry::Container::Mixin
+    #
+    # def [](name); config[name]; end
 
     # @see https://github.com/dry-rb/dry-configurable/commit/abefc03b945fb39349461b46b9b3a7aefc77a2ad
     #
