@@ -23,17 +23,19 @@ module Piktur
       module Key
 
         # @return [String]
+        def self.format(input, namespace_separator = '.')
+          Inflector.underscore(input.to_s).tr("/\s", namespace_separator).tap(&:downcase!)
+        end
+
+        # @return [String]
         def namespace_separator; config.namespace_separator; end
 
         # @return [String] The normalized key input
         def to_key(input)
-          case input
-          when ::Enumerable
-            input.join(namespace_separator).tap { |str| str.tr!('/', namespace_separator) }
-          when ::String
-            input.tr('/', namespace_separator)
+          if input.is_a?(::Array)
+            input.map { |e| to_key(e) }.join(namespace_separator)
           else
-            input
+            Key.format(input, namespace_separator)
           end
         end
 
@@ -88,12 +90,12 @@ module Piktur
 
         # @!attribute [r] namespace_separator
         #   @return [String]
-        delegate :namespace_separator, to: :container, allow_nil: true
+        def namespace_separator; container&.namespace_separator; end
 
         # @!method to_key(input)
         #   @param see (container#to_key)
         #   @return [String]
-        delegate :to_key, to: :container, allow_nil: true
+        def to_key(input); container&.to_key(input); end
 
         # Returns the {.container} item registered under given `key`
         #
