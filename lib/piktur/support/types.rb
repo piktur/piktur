@@ -28,36 +28,22 @@ module Piktur
     #   NAMESPACE::Types['enum.users.types'][:admin] # => <Enum::Value admin=1>
     module Types
 
-      # :nodoc
-      class Container
+      extend ::ActiveSupport::Autoload
 
-        include ::Dry::Container::Mixin
-        include Support::Container::Mixin
-
-        def self.new(*)
-          super.tap do |container|
-            container.merge(::Dry::Types.container)
-          end
-        end
-
-        # @return [void]
-        def finalize!
-          freeze if ::NAMESPACE.env.production?
-        end
-
-      end
+      autoload :Container
 
       include ::Dry::Types.module
-      extend  Support::Container::Delegates
 
-      # Alias `Int` to resolve breaking name change in 0.13
+      require_relative './types/container.rb'
+
+      # Alias `Int` to resolve breaking name change in dry-types v0.13
       # @see https://github.com/rom-rb/rom-sql/blob/master/lib/rom/sql/extensions/postgres/types.rb
       Int = Integer unless const_defined?(:Int)
       Strict::Int = Strict::Integer unless Strict.const_defined?(:Int)
       Coercible::Int = Coercible::Integer unless Coercible.const_defined?(:Int)
-      Coercible::Symbol = Dry::Types['symbol']
+      Coercible::Symbol = ::Dry::Types['symbol'].constructor(&:to_sym)
 
-      Dry::Types.register('coercible.symbol', Coercible::Symbol)
+      ::Dry::Types.register('coercible.symbol', Coercible::Symbol)
 
       class << self
 
@@ -70,35 +56,6 @@ module Piktur
             base.method_defined?(:[])
 
           def base.[](key); ::Piktur::Types[key]; end
-        end
-
-        # @!attribute [rw] container
-        #   @return [Dry::Container{String => Object}]
-        def container; @container ||= Container.new; end
-
-        # Register a model constructor with {.container}
-        #
-        # @param [String, Symbol] key The key to register
-        # @param [Object] constructor Any object implementing `#call(params)`
-        #
-        # @raise [Dry::Container::Error] if existing key
-        #
-        # @return [Dry::Types::Constructor] The given constructor
-        # @return [nil] if The constructor does not respond to `#call(params)`
-        def Model(key, klass) # rubocop:disable MethodName
-          return unless klass.respond_to?(:call) && !(fn = klass.method(:call)).arity.zero?
-
-          constructor = Constructor(klass, &fn)
-          container.register(key, constructor, call: false)
-          constructor
-        rescue ::Dry::Container::Error => err
-          ::NAMESPACE.debug(binding, error: err)
-        end
-
-        # @see https://github.com/rom-rb/rom-rails/blob/master/lib/generators/rom/install/templates/types.rb
-        # @return [Dry::Types::Sum]
-        def ID(*) # rubocop:disable MethodName
-          Coercible::Integer.optional.meta(primary_key: true)
         end
 
         private

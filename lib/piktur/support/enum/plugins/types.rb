@@ -16,7 +16,8 @@ module Piktur::Support # rubocop:disable ClassAndModuleChildren
 
         # @return [Object] The types container
         def self.container
-          Enum.config.types.is_a?(Proc) ? Enum.config.types.call : Enum.config.types
+          (Enum.config.types.is_a?(Proc) ? Enum.config.types.call : Enum.config.types) ||
+            raise(::StandardError, 'Missing container -- `Types` plugin not applied')
         end
 
         # :nodoc

@@ -3,8 +3,8 @@
 module Piktur::Spec::Helpers::Container
   %i(transactions operations).each { |aliaz| alias_method aliaz, :container }
 
-  def types(namespace: ::Piktur::Types, &block)
-    container(__callee__, namespace: namespace, &block)
+  def types(namespace: ::Piktur::Types, **options, &block)
+    container(__callee__, namespace: namespace, **options, &block)
   end
 end
 
