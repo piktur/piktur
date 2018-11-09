@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+$LOAD_PATH.push File.expand_path('./lib', Dir.pwd)
+
+load File.expand_path('./env', __dir__)
+
+ENV['DEBUG'] ||= '1'
+require 'bundler/setup' if File.exist?(ENV.fetch('BUNDLE_GEMFILE'))
+
+Bundler.require(:default)
+
+require 'pry'
+require 'piktur'
+require_relative BOOT_PATH if Object.const_defined?(:BOOT_PATH)
+
+Pry.start

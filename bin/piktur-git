@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift File.expand_path('../piktur/lib', __dir__)
+
+require_relative File.expand_path('../lib/piktur/cli/git', __dir__)
+
+Git.start(ARGV)

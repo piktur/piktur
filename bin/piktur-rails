@@ -1,7 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-ENV['ENV'] = ENV['RAILS_ENV'] = ENV['RACK_ENV'] = 'test'
+# This command will automatically be run when you run "rails" with Rails gems
+# installed from the root of your application.
 
 begin
   load File.expand_path('./env', __dir__)
@@ -9,6 +10,3 @@ begin
 rescue LoadError => err
   raise unless err.message.include?('spring')
 end
-
-require 'bundler/setup'
-load Gem.bin_path('rspec-core', 'rspec')
