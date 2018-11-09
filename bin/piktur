@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+begin
+  load File.expand_path($PROGRAM_NAME.split('/')[-1], __dir__)
+rescue LoadError
+  nil
+end

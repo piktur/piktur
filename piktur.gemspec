@@ -16,7 +16,8 @@ Gem::Specification.new do |s|
   s.description = 'Common utilities for Piktur apps'
   s.license     = ''
   s.files = Dir[
-    '{bin,lib}/**/*.rb',
+    'bin/*',
+    '{lib}/**/*.rb',
     '.rubocop.yml',
     '.yardopts',
     'circle.yml',
@@ -36,7 +37,7 @@ Gem::Specification.new do |s|
   s.bindir        = 'bin'
   # @note Rubygems permits executable ruby scripts only, bash scripts ie.
   #   `s.executables.push('piktur_admin.sh')` not accepted
-  s.executables.concat(Dir['pik-*', base: File.expand_path(s.bindir, __dir__)])
+  s.executables << 'piktur'
 
   # @!group Security
   # @note `dotenv` preferred over `figaro`, for `foreman` compatibility

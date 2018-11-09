@@ -5,8 +5,8 @@
 # installed from the root of your application.
 
 begin
-  load File.expand_path('./pik-env', __dir__)
-  load File.expand_path('./pik-spring', __dir__) unless defined?(Spring)
+  load File.expand_path('./env', __dir__)
+  load File.expand_path('./spring', __dir__) unless defined?(Spring)
 rescue LoadError => err
   raise unless err.message.include?('spring')
 end
