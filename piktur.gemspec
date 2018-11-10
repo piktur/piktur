@@ -37,7 +37,7 @@ Gem::Specification.new do |s|
   s.bindir        = 'bin'
   # @note Rubygems permits executable ruby scripts only, bash scripts ie.
   #   `s.executables.push('piktur_admin.sh')` not accepted
-  s.executables << 'piktur'
+  s.executables.push 'piktur', 'piktur-env', 'piktur-spring'
 
   # @!group Security
   # @note `dotenv` preferred over `figaro`, for `foreman` compatibility

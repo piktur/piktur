@@ -14,7 +14,7 @@ else
 end
 APP_PATH ||= File.join(APP_ROOT, 'config/application.rb')
 
-load File.realpath(File.expand_path('../lib/piktur/env.rb', __dir__))
+load File.expand_path('../lib/piktur/env.rb', __dir__)
 env = Piktur::Environment.instance
 
 if env == 'production'
