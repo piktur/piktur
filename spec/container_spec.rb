@@ -2,14 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe Piktur::Support::Container, 'container naming' do
+RSpec.describe Piktur::Container, 'container naming' do
   let(:container) { Container.new }
 
   before do
-    stub_const('Container', Class.new {
-      include Dry::Container::Mixin
-      include Piktur::Support::Container::Mixin
-    })
+    stub_const('Container', Class.new(Piktur::Container::Base))
   end
 
   describe '#to_key(input)' do

@@ -1,21 +1,19 @@
 # frozen_string_literal: true
 
 module Piktur::Spec::Helpers::Container
-  %i(transactions operations).each { |aliaz| alias_method aliaz, :container }
 
-  def types(namespace: ::Piktur::Types, **options, &block)
-    container(__callee__, namespace: namespace, **options, &block)
-  end
+  alias main container
+  alias types container
+  alias operations container
+  alias transactions operations
+
 end
 
 RSpec.shared_context 'container' do
   include Piktur::Spec::Helpers::Container
 
   let(:test_container) do
-    stub_const('Test::Container', ::Class.new {
-      include ::Dry::Container::Mixin
-      include ::Piktur::Support::Container::Mixin
-
+    stub_const('Test::Container', Class.new(Piktur::Container::Base) {
       def self.new(*); super.tap { |container| container.enable_stubs! }; end
     })
   end

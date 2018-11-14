@@ -65,3 +65,5 @@ module Piktur
   end
 
 end
+
+require_relative './config/delegates.rb'

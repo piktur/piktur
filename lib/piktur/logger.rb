@@ -47,6 +47,9 @@ module Piktur
 
     end
 
+    # @return [Logger]
+    def logger; @logger ||= self::Logger.new; end
+
   end
 
 end

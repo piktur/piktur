@@ -2,16 +2,14 @@
 
 require 'dry/container'
 
-module Piktur
+module Piktur::Container # rubocop:disable ClassAndModuleChildren, Documentation
 
-  class Container
+  extend ::ActiveSupport::Autoload
 
-    include ::Dry::Container::Mixin
-    include Support::Container::Mixin
-
-    # @return [void]
-    def finalize!; end
-
-  end
+  autoload :Aggregate
+  autoload :Base
+  autoload :Delegates
+  autoload :Key
+  autoload :Mixin
 
 end

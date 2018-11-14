@@ -16,12 +16,14 @@ RSpec.describe Piktur::Support::Enum do
   end
 
   before do
+    stub_const('Types', Piktur::Types.dup)
+
     allow(Piktur::Support::Enum).to receive(:config) do
       OpenStruct.new(
         inflector: Inflector,
         i18n_namespace: :enum,
-        types: -> { Piktur::Types.container },
-        container: -> { Piktur.container },
+        types: Types,
+        container: test_container.new,
       )
     end
   end
@@ -485,7 +487,7 @@ RSpec.describe Piktur::Support::Enum do
       before do
         Piktur::Support::Enum.use :types
 
-        Piktur::Support::Types.Enum(name, namespace: namespace, **options) do
+        Types.Enum(name, namespace: namespace, **options) do
           default :black
           value   :blue
           value   :purple
@@ -497,7 +499,7 @@ RSpec.describe Piktur::Support::Enum do
       let(:name) { :colours }
       let(:namespace) { Test.safe_const_reset(:Palette, ::Module.new) }
       let(:key) { "enum.test.palette.#{name}" }
-      let(:result) { Piktur::Support::Types.container[key] }
+      let(:result) { Types.container[key] }
 
       describe 'the constructor' do
         it 'is assigned to the Types container' do

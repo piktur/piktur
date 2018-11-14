@@ -12,7 +12,6 @@ module Piktur
 
     autoload :Cache
     autoload :Calc
-    autoload :Container
     autoload :Enum
     autoload :Format
     autoload :Inheritable
@@ -29,7 +28,6 @@ module Piktur
       autoload :WithAttrReader
     end
     autoload :SerializableURI, 'piktur/support/uri'
-    autoload :Types
     autoload :URI, 'piktur/support/uri'
 
     # List available extensions for core Ruby types
@@ -39,8 +37,7 @@ module Piktur
       inflector: [:Inflector],
       json:      [:JSON],
       module:    [:Introspection],
-      object:    [:Object],
-      types:     [:Types]
+      object:    [:Object]
     }.freeze
     private_constant :EXTENSIONS
 

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.require_support 'container', app: 'piktur'
 
-RSpec.describe Piktur::Support::Types do
+RSpec.describe Piktur::Types do
   include_context 'container'
   it_should_behave_like 'a container'
 

@@ -53,6 +53,7 @@ module Piktur
     extend ::ActiveSupport::Autoload
 
     autoload :Application, 'piktur/services/service'
+    autoload :Delegates
     autoload :Engine, 'piktur/services/service'
     autoload :FileIndex
     autoload :Index

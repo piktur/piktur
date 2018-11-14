@@ -11,13 +11,19 @@ module Piktur::Support # rubocop:disable ClassAndModuleChildren
 
         def self.included(*)
           [Set, Map].each { |klass| klass.include InstanceMethods }
-          container.extend Constructor
+
+          types.extend Constructor
+        end
+
+        # @return [Module] The types module
+        def self.types
+          (Enum.config.types.is_a?(Proc) ? Enum.config.types.call : Enum.config.types) ||
+            raise(::StandardError, 'Missing container -- `Types` plugin not applied')
         end
 
         # @return [Object] The types container
         def self.container
-          (Enum.config.types.is_a?(Proc) ? Enum.config.types.call : Enum.config.types) ||
-            raise(::StandardError, 'Missing container -- `Types` plugin not applied')
+          types.container
         end
 
         # :nodoc

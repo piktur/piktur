@@ -99,3 +99,5 @@ module Piktur
   end
 
 end
+
+Kernel.load ::File.expand_path('./environment/predicates.rb', __dir__)
