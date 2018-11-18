@@ -15,7 +15,7 @@ module Piktur
     # @!attribute [rw] operations
     #   @return [Dry::Container{String => Object}]
     attr_writer :operations
-    def operations; @operations ||= ::Piktur::Operations.new; end
+    def operations; @operations ||= ::Piktur::Operations::Container.new; end
 
     # @!attribute [rw] types
     #   @return [Dry::Container{String => Object}]
@@ -25,7 +25,7 @@ module Piktur
     # @return [Array<Dry::Container{String => Object}>]
     def to_a; [main, operations, types]; end
 
-    # @yieldparam [Dry::Container{String => Object}]
+    # @yieldparam [Dry::Container{String => Object}] container
     #
     # @return [Enumerator]
     def each(&block); to_a.each(&block); end

@@ -8,9 +8,4 @@ class Piktur::Types::Container < Piktur::Container::Base # rubocop:disable Class
     end
   end
 
-  # @return [void]
-  def finalize!
-    freeze if ::NAMESPACE.env.production?
-  end
-
 end

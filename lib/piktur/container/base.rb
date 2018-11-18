@@ -27,7 +27,9 @@ module Piktur::Container # rubocop:disable ClassAndModuleChildren
     end
 
     # @return [void]
-    def finalize!; end
+    def finalize!
+      freeze if ::NAMESPACE.env.production?
+    end
 
   end
 
