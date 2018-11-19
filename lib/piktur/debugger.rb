@@ -43,7 +43,7 @@ module Piktur # rubocop:disable Documentation
     #
     # @return [void]
     def debug(obj = binding, diff = true, warning: nil, error: nil, **options) # rubocop:disable MethodLength
-      const_get(:DEBUGGER)[obj, diff] unless env.production?
+      const_get(:DEBUGGER)[obj, diff] unless ::NAMESPACE.env.production?
 
       if options[:raise]
         self::Errors.raise(options[:raise])
